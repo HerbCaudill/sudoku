@@ -1,6 +1,7 @@
 import { describe, it, expect, assert } from 'vitest'
 import { toGrid } from '../toGrid.js'
-import { Candidates, getCandidates, isSolved } from '../getCandidatesNew.js'
+import { getCandidates, isSolved } from '../getCandidatesNew.js'
+import { LogicalSolver } from '../LogicalSolver.js'
 import { printCandidates } from '../printCandidates.js'
 
 describe('getCandidates', () => {
@@ -33,7 +34,7 @@ describe('getCandidates', () => {
     . 7 9  . . .  . . .
     3 . 8  6 . .  4 . .
     `)
-    const candidates = new Candidates(grid).find()
+    const candidates = new LogicalSolver(grid).calculate()
     assert(candidates)
     // note that all of c5 is solved
     expect(printCandidates(candidates).slice(1)).toMatchInlineSnapshot(`
@@ -90,7 +91,7 @@ describe('getCandidates', () => {
     7 . . . . 5 . . .
     `)
 
-    const candidates = new Candidates(grid).find()
+    const candidates = new LogicalSolver(grid).calculate()
     assert(candidates)
     // we found the hidden singles in r5c1 (2) and r8c4 (7)
     expect(printCandidates(candidates).slice(1)).toMatchInlineSnapshot(`
@@ -145,7 +146,7 @@ describe('getCandidates', () => {
     . . .  3 . .  . . 4
     . 2 .  . 9 .  . 7 .
     5 . 4  . 1 .  . . 6 `)
-    const candidates = new Candidates(grid).find()
+    const candidates = new LogicalSolver(grid).calculate()
     assert(candidates)
     expect(printCandidates(candidates).slice(1)).toMatchInlineSnapshot(`
       "━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┓ 

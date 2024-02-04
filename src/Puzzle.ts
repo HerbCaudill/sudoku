@@ -1,10 +1,11 @@
 import { getFrequencies } from './getFrequencies.js'
-import { getCandidates } from './getCandidates.js'
+import { getCandidates } from './getCandidatesNew.js'
 import { getAllSingles } from './getSingles.js'
 import { peers } from './peers.js'
 import { toGrid } from './toGrid.js'
 import { Grid } from './types.js'
 import { AnalysisResult } from './types.js'
+import { LogicalSolver } from './LogicalSolver.js'
 
 export class Puzzle {
   /** The initial state of the puzzle */
@@ -21,83 +22,44 @@ export class Puzzle {
   }
 
   /**
-   * Solves a puzzle by identifying candidates for each cell, and then recursively selecting
-   * candidates and exploring the resulting grid until a contradiction is found or the puzzle is
-   * solved.
+   * Solves a puzzlealternating between a logical phase of eliminating candidates and a
+   * trial-and-error phase of guessing a candidate and recursively solving the resulting grid.
    */
   complete(grid: Grid): Grid | false {
     if (this.#maxSteps && this.#steps > this.#maxSteps) throw new Error('too many steps')
-    let candidates = getCandidates(grid)
-    let unsolvedCells = Object.keys(candidates).map(Number)
 
-    // LOGICAL PHASE
+    // 💡 LOGICAL PHASE
 
-    while (true) {
-      this.#steps += 1
-      // 🎉 if there are no unsolved cells, we're done - return the solved grid
-      if (unsolvedCells.length === 0) return grid
+    const {
+      candidates, //
+      failed,
+      grid: updatedGrid,
+      solved,
+      nextCell,
+    } = new LogicalSolver(grid)
 
-      // ❌ if there there are any cells with no candidates, this is a dead end
-      if (Object.values(candidates).some(isEmpty)) return false
+    // ❌ if we've reached a contradiction, we're at a dead end & need to backtrack
+    if (failed) return false
 
-      // TODO: Move most of this to getCandidates, including the check for contradictions.
-      // If getCandidates finds a contradiction, it should return false. The only thing we'll
-      // need to do here is check for singles and update the grid accordingly.
+    // update the grid with any cells that have been solved
+    grid = updatedGrid
 
-      // are there any cells with only one possible solution? (because it has only one candidate,
-      // or because it has no peers with the same candidate)
-      const singles = getAllSingles(grid, candidates)
-      const singleKeys = Object.keys(singles).map(Number)
+    // 🎉 if the puzzle has been solved, return it
+    if (solved) return grid
 
-      if (singleKeys.length > 0) {
-        // check for contradictions: If a cell has to be X and it's a peer of another cell that
-        // has to be X, we're at a dead end
-        const hasContradiction = singleKeys.some(index => {
-          const singlePeers = peers[index].filter(peer => singleKeys.includes(peer))
-          const isContradiction = singlePeers.some(peer => singles[peer] === singles[index])
-          return isContradiction
-        })
+    // 🎲 TRIAL AND ERROR PHASE
 
-        // ❌ if a contradiction was found, this is a dead end
-        if (hasContradiction) return false
-
-        // no contradictions - fill in these cells
-        for (const index of singleKeys) {
-          grid[index] = singles[index]
-        }
-
-        // update our list of candidates
-        candidates = getCandidates(grid)
-        unsolvedCells = Object.keys(candidates).map(Number)
-      } else {
-        // no singles - now we just need to try some candidates and backtrack as needed
-        break
-      }
-    }
-
-    // TRIAL & ERROR PHASE
-
-    // choose a cell with the fewest candidates
-    const index = unsolvedCells.reduce(
-      (minIndex, currentIndex) =>
-        candidates[currentIndex].length < candidates[minIndex].length ? currentIndex : minIndex,
-      unsolvedCells[0]
-    )
-
-    // count the number of times each value appears in the grid
-    const frequency = getFrequencies(grid)
-
-    // try completing the grid with each possible candidate, starting with the ones that appear
-    // least frequently
-    const byFrequency = (a: number, b: number) => (frequency[a] ?? 0) - (frequency[b] ?? 0)
-    const sortedCandidates = candidates[index].sort(byFrequency)
+    const sortedCandidates = sortByFrequency(grid, candidates[nextCell])
     for (const newValue of sortedCandidates) {
-      const newGrid = grid.map((oldValue, i) => (i === index ? newValue : oldValue)) as Grid
-      // 👉 recursively try to solve the puzzle assuming this value
+      // make a new grid with this value
+      const newGrid = modifyGrid(grid, nextCell, newValue)
+
+      // 👉 recursively try to solve the puzzle assuming this value;
+      // we'll get `false` if we reach a contradiction, or a solved puzzle if this value works
       const solution = this.complete(newGrid)
-      if (solution)
-        // 🎉 if it leads to a valid solution, return it
-        return solution
+
+      // 🎉 if this leads to a valid solution, return it
+      if (solution) return solution
     }
 
     // ❌ None of the candidates worked, so this is a dead end
@@ -141,4 +103,14 @@ export class Puzzle {
   }
 }
 
-const isEmpty = (arr: any[]) => arr.length === 0
+const sortByFrequency = (grid: Grid, cellCandidates: number[]) => {
+  const frequency = getFrequencies(grid)
+  const byFrequency = (a: number, b: number) => (frequency[a] ?? 0) - (frequency[b] ?? 0)
+  return cellCandidates.sort(byFrequency)
+}
+
+const modifyGrid = (grid: Grid, index: number, newValue: number) => {
+  return grid.map((oldValue, i) => {
+    return i === index ? newValue : oldValue
+  }) as Grid
+}
