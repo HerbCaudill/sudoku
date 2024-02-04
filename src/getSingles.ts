@@ -2,6 +2,7 @@ import { Grid } from './types.js'
 import { CandidateGrid } from './types.js'
 import { getCandidates } from './getCandidates.js'
 import { boxPeers, colPeers, rowPeers } from './peers.js'
+import { SingleMap } from './types.js'
 
 export const getCellSingles = (grid: Grid, candidates: CandidateGrid = getCandidates(grid)) => {
   const unsolvedCells = Object.keys(candidates).map(Number)
@@ -50,5 +51,3 @@ export const getAllSingles = (grid: Grid, candidates: CandidateGrid = getCandida
     ...getBoxSingles(grid, candidates),
   } as SingleMap
 }
-
-type SingleMap = { [index: number]: number }

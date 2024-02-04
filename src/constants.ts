@@ -49,6 +49,8 @@ export const emptyGrid: Grid = toGrid(`
   . . . . . . . . . 
 `)
 
+// the numbers 1...9 (allowed values, also possible row/col/box numbers)
 export const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
+// the numbers 0...80 (zero-based index of each cell in a grid)
 export const cells = Object.keys(emptyGrid).map(Number)

@@ -1,15 +1,73 @@
 import { cells, numbers } from './constants.js'
-import { peers } from './peers.js'
+import { boxPeers, colPeers, peers, rowPeers } from './peers.js'
 import { box, col, row } from './units.js'
-import { CandidateGrid, Grid } from './types.js'
+import { CandidateGrid, Grid, SingleMap } from './types.js'
 
-export const getCandidates = (grid: Grid) => {
-  const candidates = getGridCandidates(grid)
-  const hasNoCandidates = (index: number) => candidates[index].length === 0
-  const hasOneCandidate = (index: number) => candidates[index].length === 1
-  const hasCandidate = (value: number) => (index: number) => candidates[index].includes(value)
+export class Candidates {
+  candidates: CandidateGrid
 
-  const hasContradictions = () => {
+  constructor(private grid: Grid) {
+    this.candidates = getGridCandidates(this.grid)
+  }
+
+  find = () => {
+    const { hasOneCandidate } = this
+    do {
+      // if there are no unsolved cells, we're done - return the solved grid
+      if (cells.every(hasOneCandidate)) return this.candidates
+
+      // if there are contradictions, return false
+      if (this.hasContradictions()) return false
+
+      // iteratively propagate constraints until nothing changes
+    } while (this.propagateConstraints())
+
+    return this.candidates
+  }
+
+  propagateConstraints = () => {
+    let propagate = false
+
+    // if there are any naked singles, eliminate those values from peers
+    this.getCellSingles().forEach(([index, single]) => {
+      peers[index] //
+        .filter(this.hasCandidate(single))
+        .forEach(peer => {
+          this.removeCandidate(peer, single)
+          propagate = true
+        })
+    })
+
+    // if there are any hidden singles, eliminate those values from peers
+    const unitType = [rowPeers, colPeers, boxPeers]
+    unitType.forEach(unitPeers => {
+      this.getUnitSingles(unitPeers).forEach(([index, value]) => {
+        unitPeers[index] //
+          .filter(this.hasCandidate(value))
+          .forEach(peer => {
+            this.removeCandidate(peer, value)
+            propagate = true
+          })
+        // set this as the only candidate for this cell
+        this.candidates[index] = [value]
+      })
+    })
+
+    // can we generalize to doubles, triples, etc?
+
+    // if there are any boxes whose values can only go in one row or column, eliminate those values from other cells in that row or column
+
+    // if we haven't made any changes, don't keep looping
+    return propagate
+  }
+
+  removeCandidate = (index: number, value: number) => {
+    this.candidates[index] = this.candidates[index].filter(v => v !== value)
+  }
+
+  hasContradictions = () => {
+    const { hasNoCandidates, hasOneCandidate, hasCandidate } = this
+
     // if any cell has no candidates
     if (cells.some(hasNoCandidates)) return true
 
@@ -26,10 +84,7 @@ export const getCandidates = (grid: Grid) => {
       return true
 
     // if any single-candidate cell has a peer with the same single candidate
-    const singles = cells.filter(hasOneCandidate).map(index => {
-      const single = candidates[index][0]
-      return [index, single] as const
-    })
+    const singles = this.getCellSingles()
     if (
       singles.some(([index, single]) => {
         const singlePeers = peers[index].filter(hasOneCandidate)
@@ -39,27 +94,46 @@ export const getCandidates = (grid: Grid) => {
       return true
   }
 
-  while (true) {
-    // if there are no unsolved cells, we're done - return the solved grid
-    if (cells.every(hasOneCandidate)) return candidates
+  // filter predicates
 
-    // if there are contradictions, return false
-    if (hasContradictions()) return false
+  hasNoCandidates = (index: number) => this.candidates[index].length === 0
 
-    // constraint propagation:
-    if (false) {
-      // if there are any singles/doubles/etc, eliminate other values from those cells, and eliminate those values from peers
-      continue
-    }
+  hasOneCandidate = (index: number) => this.candidates[index].length === 1
 
-    if (false) {
-      // if there are any boxes whose values can only go in one row or column, eliminate those values from other cells in that row or column
-      continue
-    }
+  hasMultipleCandidates = (index: number) => this.candidates[index].length > 1
 
-    // no further constraints - return the candidates
-    return candidates
+  hasCandidate = (value: number) => (index: number) => this.candidates[index].includes(value)
+
+  // utilities
+
+  /** "naked" singles */
+  getCellSingles = () => {
+    return cells //
+      .filter(this.hasOneCandidate)
+      .map(index => {
+        const single = this.candidates[index][0]
+        return [index, single] as const
+      })
   }
+
+  /** "hidden" singles - candidates that are only found once in a row/col/box */
+  getUnitSingles = (unitPeers: number[][]) => {
+    return cells
+      .filter(index => this.hasMultipleCandidates(index)) // we deal with naked singles elsewhere
+      .map(index => {
+        const isAloneInUnit = (candidate: number) =>
+          !unitPeers[index] //
+            .some(this.hasCandidate(candidate))
+
+        const single = this.candidates[index].find(isAloneInUnit)
+        if (single) return [index, single]
+      })
+      .filter(Boolean) as [number, number][] // eliminate cases where no single was found
+  }
+}
+
+export const getCandidates = (grid: Grid) => {
+  return new Candidates(grid).find()
 }
 
 const getGridCandidates = (grid: Grid) =>
@@ -75,3 +149,5 @@ const getCellCandidates = (grid: Grid, index: number) => {
   const peerHas = (value: number) => (peer: number) => grid[peer] === value
   return numbers.filter(value => !peers[index].some(peerHas(value)))
 }
+
+export const isSolved = (candidates: CandidateGrid) => cells.every(index => candidates[index].length === 1)

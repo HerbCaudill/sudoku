@@ -30,4 +30,5 @@ export type AnalysisResult = (
   time: number
 }
 
-export type CandidateGrid = Record<number, number[]>
+export type CandidateGrid = Record<number, number[]>export type SingleMap = { [index: number]: number} 
+
