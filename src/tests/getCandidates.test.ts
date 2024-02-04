@@ -78,49 +78,67 @@ describe('getCandidates', () => {
 
     it('no candidates for a value in a row', () => {
       const grid = toGrid(`
-      7  .  4   . (.) 6   .  .  9 
-      .  8  .   .  1 [5]  .  .  . 
-      .  .  3   .  2  .   4  5  . 
-      .  .  .   .  .  .   .  .  2 
-      .  5  6   .  .  .   7  8  . 
-      1  .  .   .  .  .   .  .  . 
-      .  2  5   .  3  .   1  .  . 
-      .  .  .   .  4  .   .  6  . 
-      9  .  .   5  .  .   3  .  7 `)
+        7  .  4   . (.) 6   .  .  9 
+        .  8  .   .  1 [5]  .  .  . 
+        .  .  3   .  2  .   4  5  . 
+        .  .  .   .  .  .   .  .  2 
+        .  5  6   .  .  .   7  8  . 
+        1  .  .   .  .  .   .  .  . 
+        .  2  5   .  3  .   1  .  . 
+        .  .  .   .  4  .   .  6  . 
+        9  .  .   5  .  .   3  .  7 `)
       // in row 1, 5 could only go in r1c5; but we put a 5 in r2c6
       // so now there's no place for a 5 in row 1
       const candidates = getCandidates(grid)
       expect(candidates).toBe(false)
     })
+
     it('no candidates for a value in a column', () => {
       const grid = toGrid(`
-      7  .  4   .  .  6   .  .  9 
-      .  8  .  [7] 1  .   . (.) . 
-      .  .  3   .  2  .   4  5  . 
-      .  .  .   .  .  .   .  .  2 
-      .  5  6   .  .  .   7  8  . 
-      1  .  .   .  .  .   .  .  . 
-      .  2  5   .  3  .   1  .  . 
-      .  .  .   .  4  .   .  6  . 
-      9  .  .   5  .  .   3  .  7 `)
+        7  .  4   .  .  6   .  .  9 
+        .  8  .  [7] 1  .   . (.) . 
+        .  .  3   .  2  .   4  5  . 
+        .  .  .   .  .  .   .  .  2 
+        .  5  6   .  .  .   7  8  . 
+        1  .  .   .  .  .   .  .  . 
+        .  2  5   .  3  .   1  .  . 
+        .  .  .   .  4  .   .  6  . 
+        9  .  .   5  .  .   3  .  7 `)
       // in column 8, 7 could only go in r2c8; but we put a 7 in r2c4
       // so now there's no place for a 7 in column 8
       const candidates = getCandidates(grid)
       expect(candidates).toBe(false)
     })
+
     it('no candidates for a value in a box', () => {
       const grid = toGrid(`
-      7  .  4   .  .  6   .  .  9 
-      .  8  .   .  1  .   .  .  . 
-      .  .  3   .  2  .   4  5  . 
-      .  .  .  [6] .  .   .  .  2 
-      .  5  6   .  .  .   7  8  . 
-      1  .  .   .  .  .   .  .  . 
-      .  2  5  (.) 3  .   1  .  . 
-      .  .  .   .  4  .   .  6  . 
-      9 [6] .   5 (.) .   3  .  7 `)
+        7  .  4   .  .  6   .  .  9 
+        .  8  .   .  1  .   .  .  . 
+        .  .  3   .  2  .   4  5  . 
+        .  .  .  [6] .  .   .  .  2 
+        .  5  6   .  .  .   7  8  . 
+        1  .  .   .  .  .   .  .  . 
+        .  2  5  (.) 3  .   1  .  . 
+        .  .  .   .  4  .   .  6  . 
+        9 [6] .   5 (.) .   3  .  7 `)
       // in box 8, 6 could only go in r7c4 and r9c5; but we put 6s in r9c2 and r4c4
       // so now there's no place for 6 in box 8
+      const candidates = getCandidates(grid)
+      expect(candidates).toBe(false)
+    })
+
+    it('two cells with the same single candidate in a row', () => {
+      const grid = toGrid(`
+        7  .  4   .  .  6   .  .  9 
+        .  8  .   .  1  .   .  .  . 
+        .  .  3   .  2  .   4  5  . 
+        .  .  .   .  .  .   .  .  2 
+        .  5  6   .  .  .   7  8  . 
+        7  .  .   .  .  .   .  .  . 
+        .  2  5   .  3  .   1  .  . 
+        .  .  .   .  4  .   .  6  . 
+        9  .  .   5  .  .   3  .  7 `)
+      // r6c1 and r1c1 both have 7 as their only candidate
       const candidates = getCandidates(grid)
       expect(candidates).toBe(false)
     })
