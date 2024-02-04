@@ -38,8 +38,11 @@ export function logicalSolver(grid: Grid) {
       })
     })
 
-    // can we generalize to doubles, triples, etc?
-    // if there are any boxes whose values can only go in one row or column, eliminate those values from other cells in that row or column
+    // TODO: can we generalize to doubles, triples, etc?
+
+    // TODO: if there are any boxes whose values can only go in one row or column, eliminate those
+    // values from other cells in that row or column
+
     // if we haven't made any changes, don't keep looping
     return propagate
   }
