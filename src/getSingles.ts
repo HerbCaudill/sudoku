@@ -18,7 +18,7 @@ export const getUnitSingles =
   (grid: Grid, candidates: CandidateGrid = getCandidates(grid)) => {
     const unsolvedCells = Object.keys(candidates).map(Number)
 
-    const rowSingles = (index: number) => {
+    const getSingles = (index: number) => {
       const hasMatch = (candidate: number) => (cell: number) => {
         const cellCandidates = candidates[cell] ?? []
         return cellCandidates.includes(candidate)
@@ -33,7 +33,7 @@ export const getUnitSingles =
 
     return Object.fromEntries(
       unsolvedCells //
-        .map(rowSingles)
+        .map(getSingles)
         .filter(([_, single]) => single) // only include cells with singles
     ) as SingleMap
   }
