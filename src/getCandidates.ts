@@ -1,3 +1,4 @@
+import { numbers } from './constants.js'
 import { getUnsolvedCells } from './getUnsolvedCells.js'
 import { peers } from './peers.js'
 import { Grid } from './types.js'
@@ -14,5 +15,3 @@ export const getCandidates = (grid: Grid) => {
   }, {})
   return gridCandidates
 }
-
-const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
