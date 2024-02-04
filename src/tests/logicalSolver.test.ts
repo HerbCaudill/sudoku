@@ -1,6 +1,6 @@
 import { describe, it, expect, assert } from 'vitest'
 import { toGrid } from '../toGrid.js'
-import { logicalSolver } from '../xxLogicalSolver.js'
+import { logicalSolver } from '../logicalSolver.js'
 import { printCandidates } from '../printCandidates.js'
 
 describe('LogicalSolver', () => {
