@@ -137,13 +137,13 @@ export function logicalSolver(grid: Grid) {
     // if there are contradictions, return false
     if (hasContradictions()) {
       failed = true
-      return
+      break
     }
 
     // if there are no unsolved cells, we're done
     if (cells.every(hasOneCandidate)) {
       solved = true
-      return
+      break
     }
 
     // iteratively propagate constraints until nothing changes

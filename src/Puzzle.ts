@@ -1,4 +1,4 @@
-import { logicalSolver } from './logicalSolver.js'
+import { logicalSolver } from './xxLogicalSolver.js'
 import { getFrequencies } from './getFrequencies.js'
 import { toGrid } from './toGrid.js'
 import { AnalysisResult, Grid } from './types.js'
