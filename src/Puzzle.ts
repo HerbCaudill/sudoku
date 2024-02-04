@@ -7,20 +7,24 @@ import { Grid } from './types.js'
 import { AnalysisResult } from './types.js'
 
 export class Puzzle {
-  /** the initial state of the puzzle */
+  /** The initial state of the puzzle */
   #puzzle: Grid
 
-  /** iteration counter for internal use while solving */
+  /** Iteration counter for internal use while solving */
   #steps = 0
 
-  /** the maximum number of iteration before bailing */
+  /** The maximum number of iteration before bailing */
   #maxSteps = 0
 
   constructor(puzzle: string) {
     this.#puzzle = toGrid(puzzle)
   }
 
-  /**  */
+  /**
+   * Solves a puzzle by identifying candidates for each cell, and then recursively selecting
+   * candidates and exploring the resulting grid until a contradiction is found or the puzzle is
+   * solved.
+   */
   complete(grid: Grid): Grid | false {
     if (this.#maxSteps && this.#steps > this.#maxSteps) throw new Error('too many steps')
     let candidates = getCandidates(grid)
