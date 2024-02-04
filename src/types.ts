@@ -1,5 +1,4 @@
 import { makeRandom } from '@herbcaudill/random'
-import { Grid } from './types.js'
 
 // prettier-ignore
 export type Grid = [
