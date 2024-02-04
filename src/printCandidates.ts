@@ -1,27 +1,27 @@
 import { cols, emptyGrid, rows } from './constants.js'
-import { getGridCandidates } from './getGridCandidates.js'
+import { getCandidates } from './getCandidates.js'
 import chalk from 'chalk'
 import { Grid } from './types.js'
 
 export const printCandidates = (grid: Grid) => {
   const output = Array.from({ length: 37 }, () => Array(37).fill(' '))
 
-  const squarePos = (i: number) => i * 4 + 1
+  const cellPos = (i: number) => i * 4 + 1
   // fill in the candidate values
-  const candidates = getGridCandidates(grid)
+  const candidates = getCandidates(grid)
   emptyGrid.forEach((_, index) => {
     const row = rows[index] - 1
     const col = cols[index] - 1
 
-    const squareY = squarePos(row)
-    const squareX = squarePos(col)
+    const cellY = cellPos(row)
+    const cellX = cellPos(col)
     if (grid[index] > 0) {
-      output[squareY + 1][squareX + 1] = chalk.yellow(grid[index])
+      output[cellY + 1][cellX + 1] = chalk.yellow(grid[index])
     } else {
-      const squareCandidates = candidates[index] ?? []
+      const cellCandidates = candidates[index] ?? []
       for (let i = 1; i <= 9; i++) {
-        const candidate = squareCandidates.includes(i) ? i : ' '
-        output[squareY + Math.floor((i - 1) / 3)][squareX + ((i - 1) % 3)] = chalk.dim(candidate)
+        const candidate = cellCandidates.includes(i) ? i : ' '
+        output[cellY + Math.floor((i - 1) / 3)][cellX + ((i - 1) % 3)] = chalk.dim(candidate)
       }
     }
   })
@@ -29,13 +29,13 @@ export const printCandidates = (grid: Grid) => {
   // draw dim inner borders
   for (let i = 0; i < 37; i++) {
     for (let j = 0; j < 9; j++) {
-      output[i][squarePos(j) + 3] = '│'
-      output[squarePos(j) + 3][i] = '─'
+      output[i][cellPos(j) + 3] = '│'
+      output[cellPos(j) + 3][i] = '─'
     }
   }
   for (let i = 0; i < 8; i++) {
     for (let j = 0; j < 8; j++) {
-      output[squarePos(i) + 3][squarePos(j) + 3] = '┼'
+      output[cellPos(i) + 3][cellPos(j) + 3] = '┼'
     }
   }
 

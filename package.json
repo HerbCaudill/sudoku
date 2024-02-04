@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "vitest",
-    "bench": "pnpm build && node dist/benchmark/benchmark.js",
-    "build": "tsc && cp -R ./src/benchmark/data ./dist/benchmark/data"
+    "bench": "tsc && cp -R ./src/benchmark/data ./dist/benchmark/data && node dist/benchmark/benchmark.js",
+    "build": "tsc"
   },
   "author": "herb@devresults.com",
   "license": "ISC",

@@ -1,8 +1,10 @@
-import { AnalysisResult, Puzzle } from '../Puzzle.js'
+import { Puzzle } from '../Puzzle.js'
+import { AnalysisResult } from '../types.js'
 import { load } from '../tests/helpers/load.js'
 import fs from 'fs'
 import path from 'path'
 import { URL } from 'url'
+
 const __dirname = new URL('.', import.meta.url).pathname
 
 const files = fs.readdirSync(path.join(__dirname, 'data')).filter(file => file.endsWith('.txt'))
@@ -28,6 +30,8 @@ const avgSteps = average(solved.map(result => result.steps)).toFixed(0)
 const avgTime = average(solved.map(result => result.time)).toFixed(0)
 const maxSteps = Math.max(...solved.map(result => result.steps))
 const maxTime = Math.max(...solved.map(result => result.time)).toFixed(0)
+const totalTime = (solved.reduce((sum, result) => sum + result.time, 0) / 1000).toFixed(0)
+
 console.log(
   [
     `puzzles: ${total}`,
@@ -37,8 +41,9 @@ console.log(
     `average steps: ${avgSteps}`,
     `max steps: ${maxSteps}`,
     ``,
-    `average time (ms): ${avgTime}`,
-    `max time (ms): ${maxTime}`,
+    `average time: ${avgTime}ms`,
+    `max time: ${maxTime}ms`,
+    `total time: ${totalTime}s`,
   ].join('\n')
 )
 

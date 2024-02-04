@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { emptyGrid } from '../constants.js'
-import { getBoxSingles, getColSingles, getRowSingles, getSquareSingles } from '../getSingles.js'
+import { getBoxSingles, getColSingles, getRowSingles, getCellSingles } from '../getSingles.js'
 import { toGrid } from '../toGrid.js'
 
-describe('getSquareSingles', () => {
+describe('getCellSingles', () => {
   it('empty grid', () => {
-    expect(getSquareSingles(emptyGrid)).toEqual({})
+    expect(getCellSingles(emptyGrid)).toEqual({})
   })
 
   it('full grid', () => {
@@ -20,7 +20,7 @@ describe('getSquareSingles', () => {
       6 7 8 9 1 2 3 4 5
       9 1 2 3 4 5 6 7 8
     `)
-    expect(getSquareSingles(grid)).toEqual({})
+    expect(getCellSingles(grid)).toEqual({})
   })
 
   it('one vacancy', () => {
@@ -35,7 +35,7 @@ describe('getSquareSingles', () => {
       6 7 8 9 1 2 3 4 5
       9 1 2 3 4 5 6 7 8
     `)
-    expect(getSquareSingles(grid)).toEqual({ 2: 3 })
+    expect(getCellSingles(grid)).toEqual({ 2: 3 })
   })
 
   it('multiple vacancies', () => {
@@ -51,7 +51,7 @@ describe('getSquareSingles', () => {
       9 1 2 3 4 . 6 7 8
     `)
 
-    expect(getSquareSingles(grid)).toEqual({
+    expect(getCellSingles(grid)).toEqual({
       0: 1, //
       19: 8,
       42: 2,
@@ -74,7 +74,7 @@ describe('getSquareSingles', () => {
       . . 5 . 1 . 3 . .
     `)
 
-    expect(getSquareSingles(grid)).toEqual({
+    expect(getCellSingles(grid)).toEqual({
       41: 4,
       42: 1,
       75: 4,

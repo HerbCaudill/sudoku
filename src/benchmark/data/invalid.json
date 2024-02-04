@@ -30,7 +30,7 @@
     "error": "invalid puzzle"
   },
   {
-    "label": "unsolvable square (r1c5 has no candidates)",
+    "label": "unsolvable cell (r1c5 has no candidates)",
     "puzzle": "..9.287..8.6..4..5..3.....46.........2.71345.........23.....5..9..4..8.7..125.3..",
     "error": "no solution"
   },
