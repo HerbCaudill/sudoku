@@ -1,10 +1,9 @@
 import { describe, it, expect, assert } from 'vitest'
 import { toGrid } from '../toGrid.js'
-import { getCandidates, isSolved } from '../getCandidatesNew.js'
-import { LogicalSolver } from '../LogicalSolver.js'
+import { logicalSolver } from '../logicalSolver.js'
 import { printCandidates } from '../printCandidates.js'
 
-describe('getCandidates', () => {
+describe('LogicalSolver', () => {
   it('cracking the cryptic #1', () => {
     const grid = toGrid(`
       7 . 4  . . 6  . . 9 
@@ -16,10 +15,10 @@ describe('getCandidates', () => {
       . 2 5  . 3 .  1 . . 
       . . .  . 4 .  . 6 . 
       9 . .  5 . .  3 . 7 `)
-    const candidates = getCandidates(grid)
-    assert(candidates)
+    const { failed, solved } = logicalSolver(grid)
+    assert(!failed)
     // the puzzle is completely solved
-    expect(isSolved(candidates)).toBe(true)
+    expect(solved).toBe(true)
   })
 
   it('cracking the cryptic #19', () => {
@@ -34,8 +33,8 @@ describe('getCandidates', () => {
     . 7 9  . . .  . . .
     3 . 8  6 . .  4 . .
     `)
-    const candidates = new LogicalSolver(grid).calculate()
-    assert(candidates)
+    const { candidates, failed } = logicalSolver(grid)
+    assert(!failed)
     // note that all of c5 is solved
     expect(printCandidates(candidates).slice(1)).toMatchInlineSnapshot(`
       "━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┓ 
@@ -91,8 +90,8 @@ describe('getCandidates', () => {
     7 . . . . 5 . . .
     `)
 
-    const candidates = new LogicalSolver(grid).calculate()
-    assert(candidates)
+    const { candidates, solved, failed } = logicalSolver(grid)
+    assert(!failed)
     // we found the hidden singles in r5c1 (2) and r8c4 (7)
     expect(printCandidates(candidates).slice(1)).toMatchInlineSnapshot(`
       "━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┓ 
@@ -146,8 +145,8 @@ describe('getCandidates', () => {
     . . .  3 . .  . . 4
     . 2 .  . 9 .  . 7 .
     5 . 4  . 1 .  . . 6 `)
-    const candidates = new LogicalSolver(grid).calculate()
-    assert(candidates)
+    const { candidates, failed } = logicalSolver(grid)
+    assert(!failed)
     expect(printCandidates(candidates).slice(1)).toMatchInlineSnapshot(`
       "━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┓ 
       ┃       │       │       ┃       │       │       ┃       │       │       ┃ 
@@ -205,8 +204,8 @@ describe('contradictions', () => {
       .  .  .   .  4  .   .  6  . 
       9  .  .   5  .  .   3  .  7 `)
     // r1c2's only candidate was 1, but we put 1 in r3c2 and now r1c2 has no candidates
-    const candidates = getCandidates(grid)
-    expect(candidates).toBe(false)
+    const solver = logicalSolver(grid)
+    expect(solver.failed).toBe(true)
   })
 
   it('no candidates for a value in a row', () => {
@@ -222,8 +221,8 @@ describe('contradictions', () => {
         9  .  .   5  .  .   3  .  7 `)
     // in row 1, 5 could only go in r1c5; but we put a 5 in r2c6
     // so now there's no place for a 5 in row 1
-    const candidates = getCandidates(grid)
-    expect(candidates).toBe(false)
+    const solver = logicalSolver(grid)
+    expect(solver.failed).toBe(true)
   })
 
   it('no candidates for a value in a column', () => {
@@ -239,8 +238,8 @@ describe('contradictions', () => {
         9  .  .   5  .  .   3  .  7 `)
     // in column 8, 7 could only go in r2c8; but we put a 7 in r2c4
     // so now there's no place for a 7 in column 8
-    const candidates = getCandidates(grid)
-    expect(candidates).toBe(false)
+    const solver = logicalSolver(grid)
+    expect(solver.failed).toBe(true)
   })
 
   it('no candidates for a value in a box', () => {
@@ -256,8 +255,8 @@ describe('contradictions', () => {
         9 [6] .   5 (.) .   3  .  7 `)
     // in box 8, 6 could only go in r7c4 and r9c5; but we put 6s in r9c2 and r4c4
     // so now there's no place for 6 in box 8
-    const candidates = getCandidates(grid)
-    expect(candidates).toBe(false)
+    const solver = logicalSolver(grid)
+    expect(solver.failed).toBe(true)
   })
 
   it('two cells with the same single candidate in a row', () => {
@@ -272,7 +271,7 @@ describe('contradictions', () => {
         .  .  .   .  4  .   .  6  . 
         9  .  .   5  .  .   3  .  7 `)
     // r6c1 and r1c1 both have 7 as their only candidate
-    const candidates = getCandidates(grid)
-    expect(candidates).toBe(false)
+    const solver = logicalSolver(grid)
+    expect(solver.failed).toBe(true)
   })
 })

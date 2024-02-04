@@ -1,48 +1,24 @@
 import { cells, numbers } from './constants.js'
+import { getGridCandidates } from './getCandidates.js'
 import { boxPeers, colPeers, peers, rowPeers } from './peers.js'
+import { Grid } from './types.js'
 import { box, col, row } from './units.js'
-import { CandidateGrid, Grid } from './types.js'
-import { getGridCandidates } from './getCandidatesNew.js'
 
-export class LogicalSolver {
-  candidates: CandidateGrid
-  failed: boolean = false
-  solved: boolean = false
-  nextCell: number
+export function logicalSolver(grid: Grid) {
+  let candidates = getGridCandidates(grid)
+  let failed: boolean = false
+  let solved: boolean = false
+  let nextCell: number | undefined = undefined
 
-  constructor(public grid: Grid) {
-    try {
-      this.calculate()
-      this.grid = this.applySolvedCells()
-      this.nextCell = this.pickNextCell()
-      this.solved = this.isSolved()
-    } catch (e) {
-      this.failed = true
-    }
-  }
-
-  calculate = () => {
-    this.candidates = getGridCandidates(this.grid)
-    do {
-      // if there are contradictions, return false
-      if (this.hasContradictions()) throw new Error('reached contradiction')
-
-      // if there are no unsolved cells, we're done - return the solved grid
-      if (cells.every(this.hasOneCandidate)) return this.candidates
-
-      // iteratively propagate constraints until nothing changes
-    } while (this.propagateConstraints())
-  }
-
-  propagateConstraints = () => {
+  const propagateConstraints = () => {
     let propagate = false
 
     // if there are any naked singles, eliminate those values from peers
-    this.getCellSingles().forEach(([index, single]) => {
+    getCellSingles().forEach(([index, single]) => {
       peers[index] //
-        .filter(this.hasCandidate(single))
+        .filter(hasCandidate(single))
         .forEach(peer => {
-          this.removeCandidate(peer, single)
+          removeCandidate(peer, single)
           propagate = true
         })
     })
@@ -50,15 +26,15 @@ export class LogicalSolver {
     // if there are any hidden singles, eliminate those values from peers
     const unitType = [rowPeers, colPeers, boxPeers]
     unitType.forEach(unitPeers => {
-      this.getUnitSingles(unitPeers).forEach(([index, value]) => {
+      getUnitSingles(unitPeers).forEach(([index, value]) => {
         unitPeers[index] //
-          .filter(this.hasCandidate(value))
+          .filter(hasCandidate(value))
           .forEach(peer => {
-            this.removeCandidate(peer, value)
+            removeCandidate(peer, value)
             propagate = true
           })
         // set this as the only candidate for this cell
-        this.candidates[index] = [value]
+        candidates[index] = [value]
       })
     })
 
@@ -68,13 +44,11 @@ export class LogicalSolver {
     return propagate
   }
 
-  removeCandidate = (index: number, value: number) => {
-    this.candidates[index] = this.candidates[index].filter(v => v !== value)
+  const removeCandidate = (index: number, value: number) => {
+    candidates[index] = candidates[index].filter(v => v !== value)
   }
 
-  hasContradictions = () => {
-    const { hasNoCandidates, hasOneCandidate, hasCandidate } = this
-
+  const hasContradictions = () => {
     // if any cell has no candidates
     if (cells.some(hasNoCandidates)) return true
 
@@ -91,7 +65,7 @@ export class LogicalSolver {
       return true
 
     // if any single-candidate cell has a peer with the same single candidate
-    const singles = this.getCellSingles()
+    const singles = getCellSingles()
     if (
       singles.some(([index, single]) => {
         const singlePeers = peers[index].filter(hasOneCandidate)
@@ -102,58 +76,84 @@ export class LogicalSolver {
   }
 
   // filter predicates
-  hasNoCandidates = (index: number) => this.candidates[index].length === 0
+  const hasNoCandidates = (index: number) => candidates[index].length === 0
 
-  hasOneCandidate = (index: number) => this.candidates[index].length === 1
+  const hasOneCandidate = (index: number) => candidates[index].length === 1
 
-  hasMultipleCandidates = (index: number) => this.candidates[index].length > 1
+  const hasMultipleCandidates = (index: number) => candidates[index].length > 1
 
-  hasCandidate = (value: number) => (index: number) => this.candidates[index].includes(value)
+  const hasCandidate = (value: number) => (index: number) => candidates[index].includes(value)
 
   // utilities
 
-  applySolvedCells = () => {
-    return this.grid.map((value, index) => {
-      if (this.candidates[index].length === 1) return this.candidates[index][0]
+  const applySolvedCells = () => {
+    return grid.map((value, index) => {
+      if (candidates[index].length === 1) return candidates[index][0]
       else return value
     }) as Grid
   }
 
-  getUnsolvedCells = () => cells.filter(this.hasMultipleCandidates)
+  const getUnsolvedCells = () => cells.filter(hasMultipleCandidates)
 
-  isSolved = () => this.getUnsolvedCells().length === 0
+  const isSolved = () => getUnsolvedCells().length === 0
 
   // choose a cell with the fewest candidates
-  pickNextCell = () => {
-    const unsolvedCells = this.getUnsolvedCells()
+  const pickNextCell = () => {
+    const unsolvedCells = getUnsolvedCells()
     return unsolvedCells.reduce(
       (minIndex, currentIndex) =>
-        this.candidates[currentIndex].length < this.candidates[minIndex].length ? currentIndex : minIndex,
+        candidates[currentIndex].length < candidates[minIndex].length ? currentIndex : minIndex,
       unsolvedCells[0]
     )
   }
 
   /** "naked" singles */
-  getCellSingles = () => {
+  const getCellSingles = () => {
     return cells //
-      .filter(this.hasOneCandidate)
+      .filter(hasOneCandidate)
       .map(index => {
-        const single = this.candidates[index][0]
+        const single = candidates[index][0]
         return [index, single] as const
       })
   }
 
   /** "hidden" singles - candidates that are only found once in a row/col/box */
-  getUnitSingles = (unitPeers: number[][]) => {
-    return this.getUnsolvedCells()
+  const getUnitSingles = (unitPeers: number[][]) => {
+    return getUnsolvedCells()
       .map(index => {
         const isAloneInUnit = (candidate: number) =>
           !unitPeers[index] //
-            .some(this.hasCandidate(candidate))
+            .some(hasCandidate(candidate))
 
-        const single = this.candidates[index].find(isAloneInUnit)
+        const single = candidates[index].find(isAloneInUnit)
         if (single) return [index, single]
       })
       .filter(Boolean) as [number, number][] // eliminate cases where no single was found
   }
+
+  // main loop
+
+  do {
+    // if there are contradictions, return false
+    if (hasContradictions()) {
+      failed = true
+      return
+    }
+
+    // if there are no unsolved cells, we're done
+    if (cells.every(hasOneCandidate)) {
+      solved = true
+      return
+    }
+
+    // iteratively propagate constraints until nothing changes
+  } while (propagateConstraints())
+
+  if (!failed) {
+    grid = applySolvedCells()
+    nextCell = pickNextCell()
+    solved = isSolved()
+  }
+
+  return { candidates, failed, solved, nextCell, grid }
 }

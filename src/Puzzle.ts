@@ -1,11 +1,7 @@
+import { logicalSolver } from './logicalSolver.js'
 import { getFrequencies } from './getFrequencies.js'
-import { getCandidates } from './getCandidatesNew.js'
-import { getAllSingles } from './getSingles.js'
-import { peers } from './peers.js'
 import { toGrid } from './toGrid.js'
-import { Grid } from './types.js'
-import { AnalysisResult } from './types.js'
-import { LogicalSolver } from './LogicalSolver.js'
+import { AnalysisResult, Grid } from './types.js'
 
 export class Puzzle {
   /** The initial state of the puzzle */
@@ -22,10 +18,11 @@ export class Puzzle {
   }
 
   /**
-   * Solves a puzzlealternating between a logical phase of eliminating candidates and a
+   * Solves a puzzle alternating between a logical phase of eliminating candidates and a
    * trial-and-error phase of guessing a candidate and recursively solving the resulting grid.
    */
   complete(grid: Grid): Grid | false {
+    this.#steps += 1
     if (this.#maxSteps && this.#steps > this.#maxSteps) throw new Error('too many steps')
 
     // 💡 LOGICAL PHASE
@@ -36,7 +33,7 @@ export class Puzzle {
       grid: updatedGrid,
       solved,
       nextCell,
-    } = new LogicalSolver(grid)
+    } = logicalSolver(grid)
 
     // ❌ if we've reached a contradiction, we're at a dead end & need to backtrack
     if (failed) return false
@@ -49,10 +46,11 @@ export class Puzzle {
 
     // 🎲 TRIAL AND ERROR PHASE
 
-    const sortedCandidates = sortByFrequency(grid, candidates[nextCell])
+    const index = nextCell!
+    const sortedCandidates = sortByFrequency(grid, candidates[index])
     for (const newValue of sortedCandidates) {
       // make a new grid with this value
-      const newGrid = modifyGrid(grid, nextCell, newValue)
+      const newGrid = modifyGrid(grid, index, newValue)
 
       // 👉 recursively try to solve the puzzle assuming this value;
       // we'll get `false` if we reach a contradiction, or a solved puzzle if this value works

@@ -9,6 +9,9 @@ const __dirname = new URL('.', import.meta.url).pathname
 
 const files = fs.readdirSync(path.join(__dirname, 'data')).filter(file => file.endsWith('.txt'))
 const results = [] as AnalysisResult[]
+
+console.profile()
+
 for (const file of files) {
   const puzzles = load(file).slice(0, 10)
   let failures = 0
@@ -31,6 +34,8 @@ const avgTime = average(solved.map(result => result.time)).toFixed(0)
 const maxSteps = Math.max(...solved.map(result => result.steps))
 const maxTime = Math.max(...solved.map(result => result.time)).toFixed(0)
 const totalTime = (solved.reduce((sum, result) => sum + result.time, 0) / 1000).toFixed(0)
+
+console.profileEnd()
 
 console.log(
   [

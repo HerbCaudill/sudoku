@@ -1,17 +1,19 @@
-import { numbers } from './constants.js'
-import { getUnsolvedCells } from './getUnsolvedCells.js'
+import { cells, numbers } from './constants.js'
 import { peers } from './peers.js'
-import { Grid } from './types.js'
+import { CandidateGrid, Grid } from './types.js'
 
-export const getCandidates = (grid: Grid) => {
-  const gridCandidates = getUnsolvedCells(grid).reduce<Record<number, number[]>>((result, i) => {
-    const peerHas = (value: number) => (peer: number) => grid[peer] === value
-    const ourPeers = peers[i]
-    const cellCandidates = numbers.filter(value => !ourPeers.some(peerHas(value)))
-    return {
-      ...result,
-      [i]: cellCandidates,
+export const getGridCandidates = (grid: Grid) =>
+  cells.reduce<CandidateGrid>((result, i) => {
+    if (grid[i] !== 0) {
+      return { ...result, [i]: [grid[i]] }
+    } else {
+      return { ...result, [i]: getCellCandidates(grid, i) }
     }
   }, {})
-  return gridCandidates
+
+const getCellCandidates = (grid: Grid, index: number) => {
+  const peerHas = (value: number) => (peer: number) => grid[peer] === value
+  return numbers.filter(value => !peers[index].some(peerHas(value)))
 }
+
+export const isSolved = (candidates: CandidateGrid) => cells.every(index => candidates[index].length === 1)
