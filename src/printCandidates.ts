@@ -1,24 +1,24 @@
-import { cols, emptyGrid, rows } from './constants.js'
-import { getCandidates } from './getCandidates.js'
 import chalk from 'chalk'
-import { Grid } from './types.js'
+import { cells, cols, rows } from './constants.js'
+import { CandidateGrid } from './types.js'
 
-export const printCandidates = (grid: Grid) => {
+export const printCandidates = (candidates: CandidateGrid, options: { color?: boolean } = {}) => {
+  const { color = false } = options
   const output = Array.from({ length: 37 }, () => Array(37).fill(' '))
 
   const cellPos = (i: number) => i * 4 + 1
   // fill in the candidate values
-  const candidates = getCandidates(grid)
-  emptyGrid.forEach((_, index) => {
+  cells.forEach(index => {
     const row = rows[index] - 1
     const col = cols[index] - 1
 
     const cellY = cellPos(row)
     const cellX = cellPos(col)
-    if (grid[index] > 0) {
-      output[cellY + 1][cellX + 1] = chalk.yellow(grid[index])
+    const cellCandidates = candidates[index] ?? []
+
+    if (cellCandidates.length === 1) {
+      output[cellY + 1][cellX + 1] = chalk.yellow(cellCandidates[0])
     } else {
-      const cellCandidates = candidates[index] ?? []
       for (let i = 1; i <= 9; i++) {
         const candidate = cellCandidates.includes(i) ? i : ' '
         output[cellY + Math.floor((i - 1) / 3)][cellX + ((i - 1) % 3)] = chalk.dim(candidate)
@@ -26,7 +26,7 @@ export const printCandidates = (grid: Grid) => {
     }
   })
 
-  // draw dim inner borders
+  // draw light inner borders
   for (let i = 0; i < 37; i++) {
     for (let j = 0; j < 9; j++) {
       output[i][cellPos(j) + 3] = '│'
@@ -39,7 +39,7 @@ export const printCandidates = (grid: Grid) => {
     }
   }
 
-  // draw borders
+  // draw thick borders
   for (let i = 0; i < 37; i++) {
     for (let j = 0; j < 4; j++) {
       output[i][j * 12] = '┃'
@@ -64,7 +64,7 @@ export const printCandidates = (grid: Grid) => {
     output[36][i * 12] = '┻'
   }
 
-  return output
+  let stringOutput = output
     .map(r =>
       r
         // double width
@@ -78,4 +78,7 @@ export const printCandidates = (grid: Grid) => {
         .join('')
     )
     .join('\n')
+
+  if (!color) stringOutput = stringOutput.replace(/\u001b\[.*?m/g, '')
+  return stringOutput
 }

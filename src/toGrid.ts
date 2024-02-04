@@ -3,6 +3,7 @@ import { Grid } from './types.js'
 export const toGrid = (str: string) =>
   str
     .trim()
+    .replace(/\[|\]|\*/g, ' ')
     .split(/\s*/)
     .map(n => (!isNumeric(n) ? 0 : Number(n))) as Grid
 
