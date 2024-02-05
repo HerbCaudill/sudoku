@@ -24,6 +24,7 @@ export class Puzzle {
    */
   complete(grid: Grid): Grid | false {
     this.#steps++
+    if (this.#steps > 10000) throw new Error('too many steps')
 
     // LOGIC
 
@@ -55,8 +56,6 @@ export class Puzzle {
    * a contradiction is found.
    */
   getCandidates(grid: Grid): CandidateMap | false {
-    this.#steps++
-
     const candidates = Object.fromEntries(
       getUnsolved(grid).map(i => {
         const noPeerMatch = (v: number) => !peers[i].some(peer => grid[peer] === v)
@@ -113,6 +112,8 @@ export class Puzzle {
     }
   }
 }
+
+// HELPERS
 
 const nakedSingles = (candidates: CandidateGrid) => {
   const unsolved = Object.keys(candidates).map(Number)
