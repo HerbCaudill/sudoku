@@ -1,10 +1,9 @@
 import { numbers } from './constants.js'
-import { getFrequencies } from './getFrequencies.js'
-import { allSingles } from './getSingles.js'
-import { getUnsolved } from './getUnsolved.js'
 import { peers } from './peers.js'
-import { toGrid } from './toGrid.js'
+import { toGrid } from './helpers/toGrid.js'
 import { AnalysisResult, CandidateGrid as CandidateMap, Grid } from './types.js'
+import { rowPeers, colPeers, boxPeers } from './peers.js'
+import { CandidateGrid } from './types.js'
 
 export class Puzzle {
   #puzzle: Grid
@@ -26,7 +25,7 @@ export class Puzzle {
   complete(grid: Grid): Grid | false {
     this.#steps++
 
-    // LOGICAL PHASE
+    // LOGIC
 
     const candidates = this.getCandidates(grid)
     if (!candidates) return false // ❌ contradictions found - dead end
@@ -34,18 +33,18 @@ export class Puzzle {
     const unsolved = Object.keys(candidates).map(Number)
     if (unsolved.length === 0) return grid // 🎉 solved!
 
-    // TRIAL & ERROR PHASE
+    // TRIAL & ERROR
 
     // choose an unsolved cell with the fewest possible candidates
     const index = unsolved.reduce(
       (min, i) => (candidates[i].length < candidates[min].length ? i : min),
       unsolved[0] //
     )
-    for (const newValue of candidates[index]) {
+    for (const nextValue of candidates[index]) {
       // recursively try to solve the puzzle assuming this value
-      const newGrid = [...grid]
-      newGrid[index] = newValue
-      const solution = this.complete(newGrid)
+      const nextGrid = [...grid]
+      nextGrid[index] = nextValue
+      const solution = this.complete(nextGrid)
       if (solution) return solution // 🎉 solved!
     }
     return false // ❌ None of these worked - dead end
@@ -56,32 +55,33 @@ export class Puzzle {
    * a contradiction is found.
    */
   getCandidates(grid: Grid): CandidateMap | false {
-    while (true) {
-      this.#steps++
+    this.#steps++
 
-      const candidates = Object.fromEntries(
-        getUnsolved(grid).map(i => {
-          const noPeerMatch = (v: number) => !peers[i].some(peer => grid[peer] === v)
-          return [i, numbers.filter(noPeerMatch)]
-        })
-      )
+    const candidates = Object.fromEntries(
+      getUnsolved(grid).map(i => {
+        const noPeerMatch = (v: number) => !peers[i].some(peer => grid[peer] === v)
+        return [i, numbers.filter(noPeerMatch)]
+      })
+    )
 
-      // find cells with only one possible value
-      const singles = allSingles(candidates)
+    // find cells with only one possible value
+    const singles = allSingles(candidates)
 
-      // if there are no singles, stop looping & return the candidates
-      if (Object.keys(singles).length === 0) return candidates
+    // if there are none, stop looping & return the candidates
+    if (Object.keys(singles).length === 0) return candidates
 
-      for (const i in singles) {
-        const contradiction = peers[i]
-          .filter(peer => singles[peer]) // peers that are also singles
-          .some(peer => singles[peer] === singles[i]) // with the same value
-        if (contradiction) return false // ❌ dead end
+    for (const i in singles) {
+      const contradiction = peers[i]
+        .filter(peer => singles[peer]) // peers that are also singles
+        .some(peer => singles[peer] === singles[i]) // with the same value
+      if (contradiction) return false // ❌ dead end
 
-        // no contradictions - set this cell's value and continue
-        grid[i] = singles[i]
-      }
+      // no contradiction - set this cell's value and continue
+      grid[i] = singles[i]
     }
+
+    // see if we can eliminate any more candidates
+    return this.getCandidates(grid)
   }
 
   analyze(): AnalysisResult {
@@ -113,3 +113,41 @@ export class Puzzle {
     }
   }
 }
+
+const nakedSingles = (candidates: CandidateGrid) => {
+  const unsolved = Object.keys(candidates).map(Number)
+  return Object.fromEntries(
+    unsolved //
+      .filter(index => candidates[index].length === 1)
+      .map(index => [index, candidates[index][0]])
+  ) as SingleMap
+}
+
+const hiddenSingles = (peers: number[][]) => (candidates: CandidateGrid) => {
+  const unsolved = Object.keys(candidates).map(Number)
+  return Object.fromEntries(
+    unsolved
+      .map(index => {
+        const noPeerHasValue = (v: number) => !peers[index].some(i => candidates[i]?.includes(v))
+        const single = candidates[index].find(noPeerHasValue)
+        if (single) return [index, single]
+      })
+      .filter(Boolean) as [number, number][] // omit undefined
+  ) as SingleMap
+}
+
+const allSingles = (candidates: CandidateGrid) => {
+  return {
+    ...nakedSingles(candidates),
+    ...hiddenSingles(rowPeers)(candidates),
+    ...hiddenSingles(colPeers)(candidates),
+    ...hiddenSingles(boxPeers)(candidates),
+  } as SingleMap
+}
+
+const getUnsolved = (grid: Grid) =>
+  grid
+    .map((cell, index) => (cell === 0 ? index : -1)) //
+    .filter(index => index !== -1)
+
+export type SingleMap = { [index: number]: number }

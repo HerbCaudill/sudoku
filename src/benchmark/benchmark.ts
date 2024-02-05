@@ -1,6 +1,6 @@
 import { Puzzle } from '../Puzzle.js'
 import { AnalysisResult } from '../types.js'
-import { load } from '../tests/helpers/load.js'
+import { load } from '../helpers/load.js'
 import fs from 'fs'
 import path from 'path'
 import { URL } from 'url'

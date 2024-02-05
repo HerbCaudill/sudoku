@@ -1,10 +1,10 @@
 import { assert, describe, expect, it } from 'vitest'
 import { Puzzle } from '../Puzzle.js'
-import { toGrid } from '../toGrid.js'
-import { load } from './helpers/load.js'
-import { solve } from './helpers/solve.js'
+import { toGrid } from '../helpers/toGrid.js'
+import { load } from '../helpers/load.js'
+import { solve } from '../helpers/solve.js'
 import { Grid } from '../types.js'
-import { printGrid } from '../printGrid.js'
+import { printGrid } from '../helpers/printGrid.js'
 
 describe('Puzzle.solve', () => {
   it('no vacancies', () => {
