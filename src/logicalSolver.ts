@@ -125,7 +125,7 @@ export function logicalSolver(grid: Grid) {
   const hasMultipleCandidates = (index: number) => candidates[index].length > 1
   const hasCandidate = (value: number) => (index: number) => candidates[index].includes(value)
   const hasSomeCandidates = (values: number[]) => (i: number) => values.some(v => hasCandidate(v)(i))
-  const hasMatchingCandidates = (values: number[]) => (index: number) => arraysMatch(candidates[index], values)
+  const hasMatchingCandidates = (values: number[]) => (index: number) => isSubset(candidates[index], values)
   const excluding = (cells: number[]) => (index: number) => !cells.includes(index)
 
   // utilities
@@ -202,5 +202,5 @@ export function logicalSolver(grid: Grid) {
   return { candidates, failed, solved, nextCell, grid }
 }
 
-const arraysMatch = (a: number[], b: number[]) => a.length === b.length && a.every((value, index) => value === b[index])
-const distinct = (values: number[]) => [...new Set(values)]
+/** Returns true if a is a subset of b */
+const isSubset = (a: number[], b: number[]) => a.every(value => b.includes(value))
