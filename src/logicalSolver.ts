@@ -25,7 +25,7 @@ export function logicalSolver(grid: Grid) {
         for (const unitPeers of [rowPeers, colPeers, boxPeers]) {
           const ourPeers = unitPeers[index]
           const matches = ourPeers.filter(hasMatchingCandidates(values))
-          // for naked doubles, we need one other match; for triples, two other matches; etc
+          // for naked doubles, we need 1 other match; for triples, 2 other matches; etc
           if (matches.length === N - 1) {
             ourPeers
               .filter(hasSomeCandidates(values))
@@ -53,7 +53,7 @@ export function logicalSolver(grid: Grid) {
       })
     }
 
-    // TODO: hidden doubles etc.
+    // // TODO: hidden doubles etc.
 
     // pointing pairs & triples: if there are any boxes whose values can only go in one row or
     // column, eliminate those values from other cells in that row or column
@@ -66,11 +66,11 @@ export function logicalSolver(grid: Grid) {
         for (const which of [rows, cols]) {
           // are all the candidates in this box in the same row or column?
           const candidateRowsOrCols = boxCandidates.map(index => which[index])
-          const rowOrColNumber = candidateRowsOrCols[0]
-          const onlyOneRowOrCol = !candidateRowsOrCols.some(n => n !== rowOrColNumber)
-          if (onlyOneRowOrCol) {
+          const n = candidateRowsOrCols[0]
+          const singleRowOrCol = !candidateRowsOrCols.some(m => m !== n)
+          if (singleRowOrCol) {
             // eliminate the value from cells in this row or column outside this box
-            rowOrCol(which)(rowOrColNumber)
+            rowOrCol(which)(n)
               .filter(excluding(boxCells))
               .filter(hasCandidate(value))
               .forEach(index => {
@@ -94,27 +94,15 @@ export function logicalSolver(grid: Grid) {
     // if any cell has no candidates
     if (cells.some(hasNoCandidates)) return true
 
-    // if any value has no candidates for a row, column, or box
-    if (
-      [row, col, box].some(unit =>
-        numbers.some(unitNumber =>
-          numbers.some(
-            value => unit(unitNumber).some(hasCandidate(value)) === false //
-          )
-        )
-      )
-    )
-      return true
-
-    // if any single-candidate cell has a peer with the same single candidate
-    const singles = getNakedSingles()
-    if (
-      singles.some(([index, single]) => {
-        const singlePeers = peers[index].filter(hasOneCandidate)
-        return singlePeers.some(hasCandidate(single))
-      })
-    )
-      return true
+    // if any row, column, or box has no candidates for a value
+    for (const unit of [row, col, box]) {
+      for (const n of numbers) {
+        for (const value of numbers) {
+          const noCandidates = !unit(n).some(hasCandidate(value))
+          if (noCandidates) return true
+        }
+      }
+    }
   }
 
   // filter predicates
