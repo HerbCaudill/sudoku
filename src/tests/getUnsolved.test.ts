@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest'
-import { getUnsolvedCells } from '../getUnsolvedCells.js'
+import { getUnsolved } from '../getUnsolved.js'
 import { toGrid } from '../toGrid.js'
 import { emptyGrid } from '../constants.js'
 
-describe('getEmptyCells', () => {
+describe('getUnsolved', () => {
   it('returns the numbers 0...80 for an empty grid', () => {
-    expect(getUnsolvedCells(emptyGrid)).toEqual(Array.from(Array(81).keys()))
+    expect(getUnsolved(emptyGrid)).toEqual(Array.from(Array(81).keys()))
   })
 
   it('returns empty array if there are no empty cells ', () => {
@@ -20,7 +20,7 @@ describe('getEmptyCells', () => {
       6 7 8 9 1 2 3 4 5
       9 1 2 3 4 5 6 7 8
     `)
-    expect(getUnsolvedCells(grid)).toEqual([])
+    expect(getUnsolved(grid)).toEqual([])
   })
 
   it('returns the indexes of empty cells', () => {
@@ -35,6 +35,6 @@ describe('getEmptyCells', () => {
       6 7 8 9 1 2 3 4 5
       9 1 2 3 4 5 . 7 8
     `)
-    expect(getUnsolvedCells(grid)).toEqual([3, 50, 78])
+    expect(getUnsolved(grid)).toEqual([3, 50, 78])
   })
 })

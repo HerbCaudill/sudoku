@@ -1,54 +1,39 @@
-import { Grid } from './types.js'
+import { rowPeers, colPeers, boxPeers } from './peers.js'
 import { CandidateGrid } from './types.js'
-import { getCandidates } from './getCandidates.js'
-import { boxPeers, colPeers, rowPeers } from './peers.js'
 
-export const getCellSingles = (grid: Grid, candidates: CandidateGrid = getCandidates(grid)) => {
-  const unsolvedCells = Object.keys(candidates).map(Number)
-
+export const nakedSingles = (candidates: CandidateGrid) => {
+  const unsolved = Object.keys(candidates).map(Number)
   return Object.fromEntries(
-    unsolvedCells //
+    unsolved //
       .filter(index => candidates[index].length === 1)
       .map(index => [index, candidates[index][0]])
   ) as SingleMap
 }
 
-export const getUnitSingles =
-  (unitPeers: number[][]) =>
-  (grid: Grid, candidates: CandidateGrid = getCandidates(grid)) => {
-    const unsolvedCells = Object.keys(candidates).map(Number)
-
-    const rowSingles = (index: number) => {
-      const hasMatch = (candidate: number) => (cell: number) => {
-        const cellCandidates = candidates[cell] ?? []
-        return cellCandidates.includes(candidate)
-      }
-
-      const single = candidates[index].find(candidate => {
-        return !unitPeers[index].some(hasMatch(candidate))
+export const hiddenSingles = (peers: number[][]) => (candidates: CandidateGrid) => {
+  const unsolved = Object.keys(candidates).map(Number)
+  return Object.fromEntries(
+    unsolved
+      .map(index => {
+        const noPeerHasValue = (v: number) => !peers[index].some(i => candidates[i]?.includes(v))
+        const single = candidates[index].find(noPeerHasValue)
+        if (single) return [index, single]
       })
+      .filter(Boolean) as [number, number][] // omit undefined
+  ) as SingleMap
+}
 
-      return [index, single]
-    }
+export const rowSingles = hiddenSingles(rowPeers)
+export const colSingles = hiddenSingles(colPeers)
+export const boxSingles = hiddenSingles(boxPeers)
 
-    return Object.fromEntries(
-      unsolvedCells //
-        .map(rowSingles)
-        .filter(([_, single]) => single) // only include cells with singles
-    ) as SingleMap
-  }
-
-export const getRowSingles = getUnitSingles(rowPeers)
-export const getColSingles = getUnitSingles(colPeers)
-export const getBoxSingles = getUnitSingles(boxPeers)
-
-export const getAllSingles = (grid: Grid, candidates: CandidateGrid = getCandidates(grid)) => {
+export const allSingles = (candidates: CandidateGrid) => {
   return {
-    ...getCellSingles(grid, candidates),
-    ...getRowSingles(grid, candidates),
-    ...getColSingles(grid, candidates),
-    ...getBoxSingles(grid, candidates),
+    ...nakedSingles(candidates),
+    ...rowSingles(candidates),
+    ...colSingles(candidates),
+    ...boxSingles(candidates),
   } as SingleMap
 }
 
-type SingleMap = { [index: number]: number }
+export type SingleMap = { [index: number]: number }

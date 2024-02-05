@@ -1,22 +1,21 @@
 import { cols, emptyGrid, rows } from './constants.js'
-import { getCandidates } from './getCandidates.js'
 import chalk from 'chalk'
-import { Grid } from './types.js'
+import { CandidateGrid, Grid } from './types.js'
 
-export const printCandidates = (grid: Grid) => {
+export const printCandidates = (candidates: CandidateGrid) => {
   const output = Array.from({ length: 37 }, () => Array(37).fill(' '))
 
   const cellPos = (i: number) => i * 4 + 1
   // fill in the candidate values
-  const candidates = getCandidates(grid)
   emptyGrid.forEach((_, index) => {
     const row = rows[index] - 1
     const col = cols[index] - 1
 
     const cellY = cellPos(row)
     const cellX = cellPos(col)
-    if (grid[index] > 0) {
-      output[cellY + 1][cellX + 1] = chalk.yellow(grid[index])
+
+    if (candidates[index].length === 1) {
+      output[cellY + 1][cellX + 1] = chalk.yellow(candidates[index][0])
     } else {
       const cellCandidates = candidates[index] ?? []
       for (let i = 1; i <= 9; i++) {
