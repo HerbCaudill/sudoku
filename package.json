@@ -12,7 +12,7 @@
   "author": "herb@devresults.com",
   "license": "ISC",
   "dependencies": {
-    "@herbcaudill/random": "^0.3.0",
+    "@herbcaudill/random": "^1.0.5",
     "chalk": "^5.3.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",

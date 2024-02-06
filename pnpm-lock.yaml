@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@herbcaudill/random':
-    specifier: ^0.3.0
-    version: 0.3.0
+    specifier: ^1.0.5
+    version: 1.0.5
   chalk:
     specifier: ^5.3.0
     version: 5.3.0
@@ -240,9 +240,8 @@ packages:
     dev: false
     optional: true
 
-  /@herbcaudill/random@0.3.0:
-    resolution: {integrity: sha512-PQQ8Wym+y7Eh1LLQTJziLAwxiXwBCxmap2OLMwLykOxIUVBFoIezODVMraxqGlrRl+KYrpOiN+Cx0QtbAZAwCg==}
-    engines: {node: '>=10'}
+  /@herbcaudill/random@1.0.5:
+    resolution: {integrity: sha512-APF0+++VXT2VXNL8WGpmmqUV8vpZOGgntDj5Sg+mgcWK1u85awDdbtNtaJ4QX7yx8XPvBYby8cQskPl9PvQgqg==}
     dependencies:
       seed-random: 2.2.0
     dev: false

@@ -4,13 +4,17 @@ import { toGrid } from './helpers/toGrid.js'
 import { AnalysisResult, CandidateGrid as CandidateMap, Grid } from './types.js'
 import { rowPeers, colPeers, boxPeers } from './peers.js'
 import { CandidateGrid } from './types.js'
+import { makeRandom } from '@herbcaudill/random'
 
-export class Puzzle {
+export class Solver {
   #puzzle: Grid
   #steps = 0
+  #random: ReturnType<typeof makeRandom>
 
-  constructor(puzzle: string) {
-    this.#puzzle = toGrid(puzzle)
+  constructor(puzzle: string | Grid, seed: string = Math.random().toString()) {
+    const parsedPuzzle = typeof puzzle === 'string' ? toGrid(puzzle) : puzzle
+    this.#puzzle = [...parsedPuzzle]
+    this.#random = makeRandom(seed)
   }
 
   solve() {
@@ -37,11 +41,13 @@ export class Puzzle {
     // TRIAL & ERROR
 
     // choose an unsolved cell with the fewest possible candidates
-    const index = unsolved.reduce(
+    const index = this.#random.shuffle(unsolved).reduce(
       (min, i) => (candidates[i].length < candidates[min].length ? i : min),
       unsolved[0] //
     )
-    for (const nextValue of candidates[index]) {
+
+    const sortedCandidates = this.#random.shuffle(candidates[index])
+    for (const nextValue of sortedCandidates) {
       // recursively try to solve the puzzle assuming this value
       const nextGrid = [...grid]
       nextGrid[index] = nextValue

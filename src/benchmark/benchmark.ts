@@ -1,4 +1,4 @@
-import { Puzzle } from '../Puzzle.js'
+import { Solver } from '../Solver.js'
 import { AnalysisResult } from '../types.js'
 import { load } from '../helpers/load.js'
 import fs from 'fs'
@@ -13,7 +13,7 @@ for (const file of files) {
   const puzzles = load(file).slice(0, 20)
   let failures = 0
   for (const puzzle of puzzles) {
-    const result = new Puzzle(puzzle).analyze()
+    const result = new Solver(puzzle).analyze()
     results.push(result)
     if (!result.solved) failures += 1
   }

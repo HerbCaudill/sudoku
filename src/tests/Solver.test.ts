@@ -1,12 +1,12 @@
 import { assert, describe, expect, it } from 'vitest'
-import { Puzzle } from '../Puzzle.js'
+import { Solver } from '../Solver.js'
 import { toGrid } from '../helpers/toGrid.js'
 import { load } from '../helpers/load.js'
 import { solve } from '../helpers/solve.js'
 import { Grid } from '../types.js'
 import { printGrid } from '../helpers/printGrid.js'
 
-describe('Puzzle.solve', () => {
+describe('Solver', () => {
   it('no vacancies', () => {
     const puzzle = `
       1 2 3 4 5 6 7 8 9
@@ -19,12 +19,12 @@ describe('Puzzle.solve', () => {
       6 7 8 9 1 2 3 4 5
       9 1 2 3 4 5 6 7 8
     `
-    const result = new Puzzle(puzzle).solve()
+    const result = new Solver(puzzle).solve()
     expect(result).toEqual(toGrid(puzzle))
   })
 
   it('1 vacancy', () => {
-    const result = new Puzzle(`
+    const result = new Solver(`
     1 2 . 4 5 6 7 8 9
     4 5 6 7 8 9 1 2 3
     7 8 9 1 2 3 4 5 6
@@ -40,7 +40,7 @@ describe('Puzzle.solve', () => {
   })
 
   it('2 vacancies', () => {
-    const result = new Puzzle(`
+    const result = new Solver(`
       1 2 3 4 5 6 7 8 9
       4 5 6 7 8 9 1 2 3
       7 8 9 1 2 3 4 5 6
@@ -57,7 +57,7 @@ describe('Puzzle.solve', () => {
   })
 
   it('naked singles', () => {
-    const result = new Puzzle(`
+    const result = new Solver(`
       3 . 5  4 2 .  8 1 . 
       4 8 7  9 . 1  5 . 6 
       . 2 9  . 5 6  3 7 4 
@@ -85,7 +85,7 @@ describe('Puzzle.solve', () => {
   })
 
   it('hidden singles', () => {
-    const result = new Puzzle(`
+    const result = new Solver(`
       . . 2  . 3 .  . . 8 
       . . .  . . 8  . . . 
       . 3 1  . 2 .  . . . 
@@ -195,7 +195,7 @@ describe('Puzzle.solve', () => {
 
   it(`solves the Project Euler sudoku problem`, () => {
     const puzzles = load('project-euler.txt')
-    const solutions = puzzles.map(puzzle => new Puzzle(puzzle).solve())
+    const solutions = puzzles.map(puzzle => new Solver(puzzle).solve())
     const expected = solutions.map(solution => {
       assert(solution)
       return Number(solution.slice(0, 3).join(''))
