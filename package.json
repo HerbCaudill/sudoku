@@ -2,12 +2,12 @@
   "name": "sudoku",
   "repository": "https://github.com/herbcaudill/sudoku.git",
   "version": "1.0.0",
-  "main": "dist/index.js",
   "type": "module",
   "scripts": {
     "test": "vitest",
-    "bench": "tsc && cp -R ./src/benchmark/data ./dist/benchmark/data && node dist/benchmark/benchmark.js",
-    "build": "tsc"
+    "bench": "pnpm build && node dist/benchmark/benchmark.js",
+    "build": "tsc",
+    "postbuild": "cp -R ./src/solver/benchmark/data ./dist/benchmark/data"
   },
   "author": "herb@devresults.com",
   "license": "ISC",
