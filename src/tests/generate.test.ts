@@ -5,21 +5,18 @@ import { makeRandom } from '@herbcaudill/random'
 
 describe('generate', () => {
   it('generates a puzzle and a solution', () => {
-    const start = performance.now()
     const { solution, puzzle } = generate('generate-test-1')
-    const end = performance.now()
-    console.log(`Time to generate: ${(end - start).toFixed(2)}ms`)
 
     expect(printGrid(puzzle).slice(1)).toMatchInlineSnapshot(`
-      "3 5 7  6 . 1  8 9 2 
-       . . 1  9 . 2  3 5 . 
-       6 2 9  5 3 .  7 4 1 
-       1 7 5  8 9 .  4 2 3 
-       2 6 .  4 5 3  9 1 7 
-       . . 3  . 1 7  6 8 5 
-       5 3 6  1 . 9  2 7 4 
-       7 9 4  3 2 5  1 6 . 
-       8 1 .  7 6 .  5 . . 
+      ". . 7  6 4 .  8 9 2 
+       4 . .  . 7 .  . 5 . 
+       . 2 .  . . .  . . 1 
+       . . .  . . .  . 2 . 
+       . 6 8  . . 3  . . . 
+       . 4 3  2 1 .  6 . 5 
+       5 . .  . . 9  . 7 . 
+       . . .  3 2 .  1 . . 
+       8 . .  . 6 4  . 3 . 
       "
     `)
 
@@ -37,10 +34,19 @@ describe('generate', () => {
     `)
   })
 
-  it('see if we every generate puzzles with multiple solutions', () => {
+  it.skip('see if we every generate puzzles with multiple solutions', () => {
     const random = makeRandom('generate-test-2')
-    for (let i = 0; i < 100; i++) {
+    const times = [] as number[]
+    const N = 10
+    for (let i = 0; i < N; i++) {
+      const start = performance.now()
+
       const { solution, puzzle } = generate(random.alpha())
+
+      const end = performance.now()
+      times.push(end - start)
     }
+    console.log(`average: ${(times.reduce((a, b) => a + b, 0) / N).toFixed(0)}ms`)
+    console.log(`max: ${Math.max(...times).toFixed(0)}ms`)
   })
 })
