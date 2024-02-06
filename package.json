@@ -5,18 +5,39 @@
   "type": "module",
   "scripts": {
     "test": "vitest",
-    "bench": "pnpm build && node dist/benchmark/benchmark.js",
-    "build": "tsc",
-    "postbuild": "cp -R ./src/solver/benchmark/data ./dist/benchmark/data"
+    "bench": "tsc && postbuild && node dist/benchmark/benchmark.js",
+    "postbuild": "cp -R ./src/solver/benchmark/data ./dist/benchmark/data",
+    "dev": "vite --host --port 3000 --open http://localhost:3000",
+    "build": "tsc && vite build",
+    "serve": "vite preview"
   },
   "author": "herb@devresults.com",
   "license": "ISC",
   "dependencies": {
+    "@headlessui/react": "^1.7.18",
     "@herbcaudill/random": "^1.0.5",
+    "@ibm/plex": "^6.4.0",
+    "@types/node": "^20.2.5",
+    "@types/react": "^18.2.8",
+    "@types/react-dom": "^18.2.4",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.17",
     "chalk": "^5.3.0",
+    "classnames": "^2.5.1",
+    "fast-memoize": "^2.5.2",
+    "postcss": "^8.4.34",
+    "react": "^18.2.0",
+    "react-confetti": "^6.1.0",
+    "react-dom": "^18.2.0",
+    "tailwindcss": "^3.4.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
     "vite": "^5.0.12",
-    "vitest": "^1.2.2"
+    "vite-plugin-pwa": "^0.17.5",
+    "vitest": "^1.2.2",
+    "workbox-core": "^7.0.0",
+    "workbox-precaching": "^7.0.0",
+    "workbox-routing": "^7.0.0",
+    "workbox-strategies": "^7.0.0"
   }
 }
