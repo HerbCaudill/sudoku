@@ -5,6 +5,7 @@ import { AnalysisResult, CandidateGrid as CandidateMap, Grid } from './types.js'
 import { rowPeers, colPeers, boxPeers } from './peers.js'
 import { CandidateGrid } from './types.js'
 import { makeRandom } from '@herbcaudill/random'
+import { printGrid } from './helpers/printGrid.js'
 
 export class Solver {
   #puzzle: Grid
@@ -12,6 +13,7 @@ export class Solver {
   #random: ReturnType<typeof makeRandom>
 
   constructor(puzzle: string | Grid, seed: string = Math.random().toString()) {
+    // grid can be passed as a string or as an array of numbers
     const parsedPuzzle = typeof puzzle === 'string' ? toGrid(puzzle) : puzzle
     this.#puzzle = [...parsedPuzzle]
     this.#random = makeRandom(seed)
@@ -22,46 +24,72 @@ export class Solver {
     return this.complete(this.#puzzle)
   }
 
+  complete(grid: Grid) {
+    for (const step of this.search(grid)) {
+      if (step.state === 'SOLVED') return step.grid
+    }
+    return false
+  }
+
   /**
-   * Solves a puzzle alternating between a logical phase of eliminating candidates and a
-   * trial-and-error phase of guessing a candidate and recursively solving the resulting grid.
+   * Solves a puzzle alternating between a logical phase of filling cells that have a single
+   * possible value (constraint propagation), and a trial-and-error phase of choosing randomly among
+   * the possible values for a cell and seeing if that leads to a solution.
    */
-  complete(grid: Grid): Grid | false {
+  *search(grid: Grid): Generator<InterimResult> {
     this.#steps++
-    if (this.#steps > 10000) throw new Error('too many steps')
+    if (this.#steps > 10000) yield { grid, state: 'GIVING UP' }
 
-    // LOGIC
+    // PROPAGATION
 
-    const candidates = this.getCandidates(grid)
-    if (!candidates) return false // ❌ contradictions found - dead end
+    let candidates: CandidateMap = {}
+
+    // solve as many cells as possible using constraint propagation
+    for (const step of this.propagate(grid)) {
+      yield step
+      if (step.state === 'CONTRADICTION') {
+        return // ❌ dead end
+      } else {
+        candidates = step.candidates!
+      }
+    }
 
     const unsolved = Object.keys(candidates).map(Number)
-    if (unsolved.length === 0) return grid // 🎉 solved!
+    if (unsolved.length === 0) {
+      yield { grid, state: 'SOLVED' }
+      return // 🎉 success
+    }
 
     // TRIAL & ERROR
 
-    // choose an unsolved cell with the fewest possible candidates
+    // choose a random unsolved cell with the fewest candidates possible
     const index = this.#random.shuffle(unsolved).reduce(
       (min, i) => (candidates[i].length < candidates[min].length ? i : min),
       unsolved[0] //
     )
 
     const sortedCandidates = this.#random.shuffle(candidates[index])
-    for (const nextValue of sortedCandidates) {
-      // recursively try to solve the puzzle assuming this value
+    for (const value of sortedCandidates) {
+      yield { grid, candidates, state: 'GUESSING', index, value }
+
+      // make a new grid with this value filled in
       const nextGrid = [...grid]
-      nextGrid[index] = nextValue
-      const solution = this.complete(nextGrid)
-      if (solution) return solution // 🎉 solved!
+      nextGrid[index] = value
+
+      // recursively continue the search, yielding interim results as we go
+      for (const step of this.search(nextGrid)) yield step
     }
-    return false // ❌ None of these worked - dead end
+
+    // none of the candidates for this cell worked
+    yield { grid, state: 'CONTRADICTION' } // ❌ dead end
+    return
   }
 
   /**
    * Using constraint propagation, returns a map of candidates for each unsolved cell, or false if
    * a contradiction is found.
    */
-  getCandidates(grid: Grid): CandidateMap | false {
+  *propagate(grid: Grid): Generator<InterimResult> {
     const candidates = Object.fromEntries(
       getUnsolved(grid).map(i => {
         const noPeerMatch = (v: number) => !peers[i].some(peer => grid[peer] === v)
@@ -73,20 +101,26 @@ export class Solver {
     const singles = allSingles(candidates)
 
     // if there are none, stop looping & return the candidates
-    if (Object.keys(singles).length === 0) return candidates
+    if (Object.keys(singles).length === 0) {
+      yield { grid, candidates, state: 'DONE PROPAGATING' }
+      return
+    }
 
     for (const i in singles) {
       const contradiction = peers[i]
         .filter(peer => singles[peer]) // peers that are also singles
         .some(peer => singles[peer] === singles[i]) // with the same value
-      if (contradiction) return false // ❌ dead end
-
+      if (contradiction) {
+        yield { grid, state: 'CONTRADICTION' } // ❌ dead end
+        return
+      }
       // no contradiction - set this cell's value and continue
       grid[i] = singles[i]
+      yield { grid, candidates, state: 'PROPAGATING', index: Number(i), value: singles[i] }
     }
 
     // see if we can eliminate any more candidates
-    return this.getCandidates(grid)
+    for (const result of this.propagate(grid)) yield result
   }
 
   analyze(): AnalysisResult {
@@ -108,7 +142,7 @@ export class Solver {
           time: performance.now() - start,
         }
       }
-    } catch (e) {
+    } catch (e: any) {
       return {
         solved: false,
         steps: this.#steps,
@@ -158,3 +192,11 @@ const getUnsolved = (grid: Grid) =>
     .filter(index => index !== -1)
 
 export type SingleMap = { [index: number]: number }
+
+type InterimResult = {
+  grid: Grid
+  candidates?: CandidateMap
+  state: 'GUESSING' | 'PROPAGATING' | 'DONE PROPAGATING' | 'CONTRADICTION' | 'SOLVED' | 'NO SOLUTION' | 'GIVING UP'
+  index?: number
+  value?: number
+}

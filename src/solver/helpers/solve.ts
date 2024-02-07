@@ -3,9 +3,10 @@ import { printGrid } from './printGrid.js'
 import { Solver } from '../Solver.js'
 
 export const solve = (puzzle: string) => {
-  const { solved, error } = new Solver(puzzle).analyze()
+  const { solution, solved, error } = new Solver(puzzle).analyze()
   if (!solved) {
     const grid = toGrid(puzzle)
     throw new Error(`${error}:\n${printGrid(grid)}`)
   }
+  return solution
 }

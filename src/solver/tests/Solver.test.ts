@@ -5,6 +5,7 @@ import { load } from '../helpers/load.js'
 import { solve } from '../helpers/solve.js'
 import { Grid } from '../types.js'
 import { printGrid } from '../helpers/printGrid.js'
+import { emptyGrid } from '../constants.js'
 
 describe('Solver', () => {
   it('no vacancies', () => {
@@ -85,7 +86,7 @@ describe('Solver', () => {
   })
 
   it('hidden singles', () => {
-    const result = new Solver(`
+    const solution = solve(`
       . . 2  . 3 .  . . 8 
       . . .  . . 8  . . . 
       . 3 1  . 2 .  . . . 
@@ -95,10 +96,9 @@ describe('Solver', () => {
       . . .  . 8 .  6 . 5 
       . . .  . . .  . 1 3 
       . . 5  3 1 .  4 . .
-      `).solve()
-    assert(result)
+      `)
     compare(
-      result,
+      solution,
       toGrid(`
         6 7 2  4 3 5  1 9 8 
         5 4 9  1 7 8  3 6 2 
@@ -113,7 +113,7 @@ describe('Solver', () => {
   })
 
   it('solves an "easy" puzzle', () => {
-    solve(`
+    const solution = solve(`
       5 3 .  8 . .  6 . . 
       . 4 9  5 . 2  8 3 1 
       . 2 7  1 . .  5 . 9 
@@ -123,10 +123,23 @@ describe('Solver', () => {
       . 6 .  . . 3  4 1 . 
       3 . .  . 1 .  . 2 . 
       1 8 .  2 . 4  . . . `)
+    compare(
+      solution,
+      toGrid(`
+        5 3 1  8 4 9  6 7 2 
+        6 4 9  5 7 2  8 3 1 
+        8 2 7  1 3 6  5 4 9 
+        7 5 3  9 6 1  2 8 4 
+        2 1 8  4 5 7  3 9 6 
+        4 9 6  3 2 8  1 5 7 
+        9 6 2  7 8 3  4 1 5 
+        3 7 4  6 1 5  9 2 8 
+        1 8 5  2 9 4  7 6 3 `)
+    )
   })
 
   it('solves a "medium" puzzle', () => {
-    solve(`
+    const solution = solve(`
       3 . .  . 9 .  8 2 . 
       . 1 .  6 . .  . . . 
       . . .  4 3 .  . 7 6 
@@ -136,6 +149,19 @@ describe('Solver', () => {
       7 . 6  3 . 9  2 5 4 
       1 2 3  5 . 8  . 6 9 
       . 4 .  2 . 7  . . . `)
+    compare(
+      solution,
+      toGrid(` 
+        3 6 4  7 9 5  8 2 1 
+        9 1 7  6 8 2  4 3 5 
+        8 5 2  4 3 1  9 7 6 
+        2 9 1  8 5 3  6 4 7 
+        4 7 5  1 2 6  3 9 8 
+        6 3 8  9 7 4  5 1 2 
+        7 8 6  3 1 9  2 5 4 
+        1 2 3  5 4 8  7 6 9 
+        5 4 9  2 6 7  1 8 3 `)
+    )
   })
 
   it(`solves a "master" puzzle`, () => {

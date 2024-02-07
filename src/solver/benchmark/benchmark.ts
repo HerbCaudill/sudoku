@@ -1,16 +1,17 @@
-import { Solver } from '../Solver.js'
-import { AnalysisResult } from '../types.js'
-import { load } from '../helpers/load.js'
 import fs from 'fs'
 import path from 'path'
 import { URL } from 'url'
+import { Solver } from '../Solver.js'
+import { load } from '../helpers/load.js'
+import { printGrid } from '../helpers/printGrid.js'
+import { AnalysisResult } from '../types.js'
 
 const __dirname = new URL('.', import.meta.url).pathname
 
 const files = fs.readdirSync(path.join(__dirname, 'data')).filter(file => file.endsWith('.txt'))
 const results = [] as AnalysisResult[]
 for (const file of files) {
-  const puzzles = load(file).slice(0, 20)
+  const puzzles = load(file).slice(0, 100)
   let failures = 0
   for (const puzzle of puzzles) {
     const result = new Solver(puzzle).analyze()
