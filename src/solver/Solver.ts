@@ -28,7 +28,7 @@ export class Solver {
     for (const step of this.search(grid)) {
       if (step.state === 'SOLVED') return step.grid
     }
-    return false
+    return false // ❌ no solution
   }
 
   /**
@@ -38,7 +38,7 @@ export class Solver {
    */
   *search(grid: Grid): Generator<InterimResult> {
     this.#steps++
-    if (this.#steps > 10000) yield { grid, state: 'GIVING UP' }
+    if (this.#steps > 10000) yield { grid, state: 'GIVING UP' } // ❌ shouldn't ever take this many steps
 
     // PROPAGATION
 
@@ -90,37 +90,36 @@ export class Solver {
    * a contradiction is found.
    */
   *propagate(grid: Grid): Generator<InterimResult> {
-    const candidates = Object.fromEntries(
-      getUnsolved(grid).map(i => {
-        const noPeerMatch = (v: number) => !peers[i].some(peer => grid[peer] === v)
-        return [i, numbers.filter(noPeerMatch)]
-      })
-    )
+    while (true) {
+      const candidates = Object.fromEntries(
+        getUnsolved(grid).map(i => {
+          const noPeerMatch = (v: number) => !peers[i].some(peer => grid[peer] === v)
+          return [i, numbers.filter(noPeerMatch)]
+        })
+      )
 
-    // find cells with only one possible value
-    const singles = allSingles(candidates)
+      // find cells with only one possible value
+      const singles = allSingles(candidates)
 
-    // if there are none, stop looping & return the candidates
-    if (Object.keys(singles).length === 0) {
-      yield { grid, candidates, state: 'DONE PROPAGATING' }
-      return
-    }
-
-    for (const i in singles) {
-      const contradiction = peers[i]
-        .filter(peer => singles[peer]) // peers that are also singles
-        .some(peer => singles[peer] === singles[i]) // with the same value
-      if (contradiction) {
-        yield { grid, state: 'CONTRADICTION' } // ❌ dead end
+      // if there are none, stop looping & return the candidates
+      if (Object.keys(singles).length === 0) {
+        yield { grid, candidates, state: 'DONE PROPAGATING' }
         return
       }
-      // no contradiction - set this cell's value and continue
-      grid[i] = singles[i]
-      yield { grid, candidates, state: 'PROPAGATING', index: Number(i), value: singles[i] }
-    }
 
-    // see if we can eliminate any more candidates
-    for (const result of this.propagate(grid)) yield result
+      for (const i in singles) {
+        const contradiction = peers[i]
+          .filter(peer => singles[peer]) // peers that are also singles
+          .some(peer => singles[peer] === singles[i]) // with the same value
+        if (contradiction) {
+          yield { grid, state: 'CONTRADICTION' } // ❌ dead end
+          return
+        }
+        // no contradiction - set this cell's value and continue
+        grid[i] = singles[i]
+        yield { grid, candidates, state: 'PROPAGATING', index: Number(i), value: singles[i] }
+      }
+    }
   }
 
   analyze(): AnalysisResult {
