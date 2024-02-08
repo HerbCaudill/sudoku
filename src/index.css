@@ -11,7 +11,7 @@ h2 i {
 }
 
 .button {
-  @apply inline-flex items-center rounded-full border border-opacity-50 border-black;
+  @apply inline-flex items-center rounded-md border border-opacity-50 bg-white border-black;
   @apply focus:outline-none focus:ring-0;
   @apply font-mono;
 }

@@ -21,3 +21,12 @@ export type AnalysisResult = (
 }
 
 export type CandidateGrid = Record<number, number[]>
+export type SingleMap = { [index: number]: number }
+
+export type InterimResult = {
+  grid: Grid
+  candidates?: CandidateGrid
+  state: 'GUESSING' | 'PROPAGATING' | 'DONE PROPAGATING' | 'CONTRADICTION' | 'SOLVED' | 'NO SOLUTION' | 'GIVING UP'
+  index?: number
+  value?: number
+}

@@ -6,9 +6,10 @@ import { rowPeers, colPeers, boxPeers } from './peers.js'
 import { CandidateGrid } from './types.js'
 import { makeRandom } from '@herbcaudill/random'
 import { printGrid } from './helpers/printGrid.js'
+import { InterimResult, SingleMap } from './types.js'
 
 export class Solver {
-  #puzzle: Grid
+  readonly #puzzle: Grid
   #steps = 0
   #random: ReturnType<typeof makeRandom>
 
@@ -36,7 +37,7 @@ export class Solver {
    * possible value (constraint propagation), and a trial-and-error phase of choosing randomly among
    * the possible values for a cell and seeing if that leads to a solution.
    */
-  *search(grid: Grid): Generator<InterimResult> {
+  *search(grid: Grid = this.#puzzle): Generator<InterimResult> {
     this.#steps++
     if (this.#steps > 10000) yield { grid, state: 'GIVING UP' } // ❌ shouldn't ever take this many steps
 
@@ -81,7 +82,7 @@ export class Solver {
     }
 
     // none of the candidates for this cell worked
-    yield { grid, state: 'CONTRADICTION' } // ❌ dead end
+    yield { grid, state: 'CONTRADICTION', index } // ❌ dead end
     return
   }
 
@@ -112,7 +113,7 @@ export class Solver {
           .filter(peer => singles[peer]) // peers that are also singles
           .some(peer => singles[peer] === singles[i]) // with the same value
         if (contradiction) {
-          yield { grid, state: 'CONTRADICTION' } // ❌ dead end
+          yield { grid, state: 'CONTRADICTION', index: Number(i) } // ❌ dead end
           return
         }
         // no contradiction - set this cell's value and continue
@@ -189,13 +190,3 @@ const getUnsolved = (grid: Grid) =>
   grid
     .map((cell, index) => (cell === 0 ? index : -1)) //
     .filter(index => index !== -1)
-
-export type SingleMap = { [index: number]: number }
-
-type InterimResult = {
-  grid: Grid
-  candidates?: CandidateMap
-  state: 'GUESSING' | 'PROPAGATING' | 'DONE PROPAGATING' | 'CONTRADICTION' | 'SOLVED' | 'NO SOLUTION' | 'GIVING UP'
-  index?: number
-  value?: number
-}

@@ -14,7 +14,7 @@ export const printCandidates = (candidates: CandidateGrid) => {
     const cellY = cellPos(row)
     const cellX = cellPos(col)
 
-    if (candidates[index].length === 1) {
+    if (candidates[index]?.length === 1) {
       output[cellY + 1][cellX + 1] = chalk.yellow(candidates[index][0])
     } else {
       const cellCandidates = candidates[index] ?? []
