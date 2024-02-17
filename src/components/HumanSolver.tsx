@@ -20,41 +20,53 @@ export const HumanSolver = ({ puzzle, solution }: Props) => {
       case 'ArrowLeft':
         setNumber(n => (n === 1 ? 9 : n - 1))
         break
+
       case 'ArrowRight':
       case ' ':
         setNumber(n => (n === 9 ? 1 : n + 1))
         break
+
       case 'z':
         dispatch({ type: 'UNDO' })
         break
+
       case 'y':
         dispatch({ type: 'REDO' })
         break
     }
   })
 
-  const onSetValue = (i: number) => {
+  const setValue = (i: number) => {
     if (puzzle[i]) return // can't change fixed cells
     const value = state.grid[i] === number ? 0 : number // toggle between value & blank
-    dispatch({ type: 'SET_VALUE', i: i, value })
+    dispatch({ type: 'SET', i: i, value })
   }
 
-  const toggleCandidate = (type: 'ADD_CANDIDATE' | 'REMOVE_CANDIDATE') => (i: number) => {
+  const toggle = (type: 'ADD' | 'REMOVE') => (i: number) => {
     if (puzzle[i]) return // can't change fixed cells
     if (state.grid[i] > 0) return // can't add candidates to cells with values
     dispatch({ type, i: i, candidate: number })
   }
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-row gap-2">
+        <button className="button button-xs" title="Undo" onClick={() => dispatch({ type: 'UNDO' })}>
+          Undo
+        </button>
+        <button className="button button-xs" title="Redo" onClick={() => dispatch({ type: 'REDO' })}>
+          Redo
+        </button>
+      </div>
+
       <Puzzle
         puzzle={puzzle}
         solution={solution}
         grid={state.grid}
         candidates={state.candidates}
-        onSetValue={onSetValue}
-        onAddCandidate={toggleCandidate('ADD_CANDIDATE')}
-        onRemoveCandidate={toggleCandidate('REMOVE_CANDIDATE')}
+        onSetValue={setValue}
+        onAddCandidate={toggle('ADD')}
+        onRemoveCandidate={toggle('REMOVE')}
         selectedNumber={number}
       />
 
@@ -67,60 +79,85 @@ export const HumanSolver = ({ puzzle, solution }: Props) => {
         className="w-full"
         optionClassName="grow text-[3cqw] py-[2cqw]"
       />
-    </>
+    </div>
   )
 }
 
 const reducer = (state: State, action: Action): State => {
+  const updateState = (newState: Partial<State>) => {
+    return {
+      ...state,
+      ...newState,
+      history: [state, ...state.history], // add the previous state to the history
+      future: [], // new actions reset the redo stack
+    }
+  }
+
   switch (action.type) {
-    case 'SET_VALUE': {
+    // STATE UPDATES
+
+    case 'SET': {
+      const { i, value } = action
+
       // set value
-      const newGrid = [...state.grid]
-      newGrid[action.i] = action.value
+      const grid = [...state.grid]
+      grid[i] = value
 
       // remove candidates
-      const newCandidates = { ...state.candidates }
-      delete newCandidates[action.i]
+      const candidates = { ...state.candidates }
+      delete candidates[i]
 
-      return { ...state, grid: newGrid, candidates: newCandidates, history: [state, ...state.history], future: [] }
+      return updateState({ grid, candidates })
     }
-    case 'ADD_CANDIDATE': {
+
+    case 'ADD': {
       const { i, candidate } = action
       const candidates = { ...state.candidates }
-      if (candidates[i]?.includes(candidate)) return state // don't add if already present
-      candidates[i] = [...(candidates[i] ?? []), candidate]
-      const history = [state, ...state.history]
-      return { ...state, candidates, history, future: [] }
+      const cell = candidates[i] ?? []
+      if (cell.includes(candidate)) return state // don't add if already present
+
+      // add candidate
+      candidates[i] = [...cell, candidate]
+
+      return updateState({ candidates })
     }
-    case 'REMOVE_CANDIDATE': {
+
+    case 'REMOVE': {
       const { i, candidate } = action
       const candidates = { ...state.candidates }
-      if (!candidates[i]?.includes(candidate)) return state // don't remove if not present
-      candidates[i] = candidates[i].filter((n: number) => n !== candidate)
-      const history = [state, ...state.history]
-      return { ...state, candidates, history, future: [] }
+      const cell = candidates[i] ?? []
+      if (!cell.includes(candidate)) return state // don't remove if not present
+
+      // remove candidate
+      candidates[i] = cell.filter(n => n !== candidate)
+
+      return updateState({ candidates })
     }
+
+    // UNDO/REDO
+
     case 'UNDO': {
       if (!state.history.length) return state
+
       const [prevState, ...history] = state.history
       const future = [state, ...state.future]
       return { ...prevState, history, future }
     }
+
     case 'REDO': {
       if (!state.future.length) return state
+
       const [nextState, ...future] = state.future
       const history = [state, ...state.history]
       return { ...nextState, history, future }
     }
-    default:
-      return state
   }
 }
 
 type Action =
-  | { type: 'SET_VALUE'; i: number; value: number }
-  | { type: 'ADD_CANDIDATE'; i: number; candidate: number }
-  | { type: 'REMOVE_CANDIDATE'; i: number; candidate: number }
+  | { type: 'SET'; i: number; value: number }
+  | { type: 'ADD'; i: number; candidate: number }
+  | { type: 'REMOVE'; i: number; candidate: number }
   | { type: 'UNDO' }
   | { type: 'REDO' }
 

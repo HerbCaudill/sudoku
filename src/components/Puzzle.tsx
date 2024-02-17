@@ -63,7 +63,6 @@ export const Puzzle = ({
           const cellCandidates = candidates[i]?.length > 0 ? candidates[i] : null
           const value = v > 0 ? v : null
           const isMistake = value && solution && value !== solution[i]
-          if (isMistake) console.log({ value, solution: solution![i] })
 
           return (
             <div
