@@ -20,8 +20,8 @@ export const App = () => {
         value={mode}
         onChange={v => setMode(v as Mode)}
         options={[
-          { value: HUMAN, label: '😎', title: 'Human solver' },
-          { value: BOT, label: '🤖', title: 'Bot solver' },
+          { value: HUMAN, label: <IconWoman className="w-7 h-7" />, title: 'Human solver' },
+          { value: BOT, label: <IconRobot className="w-7 h-7" />, title: 'Bot solver' },
         ].map(o => ({
           ...o,
           label: <span className={`text-xl text-outline-white`}>{o.label}</span>,

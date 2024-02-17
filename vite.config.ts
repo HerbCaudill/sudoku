@@ -2,6 +2,9 @@ import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import type { VitePWAOptions } from 'vite-plugin-pwa'
 import { VitePWA as vitePWA } from 'vite-plugin-pwa'
+import autoImport from 'unplugin-auto-import/vite'
+import iconsResolver from 'unplugin-icons/resolver'
+import icons from 'unplugin-icons/vite'
 
 const pwaOptions: Partial<VitePWAOptions> = {
   mode: 'production',
@@ -29,7 +32,24 @@ const pwaOptions: Partial<VitePWAOptions> = {
 }
 
 export default defineConfig({
-  plugins: [react(), vitePWA(pwaOptions)],
+  plugins: [
+    react(),
+    vitePWA(pwaOptions),
+    autoImport({
+      dts: false,
+      resolvers: [
+        iconsResolver({
+          prefix: false,
+          extension: 'jsx',
+          enabledCollections: ['tabler'],
+          alias: {
+            icon: 'tabler',
+          },
+        }),
+      ],
+    }),
+    icons({ compiler: 'jsx', jsx: 'react' }),
+  ],
   worker: {
     format: 'es',
   },

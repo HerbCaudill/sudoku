@@ -41,3 +41,5 @@ export type InterimResult = {
   /** value of the cell that was just set */
   value?: number
 }
+
+export type Icon = (props: React.SVGProps<SVGSVGElement>) => React.ReactElement
