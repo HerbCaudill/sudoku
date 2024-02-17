@@ -23,10 +23,21 @@ export type AnalysisResult = (
 export type CandidateGrid = Record<number, number[]>
 export type SingleMap = { [index: number]: number }
 
+export type SolverState =
+  | 'GUESSING'
+  | 'PROPAGATING'
+  | 'DONE PROPAGATING'
+  | 'CONTRADICTION'
+  | 'SOLVED'
+  | 'NO SOLUTION'
+  | 'GIVING UP'
+
 export type InterimResult = {
   grid: Grid
   candidates?: CandidateGrid
-  state: 'GUESSING' | 'PROPAGATING' | 'DONE PROPAGATING' | 'CONTRADICTION' | 'SOLVED' | 'NO SOLUTION' | 'GIVING UP'
+  state: SolverState
+  /** index of the cell that was just set */
   index?: number
+  /** value of the cell that was just set */
   value?: number
 }
