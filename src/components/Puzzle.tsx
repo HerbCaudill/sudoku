@@ -6,6 +6,7 @@ const DOUBLE_TAP_INTERVAL = 400
 
 export const Puzzle = ({
   puzzle,
+  solution,
   grid,
   candidates = {},
   state,
@@ -61,6 +62,8 @@ export const Puzzle = ({
         {grid.map((v, i) => {
           const cellCandidates = candidates[i]?.length > 0 ? candidates[i] : null
           const value = v > 0 ? v : null
+          const isMistake = value && solution && value !== solution[i]
+          if (isMistake) console.log({ value, solution: solution![i] })
 
           return (
             <div
@@ -68,7 +71,8 @@ export const Puzzle = ({
                 'animate-highlight': index === i && state !== 'CONTRADICTION',
                 'animate-contradiction': index === i && state === 'CONTRADICTION',
 
-                'bg-neutral-400 text-white': selectedNumber === value,
+                'bg-danger-500 text-white': isMistake,
+                'bg-neutral-400 text-white': !isMistake && selectedNumber === value,
                 'bg-primary-100': value === null && cellCandidates?.includes(selectedNumber),
 
                 'border-r border-r-neutral-400': [1, 2, 4, 5, 7, 8].includes(cols[i]),
@@ -106,6 +110,9 @@ export const Puzzle = ({
 type Props = {
   /** initial state of the puzzle */
   puzzle: Grid
+
+  /** solution to the puzzle (used for flagging mistakes) */
+  solution?: Grid
 
   /** current solved values of the puzzle */
   grid: Grid
