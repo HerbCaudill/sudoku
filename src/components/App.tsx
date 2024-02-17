@@ -1,27 +1,15 @@
 import { useState } from 'react'
 import { useKeyboard } from '../hooks/useKeyboard'
-import { InterimResult, Solver, generate } from '../solver'
+import { InterimResult, Solver, generate, numbers } from '../solver'
 import { Puzzle } from './Puzzle'
-import { toGrid } from '../solver/helpers/toGrid'
+import { RadioGroup } from './RadioGroup'
 
 export const App = () => {
-  const [puzzle] = useState(
-    toGrid(`
-    5 3 .  8 . .  6 . . 
-    . 4 9  5 . 2  8 3 1 
-    . 2 7  1 . .  5 . 9 
-    7 5 .  9 . 1  . . 4 
-    2 . 8  4 . .  . . 6 
-    4 . .  . . 8  . . . 
-    . 6 .  . . 3  4 1 . 
-    3 . .  . 1 .  . 2 . 
-    1 8 .  2 . 4  . . .`)
-  )
+  const [mode, setMode] = useState<Mode>(HUMAN)
+  const [number, setNumber] = useState<number>(1)
 
-  //   () => {
-  //   const { puzzle, solution } = generate('test-123')
-  //   return { puzzle, solution }
-  // }
+  // TODO: remove seed
+  const [{ puzzle, solution }] = useState(() => generate('test-123'))
 
   const [step, setStep] = useState({ grid: puzzle, candidates: {}, state: 'PROPAGATING' } as InterimResult)
   const [solver] = useState(() => new Solver(puzzle))
@@ -30,21 +18,13 @@ export const App = () => {
 
   const solveStep = () => {
     const step = stepGenerator.next().value
-    if (step) {
-      const { grid, candidates, ...rest } = step
-      console.log(rest)
-      setStep(step)
-    }
-    // else {
-    //   stop()
-    // }
+    if (step) setStep(step)
+    else stop()
   }
 
   const start = () => {
     stop()
-    const id = setInterval(() => {
-      solveStep()
-    }, 50)
+    const id = setInterval(() => solveStep(), 50)
     setIntervalId(id) // Store the intervalId
   }
 
@@ -56,27 +36,83 @@ export const App = () => {
   }
 
   useKeyboard(({ key, altKey, ctrlKey, metaKey }: KeyboardEvent) => {
-    if (key === ' ') solveStep()
-    if (key === 'Enter') {
-      if (intervalId) stop()
-      else start()
+    switch (mode) {
+      case BOT:
+        switch (key) {
+          case ' ': {
+            solveStep()
+            break
+          }
+          case 'Enter': {
+            if (intervalId) stop()
+            else start()
+            break
+          }
+        }
+        break
+      case HUMAN:
+        switch (key) {
+          case 'ArrowLeft': {
+            setNumber(n => (n === 1 ? 9 : n - 1))
+            break
+          }
+          case 'ArrowRight':
+          case ' ': {
+            setNumber(n => (n === 9 ? 1 : n + 1))
+            break
+          }
+        }
+        break
     }
   })
 
   return (
-    <div className="p-8 w-[36rem] max-w-full flex flex-col gap-4">
-      <Puzzle puzzle={puzzle} step={step} />
-      <div className="flex gap-2">
-        <button className="button button-sm" onClick={stop}>
-          ⏹︎
-        </button>
-        <button className="button button-sm" onClick={solveStep}>
-          ▶︎
-        </button>
-        <button className="button button-sm" onClick={start}>
-          ▶︎▶︎
-        </button>
+    <div
+      className="h-screen p-8 w-[36rem] max-w-full flex flex-col gap-4 select-none"
+      style={{ containerType: 'size' }}
+    >
+      <div>
+        <div>
+          <RadioGroup
+            value={mode}
+            onChange={v => setMode(v as Mode)}
+            options={[
+              { value: HUMAN, label: '😎', title: 'Human solver' },
+              { value: BOT, label: '🤖', title: 'Bot solver' },
+            ].map(o => ({
+              ...o,
+              label: <span className={`text-xl text-outline-white`}>{o.label}</span>,
+            }))}
+          />
+        </div>
       </div>
+      <Puzzle puzzle={puzzle} step={step} number={number} />
+      {mode === 'bot' ? (
+        <div className="flex gap-2">
+          <button className="button button-sm" onClick={stop}>
+            ⏹︎
+          </button>
+          <button className="button button-sm" onClick={solveStep}>
+            ▶︎
+          </button>
+          <button className="button button-sm" onClick={start}>
+            ▶︎▶︎
+          </button>
+        </div>
+      ) : (
+        <RadioGroup
+          value={number}
+          onChange={n => setNumber(n)}
+          size="xs"
+          options={numbers}
+          className="w-full"
+          optionClassName="grow text-[3cqw] py-[2cqw]"
+        />
+      )}
     </div>
   )
 }
+
+const HUMAN = 'human'
+const BOT = 'bot'
+type Mode = typeof HUMAN | typeof BOT
