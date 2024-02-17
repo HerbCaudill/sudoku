@@ -5,13 +5,6 @@ const sans = 'IBM Plex Sans' // 'Libre Franklin Variable'
 const condensed = 'IBM Plex Sans Condensed'
 const serif = 'IBM Plex Serif'
 
-const pink = {
-  500: '#FAA6A4',
-  600: '#E87E7E',
-  700: '#FF3833',
-  800: 'E20736',
-}
-
 export default {
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
@@ -24,10 +17,9 @@ export default {
       },
 
       colors: {
-        pink,
         primary: colors.blue,
         secondary: colors.teal,
-        neutral: colors.gray,
+        neutral: colors.stone,
         success: colors.green,
         warning: colors.orange,
         danger: colors.red,

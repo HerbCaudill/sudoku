@@ -1,5 +1,5 @@
 body {
-  background-color: #dbcdc6;
+  @apply bg-neutral-200;
 }
 
 h2 {
@@ -11,7 +11,7 @@ h2 i {
 }
 
 .button {
-  @apply inline-flex items-center rounded-md border border-opacity-50 bg-white border-black;
+  @apply inline-flex items-center justify-center rounded-md border border-opacity-50 bg-white border-black;
   @apply focus:outline-none focus:ring-0;
   @apply font-mono;
 }
@@ -26,6 +26,15 @@ h2 i {
   @apply px-3 py-1;
 }
 
+.button-md {
+  @apply text-base;
+  @apply px-4 py-1;
+}
+
 .Message strong {
   @apply font-black;
+}
+
+.text-outline-white {
+  text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
 }
