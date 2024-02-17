@@ -2,6 +2,8 @@ import cx from 'classnames'
 import { CandidateGrid, Grid, SolverState, cols, numbers, rows } from '../solver'
 import { useState } from 'react'
 
+const DOUBLE_TAP_INTERVAL = 400
+
 export const Puzzle = ({
   puzzle,
   grid,
@@ -13,17 +15,19 @@ export const Puzzle = ({
   onAddCandidate = () => {},
   onRemoveCandidate = () => {},
 }: Props) => {
+  // in a swipe gesture, we add candidates or remove candidates based on whether the first cell we
+  // touched had the selected number
   const [pointerAction, setPointerAction] = useState<'remove' | 'add' | null>(null)
-  const [lastTap, setLastTap] = useState(0)
+
+  // track the last tap for each cell
+  const [lastTap, setLastTap] = useState<Record<number, number>>({})
 
   const pointerDown = (i: number) => {
     // detect double tap
     let now = new Date().getTime()
-    let interval = now - lastTap
-    setLastTap(now)
-
-    if (interval < 600) {
-      // double tap: set value
+    let interval = now - lastTap[i]
+    setLastTap({ ...lastTap, [i]: now })
+    if (interval < DOUBLE_TAP_INTERVAL) {
       onSetValue(i)
     } else {
       // single tap or swipe: toggle candidates
@@ -40,10 +44,16 @@ export const Puzzle = ({
 
   const pointerMove = ({ clientX, clientY }: React.PointerEvent) => {
     const element = document.elementFromPoint(clientX, clientY)
-    const i = Number(element?.getAttribute('data-index'))
+    const index = element?.getAttribute('data-index')
+    if (index === undefined) return // no element
+    if (index === null) return // no data-index attribute
+
+    const i = Number(index)
     if (pointerAction === 'remove') onRemoveCandidate(i)
     else if (pointerAction === 'add') onAddCandidate(i)
   }
+
+  const pointerUp = () => setPointerAction(null)
 
   return (
     <div className="aspect-square touch-none">
@@ -52,7 +62,6 @@ export const Puzzle = ({
           const cellCandidates = candidates[i]?.length > 0 ? candidates[i] : null
           const value = v > 0 ? v : null
 
-          const pointerUp = () => setPointerAction(null)
           return (
             <div
               className={cx('flex content-center justify-center items-center border-black cursor-pointer ', {
