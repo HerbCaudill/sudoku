@@ -7,8 +7,7 @@ import { BotSolver } from './BotSolver'
 export const App = () => {
   const [mode, setMode] = useState<Mode>(HUMAN)
 
-  // TODO: remove seed
-  const [{ puzzle, solution }] = useState(() => generate('test-123'))
+  const [{ puzzle, solution }] = useState(() => generate())
 
   return (
     <div
