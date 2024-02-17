@@ -5,10 +5,13 @@ import { Puzzle } from './Puzzle'
 import { RadioGroup } from './RadioGroup'
 
 export const HumanSolver = ({ puzzle, solution }: { puzzle: Grid; solution: Grid }) => {
-  const [number, setNumber] = useState<number>(1)
-
   const [grid, setGrid] = useState<Grid>(puzzle)
   const [candidates, setCandidates] = useState<CandidateGrid>({})
+  const [selectedNumber, setNumber] = useState<number>(1)
+
+  // TODO: refactor to use reducer so we can undo/redo
+
+  // TODO: highlight incorrect cells
 
   useKeyboard(({ key }: KeyboardEvent) => {
     switch (key) {
@@ -26,20 +29,27 @@ export const HumanSolver = ({ puzzle, solution }: { puzzle: Grid; solution: Grid
 
   const onSetValue = (i: number) => {
     const newGrid = [...grid]
-    if (newGrid[i] === number) newGrid[i] = 0
-    else newGrid[i] = number
+    if (newGrid[i] === selectedNumber) newGrid[i] = 0
+    else newGrid[i] = selectedNumber
     setGrid(newGrid)
   }
 
-  const onSetCandidate = (i: number) => {
+  const onAddCandidate = (i: number) => {
     const newCandidates = { ...candidates }
     const cellCandidates = newCandidates[i] ?? []
-    if (cellCandidates.includes(number)) {
-      newCandidates[i] = cellCandidates.filter(n => n !== number)
-    } else {
-      newCandidates[i] = [...cellCandidates, number]
+    if (!cellCandidates.includes(selectedNumber)) {
+      newCandidates[i] = [...cellCandidates, selectedNumber]
+      setCandidates(newCandidates)
     }
-    setCandidates(newCandidates)
+  }
+
+  const onRemoveCandidate = (i: number) => {
+    const newCandidates = { ...candidates }
+    const cellCandidates = newCandidates[i] ?? []
+    if (cellCandidates.includes(selectedNumber)) {
+      newCandidates[i] = newCandidates[i].filter((n: number) => n !== selectedNumber)
+      setCandidates(newCandidates)
+    }
   }
 
   return (
@@ -49,11 +59,14 @@ export const HumanSolver = ({ puzzle, solution }: { puzzle: Grid; solution: Grid
         grid={grid}
         candidates={candidates}
         onSetValue={onSetValue}
-        onSetCandidate={onSetCandidate}
-        number={number}
+        onAddCandidate={onAddCandidate}
+        onRemoveCandidate={onRemoveCandidate}
+        selectedNumber={selectedNumber}
       />
+
+      {/* Numbers 1-9 */}
       <RadioGroup
-        value={number}
+        value={selectedNumber}
         onChange={n => setNumber(n)}
         size="xs"
         options={numbers}
