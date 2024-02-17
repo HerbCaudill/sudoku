@@ -1,11 +1,16 @@
 import cx from 'classnames'
-import { Grid, InterimResult, cols, numbers, rows } from '../solver'
-import { useState } from 'react'
+import { CandidateGrid, Grid, SolverState, cols, numbers, rows } from '../solver'
 
-export const Puzzle = ({ puzzle, step, number }: { puzzle: Grid; step: InterimResult; number: number }) => {
-  const { state, index, value } = step
-  const [grid, setGrid] = useState(step.grid)
-  const [candidates, setCandidates] = useState(step.candidates ?? {})
+export const Puzzle = ({
+  puzzle,
+  grid,
+  candidates = {},
+  state,
+  index,
+  onSetValue = () => {},
+  onSetCandidate = () => {},
+  number = 0,
+}: Props) => {
   return (
     <div className="aspect-square">
       <div className="grid grid-rows-9 h-full grid-cols-9 border-black border-4 bg-white">
@@ -19,37 +24,25 @@ export const Puzzle = ({ puzzle, step, number }: { puzzle: Grid; step: InterimRe
               className={cx('flex content-center justify-center items-center border-black cursor-pointer ', {
                 'animate-highlight': index === i && state !== 'CONTRADICTION',
                 'animate-contradiction': index === i && state === 'CONTRADICTION',
-                // 'bg-blue-100': value && !isFixed, //
-                'bg-neutral-100': isFixed,
-                'hover:bg-neutral-50': !isFixed,
+
+                // 'bg-neutral-100': isFixed && number !== value,
+                // 'hover:bg-neutral-50': !isFixed
+                'bg-neutral-4 00 text-white': number === value,
+                'bg-primary-100': value === null && cellCandidates?.includes(number),
 
                 'border-r border-r-neutral-400': [1, 2, 4, 5, 7, 8].includes(cols[i]),
                 'border-r-[.6cqw] border-r-black': [3, 6].includes(cols[i]),
                 'border-b border-b-neutral-400': [1, 2, 4, 5, 7, 8].includes(rows[i]),
                 'border-b-[.6cqw] border-b-black': [3, 6].includes(rows[i]),
               })}
-              // set value on double click
               onDoubleClick={() => {
-                if (isFixed) return // can't modify fixed cells
-                // TODO check
-
-                const newGrid = [...grid]
-                if (newGrid[i] === number) newGrid[i] = 0
-                else newGrid[i] = number
-                setGrid(newGrid)
+                if (isFixed) return
+                onSetValue(i)
               }}
-              // set candidates on click
               onClick={() => {
-                if (isFixed) return // can't modifyx fixed cells
-                if (value) return // no candidates for cells with value
-                const newCandidates = { ...candidates }
-                const cellCandidates = newCandidates[i] ?? []
-                if (cellCandidates.includes(number)) {
-                  newCandidates[i] = cellCandidates.filter(n => n !== number)
-                } else {
-                  newCandidates[i] = [...cellCandidates, number]
-                }
-                setCandidates(newCandidates)
+                if (isFixed) return
+                if (value) return
+                onSetCandidate(i)
               }}
               key={i}
             >
@@ -72,4 +65,39 @@ export const Puzzle = ({ puzzle, step, number }: { puzzle: Grid; step: InterimRe
       </div>
     </div>
   )
+}
+
+type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
+
+type Props = {
+  /** initial state of the puzzle */
+  puzzle: Grid
+
+  /** current solved values of the puzzle */
+  grid: Grid
+
+  /** current candidates for each cell */
+  candidates?: CandidateGrid
+
+  // BOT SOLVER
+
+  /** current state of the solver */
+  state?: SolverState
+
+  /** index of the cell that was just set */
+  index?: number
+
+  /** value of the cell that was just set */
+  value?: number
+
+  // HUMAN SOLVER
+
+  /** handler for setting cell value */
+  onSetValue?: (i: number) => void
+
+  /** handler for toggling cell candidate */
+  onSetCandidate?: (i: number) => void
+
+  /** currently selected number (for highlighting candidate cells) */
+  number?: number
 }
