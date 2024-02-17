@@ -15,21 +15,17 @@ export const App = () => {
       className="h-screen p-8 w-[36rem] max-w-full flex flex-col gap-4 select-none"
       style={{ containerType: 'size' }}
     >
-      <div>
-        <div>
-          <RadioGroup
-            value={mode}
-            onChange={v => setMode(v as Mode)}
-            options={[
-              { value: HUMAN, label: '😎', title: 'Human solver' },
-              { value: BOT, label: '🤖', title: 'Bot solver' },
-            ].map(o => ({
-              ...o,
-              label: <span className={`text-xl text-outline-white`}>{o.label}</span>,
-            }))}
-          />
-        </div>
-      </div>
+      <RadioGroup
+        value={mode}
+        onChange={v => setMode(v as Mode)}
+        options={[
+          { value: HUMAN, label: '😎', title: 'Human solver' },
+          { value: BOT, label: '🤖', title: 'Bot solver' },
+        ].map(o => ({
+          ...o,
+          label: <span className={`text-xl text-outline-white`}>{o.label}</span>,
+        }))}
+      />
 
       {mode === BOT ? <BotSolver puzzle={puzzle} /> : <HumanSolver puzzle={puzzle} solution={solution} />}
     </div>
