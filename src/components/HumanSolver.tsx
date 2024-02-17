@@ -28,7 +28,7 @@ export const HumanSolver = ({ puzzle, solution }: { puzzle: Grid; solution: Grid
   })
 
   const onSetValue = (i: number) => {
-    if (puzzle[i]) return
+    if (puzzle[i]) return // can't change fixed cells
     const newGrid = [...grid]
     if (newGrid[i] === number) newGrid[i] = 0
     else newGrid[i] = number
@@ -37,8 +37,8 @@ export const HumanSolver = ({ puzzle, solution }: { puzzle: Grid; solution: Grid
 
   const toggleCandidate = (addOrRemove: 'add' | 'remove') => (i: number) => {
     if (!i) return
-    if (puzzle[i]) return
-    if (grid[i] > 0) return // can't add candidates to fixed cells
+    if (puzzle[i]) return // can't change fixed cells
+    if (grid[i] > 0) return // can't add candidates to cells with values
     const newCandidates = { ...candidates }
     const cellCandidates = newCandidates[i] ?? []
     if (addOrRemove === 'add' && !cellCandidates.includes(number)) {
