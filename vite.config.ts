@@ -20,8 +20,8 @@ const pwaOptions: Partial<VitePWAOptions> = {
     name: 'Sudoku',
     short_name: 'Sudoku',
     description: 'A sudoku player',
-    theme_color: '#DBCDC6',
-    background_color: '#DBCDC6',
+    theme_color: '#e7e5e4',
+    background_color: '#e7e5e4',
     display: 'standalone',
     icons: [
       { src: 'favicon.svg', sizes: '1024x1024', type: 'image/svg+xml', purpose: 'any' },

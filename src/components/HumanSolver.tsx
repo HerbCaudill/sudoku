@@ -135,13 +135,13 @@ export const HumanSolver = ({ puzzle, solution }: Props) => {
   const prevNumber = () => setNumber(n => (n === 1 ? 9 : n - 1))
 
   return (
-    <div className="flex h-dvh flex-col gap-4 touch-none">
+    <div className="flex h-dvh pb-12 flex-col gap-4">
       <Puzzle
         puzzle={puzzle}
         solution={solution}
         grid={state.grid}
         candidates={state.candidates}
-        index={state.index}
+        // index={state.index}
         onSetValue={setValue}
         onAddCandidate={toggle('ADD')}
         onRemoveCandidate={toggle('REMOVE')}
