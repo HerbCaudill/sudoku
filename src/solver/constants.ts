@@ -1,5 +1,5 @@
-import { toGrid } from './helpers/toGrid.js'
-import { Grid } from './types.js'
+import { toGrid } from '../lib/toGrid.js'
+import { Grid } from '../types.js'
 
 export const rows: Grid = toGrid(`
   1 1 1 1 1 1 1 1 1 

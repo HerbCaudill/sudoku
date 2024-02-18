@@ -1,6 +1,6 @@
 import { Solver } from '../solver/Solver.js'
-import { files, load } from '../solver/helpers/load.js'
-import { AnalysisResult } from '../solver/types.js'
+import { files, load } from '../lib/load.js'
+import { AnalysisResult } from '../types.js'
 
 const allResults = [] as AnalysisResult[]
 for (const file of files) {

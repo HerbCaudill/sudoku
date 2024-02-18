@@ -1,33 +1,84 @@
-import { useState } from 'react'
-import { generate } from '../solver'
-import { RadioGroup } from './RadioGroup'
-import { HumanSolver } from './HumanSolver'
+import { useEffect, useState } from 'react'
+import { toGrid } from '../lib/toGrid'
+import { Grid, Solver } from '../solver'
 import { BotSolver } from './BotSolver'
+import { HumanSolver } from './HumanSolver'
+import { RadioGroup } from './RadioGroup'
+import { loadPuzzle } from './loadPuzzle'
+import { Spinner } from './Spinner'
+import { useLocalStorage } from '@uidotdev/usehooks'
 
 export const App = () => {
-  const [mode, setMode] = useState<Mode>(HUMAN)
+  const [mode, setMode] = useLocalStorage<Mode>('mode', HUMAN)
 
-  const [{ puzzle, solution }] = useState(() => generate())
+  const [puzzle, setPuzzle] = useState<Grid>()
+  const [solution, setSolution] = useState<Grid>()
+  const [level, setLevel] = useLocalStorage('level', 0)
 
-  return (
-    <div
-      className="h-screen p-2 w-[36rem] max-w-full mx-auto flex flex-col gap-4 select-none relative"
-      style={{ containerType: 'size' }}
-    >
-      <RadioGroup
-        className="absolute bottom-2 right-2"
-        value={mode}
-        onChange={v => setMode(v as Mode)}
-        options={[
-          { value: HUMAN, label: <IconWoman className="w-7 h-7" />, title: 'Human solver' },
-          { value: BOT, label: <IconRobot className="w-7 h-7" />, title: 'Bot solver' },
-        ].map(o => ({
-          ...o,
-          label: <span className={`text-xl text-outline-white`}>{o.label}</span>,
-        }))}
-      />
+  useEffect(() => {
+    loadPuzzle(level).then(p => {
+      const puzzle = toGrid(p)
+      setSolution([])
+      setPuzzle(puzzle)
+    })
+  }, [level])
 
-      {mode === BOT ? <BotSolver puzzle={puzzle} /> : <HumanSolver puzzle={puzzle} solution={solution} />}
+  useEffect(() => {
+    if (!puzzle) return
+    const solver = new Solver(puzzle)
+    const solution = solver.solve() as Grid // we know it has a solution
+    setSolution(solution)
+  }, [puzzle])
+
+  return puzzle && solution ? (
+    <>
+      <div
+        className="h-dvh p-2 w-[36rem] max-w-full mx-auto flex flex-col gap-4 select-none relative"
+        style={{ containerType: 'size' }}
+      >
+        {mode === BOT ? ( //
+          <BotSolver puzzle={puzzle} />
+        ) : (
+          <HumanSolver puzzle={puzzle} solution={solution} />
+        )}
+      </div>
+      <div className="h-dvh bg-white w-full flex flex-col gap-2 p-4">
+        <p>Play mode</p>
+        <RadioGroup
+          value={mode}
+          onChange={v => setMode(v as Mode)}
+          options={[
+            {
+              value: HUMAN,
+              label: 'Human',
+              icon: <IconWoman />,
+              title: 'Human solver',
+            },
+            {
+              value: BOT,
+              label: 'Bot',
+              icon: <IconRobot />,
+              title: 'Bot solver',
+            },
+          ]}
+        />
+        <p>New game</p>
+        <RadioGroup
+          value={level}
+          onChange={v => setLevel(v as number)}
+          options={[
+            { value: 0, label: 'Easy' },
+            { value: 1, label: 'Medium' },
+            { value: 2, label: 'Hard' },
+            { value: 3, label: 'Expert' },
+            { value: 4, label: 'Extreme' },
+          ]}
+        />
+      </div>
+    </>
+  ) : (
+    <div className="h-dvh flex items-center justify-center opacity-20">
+      <Spinner size={40} />
     </div>
   )
 }

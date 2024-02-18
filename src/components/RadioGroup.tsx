@@ -1,6 +1,7 @@
 import * as Headless from '@headlessui/react'
 import { type ReactNode, useState, Fragment } from 'react'
 import cx from 'classnames'
+import { Icon } from 'solver'
 
 export function RadioGroup<T extends string | number | boolean>({
   label,
@@ -39,14 +40,14 @@ export function RadioGroup<T extends string | number | boolean>({
       >
         {options.map((o, i) => {
           const option = typeof o === 'object' ? o : { value: o }
-          const { value, label = value.toString(), title = value.toString() } = option
+          const { value, label = value.toString(), title = value.toString(), icon = undefined } = option
           return (
             <Headless.RadioGroup.Option key={i} value={value} as={Fragment}>
               {({ checked }) => (
                 <span
                   title={title}
                   className={cx([
-                    'cursor-pointer relative inline-flex items-center justify-center',
+                    'cursor-pointer relative inline-flex items-center justify-center gap-2',
                     'border border-gray-500',
                     'focus:z-10 focus:border-primary-700 focus:outline-none focus:ring-1 focus:ring-primary-700',
                     {
@@ -69,7 +70,8 @@ export function RadioGroup<T extends string | number | boolean>({
                     optionClassName,
                   ])}
                 >
-                  {label}
+                  {icon ?? null}
+                  <span>{label}</span>
                 </span>
               )}
             </Headless.RadioGroup.Option>
@@ -94,6 +96,7 @@ type Options<T extends string | number | boolean> =
   | Array<{
       value: T
       label?: ReactNode
+      icon?: ReactNode
       title?: string
     }>
   | T[]

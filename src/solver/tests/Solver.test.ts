@@ -1,10 +1,10 @@
 import { assert, describe, expect, it } from 'vitest'
 import { Solver } from '../Solver.js'
-import { toGrid } from '../helpers/toGrid.js'
-import { load } from '../helpers/load.js'
-import { solve } from '../helpers/solve.js'
-import { Grid } from '../types.js'
-import { printGrid } from '../helpers/printGrid.js'
+import { toGrid } from '../../lib/toGrid.js'
+import { load } from '../../lib/load.js'
+import { solve } from '../../lib/solve.js'
+import { Grid } from '../../types.js'
+import { printGrid } from '../../lib/printGrid.js'
 import { emptyGrid } from '../constants.js'
 
 describe('Solver', () => {

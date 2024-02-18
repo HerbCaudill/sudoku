@@ -1,4 +1,4 @@
-import { cols, emptyGrid, rows } from '../constants.js'
+import { cols, emptyGrid, rows } from '../solver/constants.js'
 import chalk from 'chalk'
 import { CandidateGrid, Grid } from '../types.js'
 

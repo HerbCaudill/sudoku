@@ -1,5 +1,5 @@
 import { boxes, cols, rows } from './constants.js'
-import { Grid } from './types.js'
+import { Grid } from '../types.js'
 
 /** returns the indices of all elements of row/col/box #n */
 

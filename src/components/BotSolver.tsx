@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { useKeyboard } from '../hooks/useKeyboard'
 import { Grid, InterimResult, Solver } from '../solver'
 import { Puzzle } from './Puzzle'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 export const BotSolver = ({ puzzle }: { puzzle: Grid }) => {
   const [step, setStep] = useState({ grid: puzzle, candidates: {}, state: 'PROPAGATING' } as InterimResult)
@@ -9,18 +9,10 @@ export const BotSolver = ({ puzzle }: { puzzle: Grid }) => {
   const [stepGenerator] = useState(() => solver.search())
   const [intervalId, setIntervalId] = useState<ReturnType<typeof setInterval> | undefined>(undefined)
 
-  useKeyboard(({ key }: KeyboardEvent) => {
-    switch (key) {
-      case ' ': {
-        solveStep()
-        break
-      }
-      case 'Enter': {
-        if (intervalId) stop()
-        else start()
-        break
-      }
-    }
+  useHotkeys(['space'], () => solveStep())
+  useHotkeys(['enter'], () => {
+    if (intervalId) stop()
+    else start()
   })
 
   const solveStep = () => {

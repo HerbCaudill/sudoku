@@ -39,17 +39,17 @@ export default {
 
       keyframes: {
         highlight: {
-          from: { backgroundColor: colors.blue[200] },
-          to: { backgroundColor: colors.white },
+          from: { backgroundColor: colors.blue[300] },
+          to: {},
         },
         contradiction: {
-          from: { backgroundColor: colors.red[200] },
-          to: { backgroundColor: colors.white },
+          from: { backgroundColor: colors.red[300] },
+          to: {},
         },
       },
 
       animation: {
-        highlight: '1500ms highlight ease-out',
+        highlight: '500ms highlight ease-out',
         contradiction: '1500ms contradiction ease-out',
       },
     },
