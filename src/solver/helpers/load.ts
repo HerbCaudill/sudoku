@@ -1,11 +1,11 @@
 import fs from 'fs'
 import path from 'path'
-import { URL } from 'url'
 
 const __dirname = new URL('.', import.meta.url).pathname
+const dataDir = path.join(__dirname, '..', '..', 'data')
 
 export const load = (filename: string) => {
-  const filePath = path.join(__dirname, '..', '..', 'data', filename)
+  const filePath = path.join(dataDir, filename)
   return fs
     .readFileSync(filePath, 'utf-8')
     .split('\n')
@@ -15,3 +15,5 @@ export const load = (filename: string) => {
         !line.startsWith('#')
     )
 }
+
+export const files = fs.readdirSync(dataDir).filter(file => file.endsWith('.txt'))
