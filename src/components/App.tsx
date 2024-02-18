@@ -11,7 +11,7 @@ export const App = () => {
 
   return (
     <div
-      className="h-screen p-8 w-[36rem] max-w-full flex flex-col gap-4 select-none relative"
+      className="h-screen p-2 w-[36rem] max-w-full mx-auto flex flex-col gap-4 select-none relative"
       style={{ containerType: 'size' }}
     >
       <RadioGroup
