@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "test": "vitest",
-    "bench": "node --no-warnings=ExperimentalWarning --loader ts-node/esm ./src/solver/benchmark/benchmark.ts",
+    "bench": "node --no-warnings=ExperimentalWarning --loader ts-node/esm ./src/scripts/benchmark.ts",
+    "sort": "node --no-warnings=ExperimentalWarning --loader ts-node/esm ./src/scripts/sort.ts",
     "dev": "vite --host --port 3000 --open http://localhost:3000",
     "build": "tsc && vite build",
     "serve": "vite preview"

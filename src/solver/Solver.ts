@@ -9,6 +9,8 @@ import { getUnsolved } from './getUnsolved.js'
 export class Solver {
   readonly #puzzle: Grid
   #steps = 0
+  #guesses = 0
+  #backtracks = 0
   #random: ReturnType<typeof makeRandom>
 
   constructor(puzzle: string | Grid, seed: string = Math.random().toString()) {
@@ -20,6 +22,7 @@ export class Solver {
 
   solve() {
     this.#steps = 0
+    this.#backtracks = 0
     return this.complete(this.#puzzle)
   }
 
@@ -47,6 +50,7 @@ export class Solver {
     for (const step of this.propagate(grid)) {
       yield step
       if (step.state === 'CONTRADICTION') {
+        this.#backtracks++
         return // ❌ dead end
       } else {
         candidates = step.candidates!
@@ -60,6 +64,8 @@ export class Solver {
     }
 
     // TRIAL & ERROR
+
+    this.#guesses++
 
     // choose a random unsolved cell with the fewest candidates possible
     const index = this.#random.shuffle(unsolved).reduce(
@@ -80,6 +86,7 @@ export class Solver {
     }
 
     // none of the candidates for this cell worked
+    this.#backtracks++
     yield { grid, state: 'CONTRADICTION', index } // ❌ dead end
     return
   }
@@ -130,12 +137,16 @@ export class Solver {
           solved: true,
           solution,
           steps: this.#steps,
+          backtracks: this.#backtracks,
+          guesses: this.#guesses,
           time: performance.now() - start,
         }
       } else {
         return {
           solved: false,
           steps: this.#steps,
+          backtracks: this.#backtracks,
+          guesses: this.#guesses,
           error: 'no solution',
           time: performance.now() - start,
         }
@@ -144,6 +155,8 @@ export class Solver {
       return {
         solved: false,
         steps: this.#steps,
+        backtracks: this.#backtracks,
+        guesses: this.#guesses,
         error: e.toString(),
         time: performance.now() - start,
       }

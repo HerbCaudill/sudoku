@@ -17,6 +17,8 @@ export type AnalysisResult = (
     }
 ) & {
   steps: number
+  backtracks: number
+  guesses: number
   time: number
 }
 
