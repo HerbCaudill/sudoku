@@ -16,8 +16,8 @@ export const Puzzle = ({
   onAddCandidate = () => {},
   onRemoveCandidate = () => {},
 }: Props) => {
-  // in a swipe gesture, we add candidates or remove candidates based on whether the first cell we
-  // touched had the selected number
+  // in a swipe gesture, we add candidates or remove candidates based on whether
+  // the first cell we touched had the selected number
   const [pointerAction, setPointerAction] = useState<'remove' | 'add' | null>(null)
 
   // track the last tap for each cell
@@ -29,11 +29,11 @@ export const Puzzle = ({
     let interval = now - lastTap[i]
     setLastTap({ ...lastTap, [i]: now })
     if (interval < DOUBLE_TAP_INTERVAL) {
+      // double tap: set value
       onSetValue(i)
     } else {
       // single tap or swipe: toggle candidates
-      const cellCandidates = candidates[i] ?? []
-      if (cellCandidates.includes(selectedNumber)) {
+      if (candidates[i]?.includes(selectedNumber)) {
         setPointerAction('remove')
         onRemoveCandidate(i)
       } else {
