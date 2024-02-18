@@ -66,7 +66,7 @@ export const Puzzle = ({
         {grid.map((v, i) => {
           const cellCandidates = candidates[i]?.length > 0 ? candidates[i] : null
           const value = v > 0 ? v : null
-          const isMistake = value && solution && value !== solution[i]
+          const isMistake = value && solution && solution[i] && value !== solution[i]
 
           return (
             <div

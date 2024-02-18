@@ -135,7 +135,7 @@ export const HumanSolver = ({ puzzle, solution }: Props) => {
   const prevNumber = () => setNumber(n => (n === 1 ? 9 : n - 1))
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 h-full">
       <Puzzle
         puzzle={puzzle}
         solution={solution}
@@ -154,19 +154,20 @@ export const HumanSolver = ({ puzzle, solution }: Props) => {
         onChange={n => setNumber(n)}
         size="xs"
         options={numbers}
-        className="w-full "
+        className="w-full"
         optionClassName="grow text-[3cqw] py-[2cqw]"
       />
 
-      <div className="flex flex-row w-full gap-2">
-        <button className="button button-lg grow" onClick={prevNumber}>
-          <IconArrowLeft className="h-4 w-4" aria-hidden="true" />
-        </button>
-        <button className="button button-lg grow" onClick={nextNumber}>
-          <IconArrowRight className="h-4 w-4" aria-hidden="true" />
-        </button>
+      <div className="grow">
+        <div className="flex flex-row w-full gap-2">
+          <button className="button button-lg grow" onClick={prevNumber}>
+            <IconArrowLeft className="h-4 w-4" aria-hidden="true" />
+          </button>
+          <button className="button button-lg grow" onClick={nextNumber}>
+            <IconArrowRight className="h-4 w-4" aria-hidden="true" />
+          </button>
+        </div>
       </div>
-      <div className="grow" />
 
       <div className="flex flex-row gap-2">
         <button className="button button-lg" title="Undo" onClick={() => dispatch({ type: 'UNDO' })}>

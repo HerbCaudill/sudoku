@@ -11,18 +11,19 @@ h2 i {
 }
 
 .button {
-  @apply inline-flex items-center justify-center rounded-md border border-opacity-50 bg-white border-black;
+  @apply inline-flex items-center justify-center gap-2;
+  @apply rounded-md border border-opacity-50 bg-white border-black;
   @apply focus:outline-none focus:ring-0;
   @apply font-mono;
 }
 
-.button-sm {
-  @apply text-sm;
-  @apply px-5 py-2;
-}
-
 .button-xs {
   @apply text-xs;
+  @apply px-3 py-1;
+}
+
+.button-sm {
+  @apply text-sm;
   @apply px-3 py-1;
 }
 
