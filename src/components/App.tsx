@@ -38,10 +38,6 @@ export const App = () => {
     })
   }
 
-  const Backdrop = () => {
-    return <div className="fixed inset-0 bg-gray-900/20" />
-  }
-
   return puzzle && solution ? (
     <>
       <div
@@ -120,6 +116,10 @@ export const App = () => {
       <Spinner size={40} />
     </div>
   )
+}
+
+const Backdrop = () => {
+  return <div className="fixed inset-0 bg-gray-900/20" />
 }
 
 const HUMAN = 'human'
