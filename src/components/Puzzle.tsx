@@ -44,8 +44,12 @@ export const Puzzle = ({
   }
 
   const pointerMove = ({ clientX, clientY }: React.PointerEvent) => {
+    if (pointerAction === null) return
+
+    // find the element under the pointer
     const element = document.elementFromPoint(clientX, clientY)
     const index = element?.getAttribute('data-index')
+
     if (index === undefined) return // no element
     if (index === null) return // no data-index attribute
 
@@ -57,7 +61,7 @@ export const Puzzle = ({
   const pointerUp = () => setPointerAction(null)
 
   return (
-    <div className="aspect-square touch-none">
+    <div className="aspect-square pointer-events-none">
       <div className="grid grid-rows-9 h-full grid-cols-9 border-black border-4 bg-white">
         {grid.map((v, i) => {
           const cellCandidates = candidates[i]?.length > 0 ? candidates[i] : null
@@ -66,19 +70,23 @@ export const Puzzle = ({
 
           return (
             <div
-              className={cx('flex content-center justify-center items-center border-black cursor-pointer ', {
-                'animate-highlight': index === i && state !== 'CONTRADICTION',
-                'animate-contradiction': index === i && state === 'CONTRADICTION',
+              className={cx(
+                'flex content-center justify-center items-center', //
+                'pointer-events-auto cursor-pointer ',
+                {
+                  'animate-highlight': index === i && state !== 'CONTRADICTION',
+                  'animate-contradiction': index === i && state === 'CONTRADICTION',
 
-                'bg-danger-500 text-white': isMistake,
-                'bg-neutral-400 text-white': !isMistake && selectedNumber === value,
-                'bg-primary-100': value === null && cellCandidates?.includes(selectedNumber),
+                  'bg-danger-500 text-white': isMistake,
+                  'bg-neutral-400 text-white': !isMistake && selectedNumber === value,
+                  'bg-primary-100': value === null && cellCandidates?.includes(selectedNumber),
 
-                'border-r border-r-neutral-400': [1, 2, 4, 5, 7, 8].includes(cols[i]),
-                'border-r-[.6cqw] border-r-black': [3, 6].includes(cols[i]),
-                'border-b border-b-neutral-400': [1, 2, 4, 5, 7, 8].includes(rows[i]),
-                'border-b-[.6cqw] border-b-black': [3, 6].includes(rows[i]),
-              })}
+                  'border-r border-r-neutral-400': [1, 2, 4, 5, 7, 8].includes(cols[i]),
+                  'border-r-[.6cqw] border-r-black': [3, 6].includes(cols[i]),
+                  'border-b border-b-neutral-400': [1, 2, 4, 5, 7, 8].includes(rows[i]),
+                  'border-b-[.6cqw] border-b-black': [3, 6].includes(rows[i]),
+                }
+              )}
               onPointerDown={e => pointerDown(i)}
               onPointerMove={e => pointerMove(e)}
               onPointerUp={e => pointerUp()}
@@ -87,10 +95,22 @@ export const Puzzle = ({
             >
               {value ? (
                 // value
-                <div className={cx({ 'font-bold ': puzzle[i] > 0 }, 'text-[4cqw] p-2')}>{value}</div>
+                <div
+                  className={cx(
+                    { 'font-bold ': puzzle[i] === 0 }, // values we've solved are bold
+                    'pointer-events-none text-[4cqw] p-2'
+                  )}
+                >
+                  {value}
+                </div>
               ) : (
-                // candidates
-                <div className={cx('w-full px-2 grid grid-rows-3 grid-cols-3 text-[2cqw] text-neutral-500')}>
+                // candidates grid
+                <div
+                  className={cx(
+                    'pointer-events-none',
+                    'w-full px-2 grid grid-rows-3 grid-cols-3 text-[2cqw] text-neutral-500'
+                  )}
+                >
                   {numbers.map((val, i) => (
                     <span key={i} className="text-center">
                       {cellCandidates?.includes(val) ? val : ' '}
