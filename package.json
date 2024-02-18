@@ -17,7 +17,6 @@
     "@herbcaudill/random": "^1.0.5",
     "@ibm/plex": "^6.4.0",
     "@iconify-json/tabler": "^1.1.105",
-    "@types/node": "^20.2.5",
     "@types/react": "^18.2.8",
     "@types/react-dom": "^18.2.4",
     "@vitejs/plugin-react": "^4.2.1",
@@ -41,9 +40,10 @@
     "workbox-strategies": "^7.0.0"
   },
   "devDependencies": {
-    "happy-dom": "^13.3.8",
     "@svgr/core": "^8.1.0",
     "@svgr/plugin-jsx": "^8.1.0",
+    "@types/node": "^20.11.16",
+    "happy-dom": "^13.3.8",
     "unplugin-auto-import": "^0.17.5",
     "unplugin-icons": "^0.18.5"
   }
