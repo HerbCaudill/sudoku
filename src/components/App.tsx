@@ -33,47 +33,49 @@ export const App = () => {
   return puzzle && solution ? (
     <>
       <div
-        className="h-dvh p-2 w-[36rem] max-w-full mx-auto flex flex-col gap-4 select-none relative"
+        className="h-dvh p-2 pb-12 w-[36rem] max-w-full mx-auto flex flex-col gap-4 select-none relative"
         style={{ containerType: 'size' }}
       >
-        {mode === BOT ? ( //
-          <BotSolver puzzle={puzzle} />
-        ) : (
-          <HumanSolver puzzle={puzzle} solution={solution} />
-        )}
-      </div>
-      <div className="h-dvh bg-white w-full flex flex-col gap-2 p-4">
-        <p>Play mode</p>
-        <RadioGroup
-          value={mode}
-          onChange={v => setMode(v as Mode)}
-          options={[
-            {
-              value: HUMAN,
-              label: 'Human',
-              icon: <IconWoman />,
-              title: 'Human solver',
-            },
-            {
-              value: BOT,
-              label: 'Bot',
-              icon: <IconRobot />,
-              title: 'Bot solver',
-            },
-          ]}
-        />
-        <p>New game</p>
-        <RadioGroup
-          value={level}
-          onChange={v => setLevel(v as number)}
-          options={[
-            { value: 0, label: 'Easy' },
-            { value: 1, label: 'Medium' },
-            { value: 2, label: 'Hard' },
-            { value: 3, label: 'Expert' },
-            { value: 4, label: 'Extreme' },
-          ]}
-        />
+        <div className="grow">
+          {mode === BOT ? ( //
+            <BotSolver puzzle={puzzle} />
+          ) : (
+            <HumanSolver puzzle={puzzle} solution={solution} />
+          )}
+        </div>
+        <div className="flex flex-col gap-2">
+          <p>Play mode</p>
+          <RadioGroup
+            value={mode}
+            onChange={v => setMode(v as Mode)}
+            options={[
+              {
+                value: HUMAN,
+                label: 'Human',
+                icon: <IconWoman />,
+                title: 'Human solver',
+              },
+              {
+                value: BOT,
+                label: 'Bot',
+                icon: <IconRobot />,
+                title: 'Bot solver',
+              },
+            ]}
+          />
+          <p>New game</p>
+          <RadioGroup
+            value={level}
+            onChange={v => setLevel(v as number)}
+            options={[
+              { value: 0, label: 'Easy' },
+              { value: 1, label: 'Medium' },
+              { value: 2, label: 'Hard' },
+              { value: 3, label: 'Expert' },
+              { value: 4, label: 'Extreme' },
+            ]}
+          />
+        </div>
       </div>
     </>
   ) : (
