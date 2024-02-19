@@ -95,7 +95,7 @@ export const HumanSolver = ({ puzzle, solution, onNewGame }: Props) => {
   const [state, dispatch] = useReducer(reducer, initialState)
 
   useEffect(() => {
-    dispatch({ type: 'RESET' })
+    reset()
   }, [puzzle, solution])
 
   const [number, setNumber] = useState(1)
@@ -114,7 +114,7 @@ export const HumanSolver = ({ puzzle, solution, onNewGame }: Props) => {
   })
   useHotkeys(['mod+z', 'z'], () => dispatch({ type: 'UNDO' }))
   useHotkeys(['mod+y', 'y'], () => dispatch({ type: 'REDO' }))
-  useHotkeys(['mod+backspace'], e => dispatch({ type: 'RESET' }))
+  useHotkeys(['mod+backspace'], () => reset())
   useHotkeys(numberKeys, (e, { keys }) => {
     const numberKey = +keys!.join('')
     setNumber(numberKey)
@@ -137,6 +137,11 @@ export const HumanSolver = ({ puzzle, solution, onNewGame }: Props) => {
   const nextNumber = () => setNumber(n => (n === 9 ? 1 : n + 1))
   const prevNumber = () => setNumber(n => (n === 1 ? 9 : n - 1))
 
+  const reset = () => {
+    setNumber(1)
+    dispatch({ type: 'RESET' })
+  }
+
   return (
     <div className="flex flex-col gap-4 h-full">
       <Puzzle
@@ -144,7 +149,6 @@ export const HumanSolver = ({ puzzle, solution, onNewGame }: Props) => {
         solution={solution}
         grid={state.grid}
         candidates={state.candidates}
-        // index={state.index}
         onSetValue={setValue}
         onAddCandidate={toggle('ADD')}
         onRemoveCandidate={toggle('REMOVE')}
@@ -153,12 +157,6 @@ export const HumanSolver = ({ puzzle, solution, onNewGame }: Props) => {
       {isSolved ? (
         <>
           <Confetti />
-          {/* <div className="bg-white rounded-md border w-1/2  border-black text-lg px-4 py-4 flex flex-col items-center justify-center mx-auto animate-celebrate">
-            <div>
-              <p className="animate-celebrate">🎉 🎉 🎉</p>
-              <p>Solved!</p>
-            </div>
-          </div> */}
 
           <div className="flex items-center w-full justify-center">
             <button className="button button-lg" onClick={onNewGame}>
@@ -197,7 +195,7 @@ export const HumanSolver = ({ puzzle, solution, onNewGame }: Props) => {
             <button className="button button-lg" title="Redo" onClick={() => dispatch({ type: 'REDO' })}>
               <IconArrowForwardUp className="h-4 w-4" aria-hidden="true" />
             </button>
-            <button className="button button-lg" title="Reset" onClick={() => dispatch({ type: 'RESET' })}>
+            <button className="button button-lg" title="Reset" onClick={() => reset()}>
               <IconTrash className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
