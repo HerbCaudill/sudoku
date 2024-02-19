@@ -1,16 +1,15 @@
+import { Dialog, Transition } from '@headlessui/react'
+import { useLocalStorage } from '@uidotdev/usehooks'
 import { Fragment, useEffect, useState } from 'react'
 import { toGrid } from '../lib/toGrid'
 import { Grid, Solver } from '../solver'
+import { Fade } from '../transitions/Fade'
+import { Slide } from '../transitions/Slide'
 import { BotSolver } from './BotSolver'
 import { HumanSolver } from './HumanSolver'
 import { RadioGroup } from './RadioGroup'
-import { loadPuzzle } from './loadPuzzle'
 import { Spinner } from './Spinner'
-import { useLocalStorage } from '@uidotdev/usehooks'
-import { Dialog, Transition } from '@headlessui/react'
-import { Fade } from '../transitions/Fade'
-import { Slide } from '../transitions/Slide'
-import { printGrid } from '../lib/printGrid'
+import { loadPuzzle } from '../lib/loadPuzzle'
 
 export const App = () => {
   const [mode, setMode] = useLocalStorage<Mode>('mode', HUMAN)
@@ -35,11 +34,11 @@ export const App = () => {
   const newGame = (level: number) => {
     loadPuzzle(level).then(p => {
       const puzzle = toGrid(p)
-      console.log(printGrid(puzzle))
-
       setPuzzle(puzzle)
     })
   }
+
+  const isSolved = true //state.grid.every((value, i) => value === solution[i])
 
   return puzzle && solution ? (
     <>
@@ -55,7 +54,19 @@ export const App = () => {
           )}
         </div>
 
-        <button className="absolute bottom-6 right-6 opacity-25" onClick={() => setShowSettings(true)}>
+        {isSolved ? (
+          <>
+            <p>
+              <button className="button button-md" onClick={() => newGame(level)}>
+                <IconRefresh className="h-4 w-4" />
+                New game
+              </button>
+            </p>
+          </>
+        ) : null}
+
+        {/* Settings button */}
+        <button className="absolute bottom-12 right-6 opacity-25" onClick={() => setShowSettings(true)}>
           <IconSettings className="h-6 w-6" />
         </button>
 
@@ -70,26 +81,17 @@ export const App = () => {
                 {/* settings container */}
                 <Dialog.Panel className="">
                   {/* sidebar */}
-                  <div className="flex flex-col w-screen gap-5 bg-white p-4 pb-12 shadow-md">
+                  <div className="flex flex-col w-screen gap-5 bg-white px-4 py-12 ">
                     <RadioGroup
                       value={mode}
                       onChange={v => setMode(v as Mode)}
                       options={[
-                        {
-                          value: HUMAN,
-                          label: 'Human',
-                          icon: <IconWoman />,
-                          title: 'Human solver',
-                        },
-                        {
-                          value: BOT,
-                          label: 'Bot',
-                          icon: <IconRobot />,
-                          title: 'Bot solver',
-                        },
+                        { value: HUMAN, label: 'Human', icon: <IconWoman />, title: 'Human solver' },
+                        { value: BOT, label: 'Bot', icon: <IconRobot />, title: 'Bot solver' },
                       ]}
                     />
                     <RadioGroup
+                      size="sm"
                       value={level}
                       onChange={v => setLevel(v as number)}
                       options={[
@@ -101,7 +103,7 @@ export const App = () => {
                       ]}
                     />
                     <p>
-                      <button className="button button-sm" onClick={() => newGame(level)}>
+                      <button className="button button-md" onClick={() => newGame(level)}>
                         <IconRefresh className="h-4 w-4" />
                         New game
                       </button>

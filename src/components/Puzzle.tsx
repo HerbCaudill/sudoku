@@ -60,6 +60,8 @@ export const Puzzle = ({
 
   const pointerUp = () => setPointerAction(null)
 
+  const isSolved = solution && grid.every((v, i) => v === solution[i])
+
   return (
     <div className="aspect-square outlinepointer-events-none">
       <div className="grid grid-rows-9 h-full grid-cols-9 border-black border-4 bg-white">
@@ -68,6 +70,7 @@ export const Puzzle = ({
           const value = v > 0 ? v : null
           const isMistake = value && solution && solution[i] && value !== solution[i]
 
+          // CELL
           return (
             <div
               className={cx(
@@ -78,7 +81,7 @@ export const Puzzle = ({
                   'animate-contradiction': index === i && state === 'CONTRADICTION',
 
                   'bg-danger-500 text-white': isMistake,
-                  'bg-neutral-400 text-white': !isMistake && selectedNumber === value,
+                  'bg-neutral-400/60 text-white': !isMistake && selectedNumber === value,
                   'bg-primary-100': value === null && cellCandidates?.includes(selectedNumber),
 
                   'border-r border-r-neutral-400': [1, 2, 4, 5, 7, 8].includes(cols[i]),
@@ -98,7 +101,7 @@ export const Puzzle = ({
                 <div
                   className={cx(
                     { 'font-bold ': puzzle[i] === 0 }, // values we've solved are bold
-                    'pointer-events-none text-[4cqw] p-2'
+                    'pointer-events-none text-[5cqw]'
                   )}
                 >
                   {value}
@@ -108,7 +111,7 @@ export const Puzzle = ({
                 <div
                   className={cx(
                     'pointer-events-none',
-                    'w-full px-2 grid grid-rows-3 grid-cols-3 text-[2cqw] text-neutral-500'
+                    'w-full grid grid-rows-3 grid-cols-3 text-[2.2cqw] text-neutral-500'
                   )}
                 >
                   {numbers.map((val, i) => (

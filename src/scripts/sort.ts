@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { AnalysisResult } from 'solver'
 import { Solver } from '../solver/Solver.js'
-import { files, load } from '../lib/load.js'
+import { files, load } from '../lib/loadFile.js'
 
 const __dirname = new URL('.', import.meta.url).pathname
 export const puzzlesDir = path.join(__dirname, '../../public/puzzles')

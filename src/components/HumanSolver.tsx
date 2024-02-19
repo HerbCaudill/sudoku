@@ -3,6 +3,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { CandidateGrid, Grid, numbers } from '../solver'
 import { Puzzle } from './Puzzle'
 import { RadioGroup } from './RadioGroup'
+import { Confetti } from './Confetti'
 
 const numberKeys = numbers.map(n => n.toString())
 
@@ -100,6 +101,7 @@ export const HumanSolver = ({ puzzle, solution }: Props) => {
   const [number, setNumber] = useState(1)
 
   // HOTKEYS
+  const isSolved = true //state.grid.every((value, i) => value === solution[i])
 
   useHotkeys(['space', 'right'], e => {
     e.preventDefault()
@@ -147,39 +149,52 @@ export const HumanSolver = ({ puzzle, solution }: Props) => {
         onRemoveCandidate={toggle('REMOVE')}
         selectedNumber={number}
       />
-
-      {/* Numbers 1-9 */}
-      <RadioGroup
-        value={number}
-        onChange={n => setNumber(n)}
-        size="xs"
-        options={numbers}
-        className="w-full"
-        optionClassName="grow text-[3cqw] py-[2cqw]"
-      />
-
-      <div className="grow">
-        <div className="flex flex-row w-full gap-2">
-          <button className="button button-lg grow" onClick={prevNumber}>
-            <IconArrowLeft className="h-4 w-4" aria-hidden="true" />
-          </button>
-          <button className="button button-lg grow" onClick={nextNumber}>
-            <IconArrowRight className="h-4 w-4" aria-hidden="true" />
-          </button>
+      {isSolved ? (
+        <>
+          <Confetti />
+          <div className="bg-white rounded-md border w-1/2  border-black text-lg px-4 py-4 flex flex-col items-center justify-center mx-auto animate-celebrate">
+            <div>
+              <p className="animate-celebrate">🎉 🎉 🎉</p>
+              <p>Solved!</p>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="flex flex-col gap-4 grow bg-yellow-500">
+          {/* Numbers 1-9 */}
+          <RadioGroup
+            value={number}
+            onChange={n => setNumber(n)}
+            size="xs"
+            options={numbers}
+            className="w-full"
+            optionClassName="grow text-[3cqw] py-[2cqw]"
+          />
+          {/* next/prev number */}
+          <div className="grow">
+            <div className="flex flex-row w-full gap-2">
+              <button className="button button-lg grow" onClick={prevNumber}>
+                <IconArrowLeft className="h-4 w-4" aria-hidden="true" />
+              </button>
+              <button className="button button-lg grow" onClick={nextNumber}>
+                <IconArrowRight className="h-4 w-4" aria-hidden="true" />
+              </button>
+            </div>
+          </div>
+          {/* undo/redo/reset */}
+          <div className="flex flex-row gap-2">
+            <button className="button button-lg" title="Undo" onClick={() => dispatch({ type: 'UNDO' })}>
+              <IconArrowBackUp className="h-4 w-4" aria-hidden="true" />
+            </button>
+            <button className="button button-lg" title="Redo" onClick={() => dispatch({ type: 'REDO' })}>
+              <IconArrowForwardUp className="h-4 w-4" aria-hidden="true" />
+            </button>
+            <button className="button button-lg" title="Reset" onClick={() => dispatch({ type: 'RESET' })}>
+              <IconTrash className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
         </div>
-      </div>
-
-      <div className="flex flex-row gap-2">
-        <button className="button button-lg" title="Undo" onClick={() => dispatch({ type: 'UNDO' })}>
-          <IconArrowBackUp className="h-4 w-4" aria-hidden="true" />
-        </button>
-        <button className="button button-lg" title="Redo" onClick={() => dispatch({ type: 'REDO' })}>
-          <IconArrowForwardUp className="h-4 w-4" aria-hidden="true" />
-        </button>
-        <button className="button button-lg" title="Reset" onClick={() => dispatch({ type: 'RESET' })}>
-          <IconTrash className="h-4 w-4" aria-hidden="true" />
-        </button>
-      </div>
+      )}
     </div>
   )
 }

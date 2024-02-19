@@ -1,7 +1,7 @@
 import { assert, describe, expect, it } from 'vitest'
 import { Solver } from '../Solver.js'
 import { toGrid } from '../../lib/toGrid.js'
-import { load } from '../../lib/load.js'
+import { load } from '../../lib/loadFile.js'
 import { solve } from '../../lib/solve.js'
 import { Grid } from '../../types.js'
 import { printGrid } from '../../lib/printGrid.js'

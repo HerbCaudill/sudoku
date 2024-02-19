@@ -1,5 +1,5 @@
 import { Solver } from '../solver/Solver.js'
-import { files, load } from '../lib/load.js'
+import { files, load } from '../lib/loadFile.js'
 import { AnalysisResult } from '../types.js'
 
 const allResults = [] as AnalysisResult[]
