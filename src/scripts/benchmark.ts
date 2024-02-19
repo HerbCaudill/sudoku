@@ -5,7 +5,7 @@ import { AnalysisResult } from '../types.js'
 const allResults = [] as AnalysisResult[]
 for (const file of files) {
   const results = [] as AnalysisResult[]
-  const puzzles = load(file).slice(0, 500)
+  const puzzles = load(file).slice(0, 50)
   let failures = 0
   for (const puzzle of puzzles) {
     const result = new Solver(puzzle).analyze()
