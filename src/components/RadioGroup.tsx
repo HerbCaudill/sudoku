@@ -40,7 +40,13 @@ export function RadioGroup<T extends string | number | boolean>({
       >
         {options.map((o, i) => {
           const option = typeof o === 'object' ? o : { value: o }
-          const { value, label = value.toString(), title = value.toString(), icon = undefined } = option
+          const {
+            value,
+            label = value.toString(),
+            title = value.toString(),
+            icon = undefined,
+            disabled = false,
+          } = option
           return (
             <Headless.RadioGroup.Option key={i} value={value} as={Fragment}>
               {({ checked }) => (
@@ -66,6 +72,8 @@ export function RadioGroup<T extends string | number | boolean>({
                       'bg-primary-200 font-semibold': checked,
                       // unselected
                       'bg-white hover:bg-gray-50 hover:text-black ': !checked,
+                      // disabled
+                      'opacity-50': disabled,
                     },
                     optionClassName,
                   ])}
@@ -98,5 +106,6 @@ type Options<T extends string | number | boolean> =
       label?: ReactNode
       icon?: ReactNode
       title?: string
+      disabled?: boolean
     }>
   | T[]

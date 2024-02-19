@@ -6,6 +6,8 @@ import { allSingles } from './singles.js'
 import { AnalysisResult, CandidateGrid as CandidateMap, Grid, InterimResult } from '../types.js'
 import { getUnsolved } from './getUnsolved.js'
 
+const MAX_STEPS = 10000
+
 export class Solver {
   readonly #puzzle: Grid
   #steps = 0
@@ -39,7 +41,8 @@ export class Solver {
    * the possible values for a cell and seeing if that leads to a solution.
    */
   *search(grid: Grid = this.#puzzle): Generator<InterimResult> {
-    if (this.#steps++ > 10000) yield { grid, state: 'GIVING UP' } // ❌ shouldn't ever take this many steps
+    grid = [...grid]
+    if (this.#steps++ > MAX_STEPS) yield { grid, state: 'GIVING UP' } // ❌ shouldn't ever take this many steps
 
     // PROPAGATION
 

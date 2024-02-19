@@ -134,13 +134,37 @@ export const HumanSolver = ({ puzzle, solution, onNewGame }: Props) => {
     dispatch({ type, index, candidate: number })
   }
 
-  const nextNumber = () => setNumber(n => (n === 9 ? 1 : n + 1))
-  const prevNumber = () => setNumber(n => (n === 1 ? 9 : n - 1))
+  const nextNumber = () =>
+    setNumber(n => {
+      if (isSolved) return n // don't change number when solved
+
+      // find the next number that has incomplete cells
+      for (let i = 1; i <= 9; i++) {
+        const next = (n + i) % 10 || 1
+
+        if (!numberIsComplete(next)) return next
+      }
+      return n
+    })
+
+  const prevNumber = () =>
+    setNumber(n => {
+      if (isSolved) return n // don't change number when solved
+
+      // find the previous number that has incomplete cells
+      for (let i = 0; i < 9; i++) {
+        const prev = (n - i + 9) % 10 || 9
+        if (!numberIsComplete(prev)) return prev
+      }
+      return n
+    })
 
   const reset = () => {
     setNumber(1)
     dispatch({ type: 'RESET' })
   }
+
+  const numberIsComplete = (n: number) => state.grid.filter(v => v === n).length === 9
 
   return (
     <div className="flex flex-col gap-4 h-full">
@@ -172,7 +196,7 @@ export const HumanSolver = ({ puzzle, solution, onNewGame }: Props) => {
             value={number}
             onChange={n => setNumber(n)}
             size="xs"
-            options={numbers}
+            options={numbers.map(n => ({ value: n, disabled: numberIsComplete(n) }))}
             className="w-full"
             optionClassName="grow text-[3cqw] py-[2cqw]"
           />
