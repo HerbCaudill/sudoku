@@ -168,7 +168,7 @@ export const HumanSolver = ({ puzzle, solution, onNewGame }: Props) => {
           </div>
         </>
       ) : (
-        <div className="flex flex-col gap-4 grow bg-yellow-500">
+        <div className="flex flex-col gap-4 grow">
           {/* Numbers 1-9 */}
           <RadioGroup
             value={number}
