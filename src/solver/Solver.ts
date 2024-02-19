@@ -39,8 +39,7 @@ export class Solver {
    * the possible values for a cell and seeing if that leads to a solution.
    */
   *search(grid: Grid = this.#puzzle): Generator<InterimResult> {
-    this.#steps++
-    if (this.#steps > 10000) yield { grid, state: 'GIVING UP' } // ❌ shouldn't ever take this many steps
+    if (this.#steps++ > 10000) yield { grid, state: 'GIVING UP' } // ❌ shouldn't ever take this many steps
 
     // PROPAGATION
 
@@ -48,18 +47,18 @@ export class Solver {
 
     // solve as many cells as possible using constraint propagation
     for (const step of this.propagate(grid)) {
-      yield step
       if (step.state === 'CONTRADICTION') {
         this.#backtracks++
         return // ❌ dead end
       } else {
+        yield step
         candidates = step.candidates!
       }
     }
 
     const unsolved = Object.keys(candidates).map(Number)
     if (unsolved.length === 0) {
-      yield { grid, state: 'SOLVED' }
+      yield { grid: [...grid], state: 'SOLVED' }
       return // 🎉 success
     }
 
@@ -75,11 +74,10 @@ export class Solver {
 
     const sortedCandidates = this.#random.shuffle(candidates[index])
     for (const value of sortedCandidates) {
-      yield { grid, candidates, state: 'GUESSING', index, value }
+      yield { grid: [...grid], candidates, state: 'GUESSING', index, value }
 
       // make a new grid with this value filled in
-      const nextGrid = [...grid]
-      nextGrid[index] = value
+      const nextGrid = this.#updateGrid(grid, index, value)
 
       // recursively continue the search, yielding interim results as we go
       for (const step of this.search(nextGrid)) yield step
@@ -87,7 +85,7 @@ export class Solver {
 
     // none of the candidates for this cell worked
     this.#backtracks++
-    yield { grid, state: 'CONTRADICTION', index } // ❌ dead end
+    yield { grid: [...grid], state: 'CONTRADICTION', index } // ❌ dead end
     return
   }
 
@@ -96,36 +94,41 @@ export class Solver {
    * a contradiction is found.
    */
   *propagate(grid: Grid): Generator<InterimResult> {
-    while (true) {
-      const candidates = Object.fromEntries(
-        getUnsolved(grid).map(i => {
-          const noPeerMatch = (v: number) => !peers[i].some(peer => grid[peer] === v)
-          return [i, numbers.filter(noPeerMatch)]
-        })
-      )
+    const candidates = Object.fromEntries(
+      getUnsolved(grid).map(i => {
+        const noPeerMatch = (v: number) => !peers[i].some(peer => grid[peer] === v)
+        return [i, numbers.filter(noPeerMatch)]
+      })
+    )
 
-      // find cells with only one possible value
-      const singles = allSingles(candidates)
+    // find cells with only one possible value
+    const singles = allSingles(candidates)
 
-      // if there are none, stop looping & return the candidates
-      if (Object.keys(singles).length === 0) {
-        yield { grid, candidates, state: 'DONE PROPAGATING' }
+    // if there are none, stop looping & return the candidates
+    if (Object.keys(singles).length === 0) {
+      yield { grid: [...grid], candidates, state: 'DONE PROPAGATING' }
+      return
+    }
+
+    for (const i in singles) {
+      const contradiction = peers[i]
+        .filter(peer => singles[peer]) // peers that are also singles
+        .some(peer => singles[peer] === singles[i]) // with the same value
+      if (contradiction) {
+        yield { grid: [...grid], state: 'CONTRADICTION', index: Number(i) } // ❌ dead end
         return
       }
-
-      for (const i in singles) {
-        const contradiction = peers[i]
-          .filter(peer => singles[peer]) // peers that are also singles
-          .some(peer => singles[peer] === singles[i]) // with the same value
-        if (contradiction) {
-          yield { grid, state: 'CONTRADICTION', index: Number(i) } // ❌ dead end
-          return
-        }
-        // no contradiction - set this cell's value and continue
-        grid[i] = singles[i]
-        yield { grid, candidates, state: 'PROPAGATING', index: Number(i), value: singles[i] }
-      }
+      // no contradiction - set this cell's value and continue
+      grid[i] = singles[i]
+      yield { grid: [...grid], candidates, state: 'PROPAGATING', index: Number(i), value: singles[i] }
     }
+    yield this.propagate([...grid]).next().value
+  }
+
+  #updateGrid(grid: Grid, index: number, value: number) {
+    const nextGrid = [...grid]
+    nextGrid[index] = value
+    return nextGrid
   }
 
   analyze(): AnalysisResult {

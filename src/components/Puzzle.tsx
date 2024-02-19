@@ -61,7 +61,7 @@ export const Puzzle = ({
   const pointerUp = () => setPointerAction(null)
 
   return (
-    <div className="aspect-square  outlinepointer-events-none">
+    <div className="aspect-square outlinepointer-events-none">
       <div className="grid grid-rows-9 h-full grid-cols-9 border-black border-4 bg-white">
         {grid.map((v, i) => {
           const cellCandidates = candidates[i]?.length > 0 ? candidates[i] : null

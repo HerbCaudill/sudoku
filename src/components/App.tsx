@@ -10,6 +10,7 @@ import { useLocalStorage } from '@uidotdev/usehooks'
 import { Dialog, Transition } from '@headlessui/react'
 import { Fade } from '../transitions/Fade'
 import { Slide } from '../transitions/Slide'
+import { printGrid } from '../lib/printGrid'
 
 export const App = () => {
   const [mode, setMode] = useLocalStorage<Mode>('mode', HUMAN)
@@ -21,7 +22,7 @@ export const App = () => {
   const [showSettings, setShowSettings] = useState(false)
 
   useEffect(() => {
-    newGame()
+    newGame(level)
   }, [level])
 
   useEffect(() => {
@@ -31,9 +32,11 @@ export const App = () => {
     setSolution(solution)
   }, [puzzle])
 
-  const newGame = () => {
+  const newGame = (level: number) => {
     loadPuzzle(level).then(p => {
       const puzzle = toGrid(p)
+      console.log(printGrid(puzzle))
+
       setPuzzle(puzzle)
     })
   }
@@ -52,7 +55,7 @@ export const App = () => {
           )}
         </div>
 
-        <button className="absolute bottom-12 right-4 opacity-25" onClick={() => setShowSettings(true)}>
+        <button className="absolute bottom-6 right-6 opacity-25" onClick={() => setShowSettings(true)}>
           <IconSettings className="h-6 w-6" />
         </button>
 
@@ -64,10 +67,10 @@ export const App = () => {
             </Fade>
             <div className="fixed bottom-0 flex">
               <Slide>
-                {/* sidebar container */}
+                {/* settings container */}
                 <Dialog.Panel className="">
                   {/* sidebar */}
-                  <div className="flex flex-col w-screen gap-5 bg-white p-4">
+                  <div className="flex flex-col w-screen gap-5 bg-white p-4 pb-12 shadow-md">
                     <RadioGroup
                       value={mode}
                       onChange={v => setMode(v as Mode)}
@@ -98,7 +101,7 @@ export const App = () => {
                       ]}
                     />
                     <p>
-                      <button className="button button-sm" onClick={newGame}>
+                      <button className="button button-sm" onClick={() => newGame(level)}>
                         <IconRefresh className="h-4 w-4" />
                         New game
                       </button>
