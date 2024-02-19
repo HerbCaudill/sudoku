@@ -15,6 +15,7 @@ h2 i {
   @apply rounded-md border border-opacity-50 bg-white border-black;
   @apply focus:outline-none focus:ring-0;
   @apply font-mono;
+  @apply disabled:opacity-50;
 }
 
 .button-xs {
