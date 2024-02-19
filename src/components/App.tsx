@@ -53,22 +53,22 @@ export const App = () => {
         </div>
 
         {/* Settings button */}
-        <button className="absolute bottom-12 right-6 opacity-25" onClick={() => setShowSettings(true)}>
-          <IconSettings className="h-6 w-6" />
+        <button className="button button-lg absolute bottom-12 right-6 z-10" onClick={() => setShowSettings(true)}>
+          <IconSettings className="h-4 w-4" />
         </button>
 
         {/* Settings */}
         <Transition.Root show={showSettings} as={Fragment}>
-          <Dialog as="div" className="relative z-50 lg:hidden" onClose={setShowSettings}>
+          <Dialog as="div" className="relative z-50 " onClose={setShowSettings}>
             <Fade>
               <Backdrop />
             </Fade>
-            <div className="fixed bottom-0 flex">
+            <div className="fixed bottom-0  w-full ">
               <Slide>
                 {/* settings container */}
-                <Dialog.Panel className="">
+                <Dialog.Panel>
                   {/* sidebar */}
-                  <div className="flex flex-col w-screen gap-5 bg-white px-4 py-12 ">
+                  <div className="flex flex-col  gap-5 bg-white px-4 py-12 w-[36rem] max-w-full mx-auto">
                     <RadioGroup
                       value={mode}
                       onChange={v => setMode(v as Mode)}
