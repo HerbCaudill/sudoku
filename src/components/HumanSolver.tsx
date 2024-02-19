@@ -7,7 +7,7 @@ import { Confetti } from './Confetti'
 
 const numberKeys = numbers.map(n => n.toString())
 
-export const HumanSolver = ({ puzzle, solution }: Props) => {
+export const HumanSolver = ({ puzzle, solution, onNewGame }: Props) => {
   // STATE
 
   const reducer = (state: State, action: Action): State => {
@@ -100,8 +100,9 @@ export const HumanSolver = ({ puzzle, solution }: Props) => {
 
   const [number, setNumber] = useState(1)
 
+  const isSolved // state.grid.every((value, i) => value === solution[i])
+
   // HOTKEYS
-  const isSolved = state.grid.every((value, i) => value === solution[i])
 
   useHotkeys(['space', 'right'], e => {
     e.preventDefault()
@@ -152,11 +153,18 @@ export const HumanSolver = ({ puzzle, solution }: Props) => {
       {isSolved ? (
         <>
           <Confetti />
-          <div className="bg-white rounded-md border w-1/2  border-black text-lg px-4 py-4 flex flex-col items-center justify-center mx-auto animate-celebrate">
+          {/* <div className="bg-white rounded-md border w-1/2  border-black text-lg px-4 py-4 flex flex-col items-center justify-center mx-auto animate-celebrate">
             <div>
               <p className="animate-celebrate">🎉 🎉 🎉</p>
               <p>Solved!</p>
             </div>
+          </div> */}
+
+          <div className="flex items-center w-full justify-center">
+            <button className="button button-lg" onClick={onNewGame}>
+              <IconRefresh className="h-4 w-4" />
+              New game
+            </button>
           </div>
         </>
       ) : (
@@ -218,4 +226,5 @@ type State = {
 type Props = {
   puzzle: Grid
   solution: Grid
+  onNewGame: () => void
 }

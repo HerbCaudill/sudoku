@@ -38,8 +38,6 @@ export const App = () => {
     })
   }
 
-  const isSolved = state.grid.every((value, i) => value === solution[i])
-
   return puzzle && solution ? (
     <>
       <div
@@ -50,20 +48,9 @@ export const App = () => {
           {mode === BOT ? ( //
             <BotSolver puzzle={puzzle} />
           ) : (
-            <HumanSolver puzzle={puzzle} solution={solution} />
+            <HumanSolver puzzle={puzzle} solution={solution} onNewGame={() => newGame(level)} />
           )}
         </div>
-
-        {isSolved ? (
-          <>
-            <p>
-              <button className="button button-md" onClick={() => newGame(level)}>
-                <IconRefresh className="h-4 w-4" />
-                New game
-              </button>
-            </p>
-          </>
-        ) : null}
 
         {/* Settings button */}
         <button className="absolute bottom-12 right-6 opacity-25" onClick={() => setShowSettings(true)}>

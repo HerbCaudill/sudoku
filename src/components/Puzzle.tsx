@@ -60,8 +60,6 @@ export const Puzzle = ({
 
   const pointerUp = () => setPointerAction(null)
 
-  const isSolved = solution && grid.every((v, i) => v === solution[i])
-
   return (
     <div className="aspect-square outlinepointer-events-none">
       <div className="grid grid-rows-9 h-full grid-cols-9 border-black border-4 bg-white">
