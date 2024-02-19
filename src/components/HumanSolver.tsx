@@ -100,7 +100,7 @@ export const HumanSolver = ({ puzzle, solution, onNewGame }: Props) => {
 
   const [number, setNumber] = useState(1)
 
-  const isSolved // state.grid.every((value, i) => value === solution[i])
+  const isSolved = state.grid.every((value, i) => value === solution[i])
 
   // HOTKEYS
 
