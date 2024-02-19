@@ -34,7 +34,7 @@ describe('generate', () => {
     `)
   })
 
-  it.skip('see if we every generate puzzles with multiple solutions', () => {
+  it.skip('see if we ever generate puzzles with multiple solutions', () => {
     const random = makeRandom('generate-test-2')
     const times = [] as number[]
     const N = 10
