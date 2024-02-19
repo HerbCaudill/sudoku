@@ -35,19 +35,19 @@ export const BotSolver = ({ puzzle }: { puzzle: Grid }) => {
   }
 
   return (
-    <>
+    <div className="flex flex-col gap-2">
       <Puzzle puzzle={puzzle} {...step} />
       <div className="flex gap-2">
-        <button className="button button-sm" onClick={stop}>
-          ⏹︎
+        <button className="button button-lg" onClick={stop}>
+          <IconPlayerPauseFilled className="h-3 w-3" />
         </button>
-        <button className="button button-sm" onClick={solveStep}>
-          ▶︎
+        <button className="button button-lg" onClick={solveStep}>
+          <IconPlayerPlayFilled className="h-3 w-3" />
         </button>
-        <button className="button button-sm" onClick={start}>
-          ▶︎▶︎
+        <button className="button button-lg" onClick={start}>
+          <IconPlayerSkipForwardFilled className="h-3 w-3" />
         </button>
       </div>
-    </>
+    </div>
   )
 }
