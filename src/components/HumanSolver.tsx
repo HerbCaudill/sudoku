@@ -101,7 +101,7 @@ export const HumanSolver = ({ puzzle, solution }: Props) => {
   const [number, setNumber] = useState(1)
 
   // HOTKEYS
-  const isSolved = true //state.grid.every((value, i) => value === solution[i])
+  const isSolved = state.grid.every((value, i) => value === solution[i])
 
   useHotkeys(['space', 'right'], e => {
     e.preventDefault()

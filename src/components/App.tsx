@@ -38,7 +38,7 @@ export const App = () => {
     })
   }
 
-  const isSolved = true //state.grid.every((value, i) => value === solution[i])
+  const isSolved = state.grid.every((value, i) => value === solution[i])
 
   return puzzle && solution ? (
     <>
