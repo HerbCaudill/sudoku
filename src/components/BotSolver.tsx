@@ -27,6 +27,7 @@ export const BotSolver = ({ puzzle }: { puzzle: Grid }) => {
 
   useHotkeys(['shift+space', 'left'], () => stepBack())
   useHotkeys(['space', 'right'], () => stepForward())
+  useHotkeys(['mod+backspace'], () => reset())
   useHotkeys(['enter'], e => {
     e.preventDefault()
     e.stopPropagation()
@@ -43,6 +44,7 @@ export const BotSolver = ({ puzzle }: { puzzle: Grid }) => {
   }
 
   const start = () => {
+    if (isSolved()) reset()
     stop()
     const id = setInterval(stepForward, 10)
     setIntervalId(id) // Store the intervalId
@@ -55,8 +57,19 @@ export const BotSolver = ({ puzzle }: { puzzle: Grid }) => {
     }
   }
 
+  const reset = () => {
+    stop()
+    setStepIndex(0)
+  }
+
   const step = steps[stepIndex] || initialStep
-  const solvedCount = step.grid.filter(Boolean).length
+
+  const isSolved = () => {
+    const solvedCount = step.grid.filter(Boolean).length
+    return solvedCount === 81
+  }
+
+  if (isSolved()) stop()
 
   return (
     <div className="flex flex-col gap-2">
@@ -65,18 +78,24 @@ export const BotSolver = ({ puzzle }: { puzzle: Grid }) => {
 
       {/* Buttons */}
       <div className="flex gap-2">
-        <button className="button button-lg" onClick={stepBack}>
-          <IconPlayerSkipBackFilled className="h-3 w-3" />
+        <button className="button button-lg" disabled={stepIndex === 0} onClick={reset}>
+          <IconTrash className="h-4 w-4" />
         </button>
-        <button className="button button-lg" onClick={stop}>
-          <IconPlayerPauseFilled className="h-3 w-3" />
+        <button className="button button-lg" disabled={stepIndex === 0} onClick={stepBack}>
+          <IconPlayerSkipBackFilled className="h-4 w-4" />
         </button>
-        <button className="button button-lg" onClick={stepForward}>
-          <IconPlayerSkipForwardFilled className="h-3 w-3" />
+        <button className="button button-lg " onClick={stepForward}>
+          <IconPlayerSkipForwardFilled className="h-4 w-4" />
         </button>
-        <button className="button button-lg" onClick={start}>
-          <IconPlayerTrackNextFilled className="h-3 w-3" />
-        </button>
+        {intervalId ? (
+          <button className="button button-lg" onClick={stop}>
+            <IconPlayerPauseFilled className="h-4 w-4" />
+          </button>
+        ) : (
+          <button className="button button-lg" onClick={start}>
+            <IconPlayerTrackNextFilled className="h-4 w-4" />
+          </button>
+        )}
       </div>
     </div>
   )
