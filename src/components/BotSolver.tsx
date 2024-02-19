@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { Grid, InterimResult, Solver } from '../solver'
 import { Puzzle } from './Puzzle'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { printGrid } from '../lib/printGrid'
 
 export const BotSolver = ({ puzzle }: { puzzle: Grid }) => {
   const [steps, setSteps] = useState<InterimResult[]>([])
