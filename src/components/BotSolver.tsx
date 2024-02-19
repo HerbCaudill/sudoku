@@ -22,7 +22,6 @@ export const BotSolver = ({ puzzle }: { puzzle: Grid }) => {
         if (step.state === 'SOLVED') done = true
       }
     }
-    console.log('steps', steps)
     setSteps(steps)
   }, [puzzle])
 
@@ -58,7 +57,6 @@ export const BotSolver = ({ puzzle }: { puzzle: Grid }) => {
 
   const step = steps[stepIndex] || initialStep
   const solvedCount = step.grid.filter(Boolean).length
-  console.log(`step ${stepIndex}/${steps.length - 1} (${solvedCount} solved) ${step.state}`)
 
   return (
     <div className="flex flex-col gap-2">
