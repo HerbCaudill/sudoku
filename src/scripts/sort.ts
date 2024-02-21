@@ -8,9 +8,9 @@ const __dirname = new URL('.', import.meta.url).pathname
 export const puzzlesDir = path.join(__dirname, '../../public/puzzles')
 
 // We sort puzzles by number of times the solver has to resort to trial and error in order to solve them.
-const difficultyLevels = [1, 4, 16, 32, 999999]
+const difficultyLevels = [1, 2, 6, 10, 999999]
 const sortedPuzzles = { 0: [], 1: [], 2: [], 3: [], 4: [] } as Record<number, string[]>
-const TRIALS = 5
+const TRIALS = 10
 const N = 1000
 
 const start = Date.now()
@@ -27,8 +27,8 @@ for (const puzzle of allPuzzles) {
     const result = new Solver(puzzle).analyze()
     results.push(result)
   }
-  const minGuesses = Math.min(...results.map(result => result.guesses))
-  const level = difficultyLevels.findIndex(max => minGuesses <= max)!
+  const maxGuesses = Math.max(...results.map(result => result.guesses))
+  const level = difficultyLevels.findIndex(max => maxGuesses <= max)!
   sortedPuzzles[level].push(puzzle)
 
   if (i % 100 === 0) writeToFiles()
