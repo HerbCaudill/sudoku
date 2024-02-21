@@ -11,6 +11,7 @@ const nakedSingles = (candidates: CandidateGrid) => {
       .map(index => [index, candidates[index][0]])
   ) as SingleMap
 }
+
 const hiddenSingles = (peers: number[][]) => (candidates: CandidateGrid) => {
   const unsolved = Object.keys(candidates).map(Number)
   return Object.fromEntries(
@@ -23,6 +24,7 @@ const hiddenSingles = (peers: number[][]) => (candidates: CandidateGrid) => {
       .filter(Boolean) as [number, number][] // omit undefined
   ) as SingleMap
 }
+
 export const allSingles = (candidates: CandidateGrid) => {
   return {
     ...nakedSingles(candidates),
