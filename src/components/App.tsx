@@ -21,18 +21,6 @@ export const App = () => {
   const [showSettings, setShowSettings] = useState(false)
 
   useEffect(() => {
-    // setPuzzle(
-    //   toGrid(`
-    //   1 2 3  4 5 6  7 8 9
-    //   4 . 6  7 . 9  . 2 3
-    //   7 8 9  1 2 3  4 5 6
-    //   2 3 4  5 6 7  8 9 1
-    //   5 6 7  8 . 1  2 3 4
-    //   8 9 1  . . .  5 . .
-    //   3 4 5  6 7 8  9 1 2
-    //   6 7 8  9 1 2  3 4 5
-    //   9 1 2  3 4 5  6 7 8`)
-    // )
     newGame(level)
   }, [level])
 
