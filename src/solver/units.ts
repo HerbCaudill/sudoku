@@ -13,3 +13,5 @@ export const unit = (whichUnit: Grid) => (n: number) => {
 export const row = unit(rows)
 export const col = unit(cols)
 export const box = unit(boxes)
+
+export const unitByType = { row, col, box }

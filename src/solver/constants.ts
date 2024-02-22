@@ -37,6 +37,8 @@ export const boxes: Grid = toGrid(`
   7 7 7 8 8 8 9 9 9 
 `)
 
+export const unitLookup = { row: rows, col: cols, box: boxes }
+
 export const emptyGrid: Grid = toGrid(`
   . . . . . . . . . 
   . . . . . . . . . 

@@ -5,15 +5,10 @@ import { peers } from './peers.js'
 import { allSingles } from './singles.js'
 import { AnalysisResult, CandidateGrid as CandidateMap, Grid, InterimResult } from '../types.js'
 import { getUnsolved } from './getUnsolved.js'
-import { strategies } from './strategies'
+import { strategies } from './strategies.js'
 
-const MAX_STEPS = 10000
-
-export class Solver {
+export class PseudoHumanSolver {
   readonly #puzzle: Grid
-  #steps = 0
-  #guesses = 0
-  #backtracks = 0
   #random: ReturnType<typeof makeRandom>
 
   constructor(puzzle: string | Grid, seed: string = Math.random().toString()) {
@@ -24,8 +19,6 @@ export class Solver {
   }
 
   solve() {
-    this.#steps = 0
-    this.#backtracks = 0
     return this.complete(this.#puzzle)
   }
 
@@ -43,7 +36,6 @@ export class Solver {
    */
   *search(grid: Grid = this.#puzzle): Generator<InterimResult> {
     grid = [...grid]
-    if (this.#steps++ > MAX_STEPS) yield { grid, state: 'GIVING UP' } // ❌ shouldn't ever take this many steps
 
     // PROPAGATION
 
@@ -52,7 +44,6 @@ export class Solver {
     // solve as many cells as possible using constraint propagation
     for (const step of this.propagate(grid)) {
       if (step.state === 'CONTRADICTION') {
-        this.#backtracks++
         return // ❌ dead end
       } else {
         yield step
@@ -67,8 +58,6 @@ export class Solver {
     }
 
     // TRIAL & ERROR
-
-    this.#guesses++
 
     // choose a random unsolved cell with the fewest candidates possible
     const index = this.#random.shuffle(unsolved).reduce(
@@ -88,7 +77,6 @@ export class Solver {
     }
 
     // none of the candidates for this cell worked
-    this.#backtracks++
     yield { grid: [...grid], state: 'CONTRADICTION', index } // ❌ dead end
     return
   }
@@ -134,40 +122,5 @@ export class Solver {
     const nextGrid = [...grid]
     nextGrid[index] = value
     return nextGrid
-  }
-
-  analyze(): AnalysisResult {
-    const start = performance.now()
-    try {
-      const solution = this.complete(this.#puzzle)
-      if (solution) {
-        return {
-          solved: true,
-          solution,
-          steps: this.#steps,
-          backtracks: this.#backtracks,
-          guesses: this.#guesses,
-          time: performance.now() - start,
-        }
-      } else {
-        return {
-          solved: false,
-          steps: this.#steps,
-          backtracks: this.#backtracks,
-          guesses: this.#guesses,
-          error: 'no solution',
-          time: performance.now() - start,
-        }
-      }
-    } catch (e: any) {
-      return {
-        solved: false,
-        steps: this.#steps,
-        backtracks: this.#backtracks,
-        guesses: this.#guesses,
-        error: e.toString(),
-        time: performance.now() - start,
-      }
-    }
   }
 }
