@@ -1,4 +1,4 @@
-import { CandidateGrid, Grid } from './types'
+import { Action, Grid, State } from './types'
 
 export const reducer = (state: State, action: Action): State => {
   const updateState = (newState: Partial<State>) => {
@@ -84,20 +84,4 @@ export const getInitialState = (puzzle: Grid) => {
   }
   initialState.history = [initialState]
   return initialState
-}
-
-type Action =
-  | { type: 'SET'; index: number; value: number }
-  | { type: 'ADD'; index: number; candidate: number }
-  | { type: 'REMOVE'; index: number; candidate: number }
-  | { type: 'RESET' }
-  | { type: 'UNDO' }
-  | { type: 'REDO' }
-
-type State = {
-  grid: Grid
-  candidates: CandidateGrid
-  index: number
-  history: State[]
-  future: State[]
 }

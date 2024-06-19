@@ -45,3 +45,21 @@ export type InterimResult = {
 }
 
 export type Icon = (props: React.SVGProps<SVGSVGElement>) => React.ReactElement
+
+// REDUCER
+
+export type Action =
+  | { type: 'SET'; index: number; value: number }
+  | { type: 'ADD'; index: number; candidate: number }
+  | { type: 'REMOVE'; index: number; candidate: number }
+  | { type: 'RESET' }
+  | { type: 'UNDO' }
+  | { type: 'REDO' }
+
+export type State = {
+  grid: Grid
+  candidates: CandidateGrid
+  index: number
+  history: State[]
+  future: State[]
+}

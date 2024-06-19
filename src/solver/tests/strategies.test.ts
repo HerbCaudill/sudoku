@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { strategies } from '../strategies.js'
-import { toCandidateGrid } from './toCandidateGrid'
+import { toBoard } from './toCandidateGrid'
 
 describe('naked tuples', () => {
   it('finds naked singles in a row', () => {
-    const candidates = toCandidateGrid(`
+    const board = toBoard(`
       1 1234 1234 . . . . . .
       . . . . . . . . .
       . . . . . . . . .
@@ -15,7 +15,7 @@ describe('naked tuples', () => {
       . . . . . . . . .
       . . . . . . . . .
       `)
-    const { matches, removals } = strategies.nakedSingles(candidates)
+    const { matches, removals } = strategies.nakedSingles(board)
     expect(matches).toEqual([0])
     expect(removals).toEqual([
       { index: 1, value: 1 },
@@ -24,7 +24,7 @@ describe('naked tuples', () => {
   })
 
   it('finds naked doubles in a row', () => {
-    const candidates = toCandidateGrid(`
+    const board = toBoard(`
       12 234 12 . . 123 134 . .
       . . . . . . . . .
       . . . . . . . . .
@@ -35,7 +35,7 @@ describe('naked tuples', () => {
       . . . . . . . . .
       . . . . . . . . .
       `)
-    const { matches, removals } = strategies.nakedDoubles(candidates)
+    const { matches, removals } = strategies.nakedDoubles(board)
     expect(matches).toEqual([0, 2])
     expect(removals).toEqual([
       { index: 1, value: 2 },
@@ -46,7 +46,7 @@ describe('naked tuples', () => {
   })
 
   it('finds naked doubles in a box', () => {
-    const candidates = toCandidateGrid(`
+    const board = toBoard(`
         12  .  .   . . . . . .
         .   12 134 . . . . . .
         234 .  123 . . . . . .
@@ -57,7 +57,7 @@ describe('naked tuples', () => {
         . . . . . . . . .
         . . . . . . . . .
       `)
-    const { matches, removals } = strategies.nakedDoubles(candidates)
+    const { matches, removals } = strategies.nakedDoubles(board)
     expect(matches).toEqual([0, 10])
     expect(removals).toEqual([
       { index: 11, value: 1 },
@@ -68,7 +68,7 @@ describe('naked tuples', () => {
   })
 
   it('finds naked doubles in a column', () => {
-    const candidates = toCandidateGrid(`
+    const board = toBoard(`
         12  . . . . . . . .
         12  . . . . . . . .
         134 . . . . . . . .
@@ -79,7 +79,7 @@ describe('naked tuples', () => {
         234 . . . . . . . .
         .   . . . . . . . .
       `)
-    const { matches, removals } = strategies.nakedDoubles(candidates)
+    const { matches, removals } = strategies.nakedDoubles(board)
     expect(matches).toEqual([0, 9])
     expect(removals).toEqual([
       { index: 18, value: 1 },
@@ -90,7 +90,7 @@ describe('naked tuples', () => {
   })
 
   it(`doesn't match if nothing is removed`, () => {
-    const candidates = toCandidateGrid(`
+    const board = toBoard(`
         12  . . . . . . . .
         12  . . . . . . . .
         .   . . . . . . . .
@@ -101,7 +101,7 @@ describe('naked tuples', () => {
         .   . . . . . . . .
         .   . . . . . . . .
       `)
-    const { matches, removals } = strategies.nakedDoubles(candidates)
+    const { matches, removals } = strategies.nakedDoubles(board)
     expect(matches).toEqual([])
     expect(removals).toEqual([])
   })
@@ -109,7 +109,7 @@ describe('naked tuples', () => {
 
 describe('hidden tuples', () => {
   it(`finds hidden singles`, () => {
-    const candidates = toCandidateGrid(`
+    const board = toBoard(`
      234  234  234  1234 234  234  234  234  234
      1234 1234 1234 1234 1234 1234 1234 1234 1234 
      1234 1234 1234 1234 1234 1234 1234 1234 1234 
@@ -120,7 +120,7 @@ describe('hidden tuples', () => {
      1234 1234 1234 1234 1234 1234 1234 1234 1234 
      1234 1234 1234 1234 1234 1234 1234 1234 1234 
       `)
-    const { matches, removals } = strategies.hiddenSingles(candidates)
+    const { matches, removals } = strategies.hiddenSingles(board)
     expect(matches).toEqual([3])
     expect(removals).toEqual([
       { index: 3, value: 2 },
@@ -130,7 +130,7 @@ describe('hidden tuples', () => {
   })
 
   it(`finds hidden doubles`, () => {
-    const candidates = toCandidateGrid(`
+    const board = toBoard(`
       34   34   1234 1234 34   34   34   34   34 
       1234 1234 1234 1234 1234 1234 1234 1234 1234 
       1234 1234 1234 1234 1234 1234 1234 1234 1234 
@@ -141,7 +141,7 @@ describe('hidden tuples', () => {
       1234 1234 1234 1234 1234 1234 1234 1234 1234 
       1234 1234 1234 1234 1234 1234 1234 1234 1234 
       `)
-    const { matches, removals } = strategies.hiddenDoubles(candidates)
+    const { matches, removals } = strategies.hiddenDoubles(board)
     expect(matches).toEqual([2, 3])
     expect(removals).toEqual([
       { index: 2, value: 3 },
@@ -152,7 +152,7 @@ describe('hidden tuples', () => {
   })
 
   it('finds hidden triples', () => {
-    const candidates = toCandidateGrid(`
+    const board = toBoard(`
     4    4    1234 1234 1234 4    4    4    4  
     1234 1234 1234 1234 1234 1234 1234 1234 1234 
     1234 1234 1234 1234 1234 1234 1234 1234 1234 
@@ -163,7 +163,7 @@ describe('hidden tuples', () => {
     1234 1234 1234 1234 1234 1234 1234 1234 1234 
     1234 1234 1234 1234 1234 1234 1234 1234 1234 
     `)
-    const { matches, removals } = strategies.hiddenTriples(candidates)
+    const { matches, removals } = strategies.hiddenTriples(board)
     expect(matches).toEqual([2, 3, 4])
     expect(removals).toEqual([
       { index: 2, value: 4 },
@@ -173,7 +173,7 @@ describe('hidden tuples', () => {
   })
 
   it(`doesn't match if nothing is removed`, () => {
-    const candidates = toCandidateGrid(`
+    const board = toBoard(`
     234  234  234  1    234  234  234  234  234
     1234 1234 1234 1234 1234 1234 1234 1234 1234 
     1234 1234 1234 1234 1234 1234 1234 1234 1234 
@@ -184,7 +184,7 @@ describe('hidden tuples', () => {
     1234 1234 1234 1234 1234 1234 1234 1234 1234 
     1234 1234 1234 1234 1234 1234 1234 1234 1234 
    `)
-    const { matches, removals } = strategies.hiddenSingles(candidates)
+    const { matches, removals } = strategies.hiddenSingles(board)
     expect(matches).toEqual([])
     expect(removals).toEqual([])
   })
@@ -192,7 +192,7 @@ describe('hidden tuples', () => {
 
 describe('locked tuples', () => {
   it('finds locked tuples in a row', () => {
-    const candidates = toCandidateGrid(`
+    const board = toBoard(`
         2 2 2 . . . . . .
         2 2 2 . . . . . .
         2 2 2 . . . . . .
@@ -204,7 +204,7 @@ describe('locked tuples', () => {
         . 2 . . . . . . .
         `)
 
-    const { matches, removals } = strategies.lockedTuples(candidates)
+    const { matches, removals } = strategies.lockedTuples(board)
     expect(matches).toEqual([55, 64, 73])
     expect(removals).toEqual([
       { index: 1, value: 2 },
@@ -214,7 +214,7 @@ describe('locked tuples', () => {
   })
 
   it('finds locked tuples in a column', () => {
-    const candidates = toCandidateGrid(`
+    const board = toBoard(`
         2 2 2 . . . . . .
         2 2 2 . . . 2 2 2
         2 2 2 . . . . . .
@@ -226,7 +226,7 @@ describe('locked tuples', () => {
         . . . . . . . . .
         `)
 
-    const { matches, removals } = strategies.lockedTuples(candidates)
+    const { matches, removals } = strategies.lockedTuples(board)
     expect(matches).toEqual([15, 16, 17])
     expect(removals).toEqual([
       { index: 9, value: 2 },
@@ -236,7 +236,7 @@ describe('locked tuples', () => {
   })
 
   it(`doesn't match if nothing is removed`, () => {
-    const candidates = toCandidateGrid(`
+    const board = toBoard(`
           3 3 3 . . . . . .
           3 3 3 . . . 2 2 2
           3 3 3 . . . . . .
@@ -248,7 +248,7 @@ describe('locked tuples', () => {
           . . . . . . . . .
           `)
 
-    const { matches, removals } = strategies.lockedTuples(candidates)
+    const { matches, removals } = strategies.lockedTuples(board)
     expect(matches).toEqual([])
     expect(removals).toEqual([])
   })

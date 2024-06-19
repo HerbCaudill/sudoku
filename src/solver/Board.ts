@@ -1,7 +1,6 @@
 import { CandidateGrid, Grid } from 'types'
-import { getUnsolved } from './getUnsolved'
-import { boxPeers, colPeers, peers, rowPeers } from './peers'
 import { cells, numbers } from './constants'
+import { peers } from './peers'
 
 export class Board {
   constructor(public candidates: CandidateGrid) {}
@@ -28,6 +27,17 @@ export class Board {
 
   /** cells.filter(board.hasCandidates([1,2,3]) */
   hasCandidates = (values: number[]) => (index: number) => isSubset(this.candidates[index], values)
+}
+
+export const boardFromGrid = (grid: Grid) => {
+  const candidates = Object.fromEntries(
+    grid.map((value, i) => {
+      if (value > 0) return [value] // known value = single candidate
+      const noPeerMatch = (v: number) => !peers[i].some(peer => grid[peer] === v)
+      return [i, numbers.filter(noPeerMatch)]
+    })
+  )
+  return new Board(candidates)
 }
 
 const isSubset = (a: number[] = [], b: number[]) => a.length > 0 && b.length > 0 && a.every(value => b.includes(value))

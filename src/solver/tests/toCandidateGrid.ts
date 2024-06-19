@@ -1,3 +1,4 @@
+import { Board } from '../Board'
 import { CandidateGrid } from 'types'
 
 export const toCandidateGrid = (s: string): CandidateGrid => {
@@ -10,4 +11,9 @@ export const toCandidateGrid = (s: string): CandidateGrid => {
     }
   }
   return grid
+}
+
+export const toBoard = (s: string): Board => {
+  const candidates = toCandidateGrid(s)
+  return new Board(candidates)
 }

@@ -1,17 +1,15 @@
-import { cells, cols, numbers, rows, unitLookup } from './constants.js'
-import { boxPeers, colPeers, peersByType, rowPeers } from './peers.js'
-import { CandidateGrid } from '../types.js'
 import { Board } from './Board.js'
-import { box, col, row, unitByType } from './units'
-import { excluding } from './excluding.js'
 import { arraysMatch } from './arraysMatch.js'
+import { numbers, unitLookup } from './constants.js'
+import { excluding } from './excluding.js'
+import { peersByType } from './peers.js'
+import { box, unitByType } from './units'
 
 export const nakedTuples = (N: number): Strategy => {
-  return candidates => {
-    const board = new Board(candidates)
+  return board => {
     // find all cells that have exactly N candidates
     for (const index of board.tuples(N)) {
-      const values = candidates[index] // e.g. [1,2] for naked doubles
+      const values = board.candidates[index] // e.g. [1,2] for naked doubles
 
       // for each type of unit
       for (const unitType of ['row', 'col', 'box'] as const) {
@@ -27,10 +25,9 @@ export const nakedTuples = (N: number): Strategy => {
           const otherPeers = peers.filter(excluding(matches))
           const removals: Removal[] = otherPeers.flatMap(index =>
             values //
-              .filter(value => candidates[index].includes(value))
+              .filter(value => board.candidates[index].includes(value))
               .map(value => ({ index, value }))
           )
-          // only apply the strategy once per call
           if (removals.length) return { matches, removals }
         }
       }
@@ -40,8 +37,7 @@ export const nakedTuples = (N: number): Strategy => {
 }
 
 export const hiddenTuples = (N: number): Strategy => {
-  return candidates => {
-    const board = new Board(candidates)
+  return board => {
     // look at every row, column and box
     for (const unitType of ['row', 'col', 'box'] as const) {
       for (const unitIndex of numbers) {
@@ -67,11 +63,10 @@ export const hiddenTuples = (N: number): Strategy => {
             const matches = cellsByValue[value]
 
             const removals = matches.flatMap(index =>
-              candidates[index]
+              board.candidates[index]
                 .filter(v => !matchingValues.includes(v)) //
                 .map(value => ({ index, value }))
             )
-            // only apply the strategy once per call
             if (removals.length) return { matches, removals }
           }
         }
@@ -83,8 +78,7 @@ export const hiddenTuples = (N: number): Strategy => {
 
 /** Locked pairs & triples: if there are any boxes whose values can only go in one row or
  * column, eliminate those values from other cells in that row or column. */
-export const lockedTuples: Strategy = candidates => {
-  const board = new Board(candidates)
+export const lockedTuples: Strategy = board => {
   for (const value of numbers) {
     for (const boxNumber of numbers) {
       const boxCells = box(boxNumber)
@@ -155,8 +149,8 @@ const _strategies = {
 
 export const strategies = Object.keys(_strategies).reduce((acc, _key) => {
   const key = _key as keyof typeof _strategies
-  const strategyEntry: AnnotatedStrategy = (candidates: CandidateGrid) => {
-    return _strategies[key].strategy(candidates)
+  const strategyEntry: AnnotatedStrategy = (board: Board) => {
+    return _strategies[key].strategy(board)
   }
   strategyEntry.label = key
   strategyEntry.difficulty = _strategies[key].difficulty
@@ -177,7 +171,7 @@ type Removal = {
   value: number
 }
 
-type Strategy = (candidates: CandidateGrid) => StrategyResult
+type Strategy = (board: Board) => StrategyResult
 type AnnotatedStrategy = Strategy & {
   label: string
   difficulty: number

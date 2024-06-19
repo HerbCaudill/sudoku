@@ -1,10 +1,10 @@
 import { makeRandom } from '@herbcaudill/random'
-import { numbers } from './constants.js'
 import { toGrid } from '../lib/toGrid.js'
+import { Action, CandidateGrid as CandidateMap, Grid } from '../types.js'
+import { numbers } from './constants.js'
+import { getUnsolved } from './getUnsolved.js'
 import { peers } from './peers.js'
 import { allSingles } from './singles.js'
-import { AnalysisResult, CandidateGrid as CandidateMap, Grid, InterimResult } from '../types.js'
-import { getUnsolved } from './getUnsolved.js'
 import { strategies } from './strategies.js'
 
 export class PseudoHumanSolver {
@@ -18,36 +18,16 @@ export class PseudoHumanSolver {
     this.#random = makeRandom(seed)
   }
 
-  solve() {
-    return this.complete(this.#puzzle)
-  }
-
-  complete(grid: Grid) {
-    for (const step of this.search(grid)) {
-      if (step.state === 'SOLVED') return step.grid
-    }
-    return false // ❌ no solution
-  }
-
-  /**
-   * Solves a puzzle alternating between a logical phase of filling cells that have a single
-   * possible value (constraint propagation), and a trial-and-error phase of choosing randomly among
-   * the possible values for a cell and seeing if that leads to a solution.
-   */
-  *search(grid: Grid = this.#puzzle): Generator<InterimResult> {
-    grid = [...grid]
-
+  *search(board: Board): Generator<Move> {
     // PROPAGATION
 
     let candidates: CandidateMap = {}
 
     // solve as many cells as possible using constraint propagation
-    for (const step of this.propagate(grid)) {
-      if (step.state === 'CONTRADICTION') {
-        return // ❌ dead end
+    for (const move of this.propagate(board)) {
+      board.applyRemovals(move.removals)
       } else {
-        yield step
-        candidates = step.candidates!
+        yield move
       }
     }
 
@@ -85,7 +65,7 @@ export class PseudoHumanSolver {
    * Using constraint propagation, returns a map of candidates for each unsolved cell, or false if
    * a contradiction is found.
    */
-  *propagate(grid: Grid): Generator<InterimResult> {
+  *propagate(grid: Grid): Generator<Move> {
     const candidates = Object.fromEntries(
       getUnsolved(grid).map(i => {
         const noPeerMatch = (v: number) => !peers[i].some(peer => grid[peer] === v)
@@ -123,4 +103,10 @@ export class PseudoHumanSolver {
     nextGrid[index] = value
     return nextGrid
   }
+}
+
+type Move = {
+  matches: number[]
+  removals: Action[]
+  strategy: keyof typeof strategies
 }
