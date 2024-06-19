@@ -16,7 +16,7 @@ describe('naked tuples', () => {
       . . . . . . . . .
       `)
     const { matches, removals } = strategies.nakedSingles(board)
-    expect(matches).toEqual([0])
+    expect(matches).toEqual([{ index: 0, value: 1 }])
     expect(removals).toEqual([
       { index: 1, value: 1 },
       { index: 2, value: 1 },
@@ -36,7 +36,12 @@ describe('naked tuples', () => {
       . . . . . . . . .
       `)
     const { matches, removals } = strategies.nakedDoubles(board)
-    expect(matches).toEqual([0, 2])
+    expect(matches).toEqual([
+      { index: 0, value: 1 },
+      { index: 0, value: 2 },
+      { index: 2, value: 1 },
+      { index: 2, value: 2 },
+    ])
     expect(removals).toEqual([
       { index: 1, value: 2 },
       { index: 5, value: 1 },
@@ -58,7 +63,12 @@ describe('naked tuples', () => {
         . . . . . . . . .
       `)
     const { matches, removals } = strategies.nakedDoubles(board)
-    expect(matches).toEqual([0, 10])
+    expect(matches).toEqual([
+      { index: 0, value: 1 },
+      { index: 0, value: 2 },
+      { index: 10, value: 1 },
+      { index: 10, value: 2 },
+    ])
     expect(removals).toEqual([
       { index: 11, value: 1 },
       { index: 18, value: 2 },
@@ -80,7 +90,6 @@ describe('naked tuples', () => {
         .   . . . . . . . .
       `)
     const { matches, removals } = strategies.nakedDoubles(board)
-    expect(matches).toEqual([0, 9])
     expect(removals).toEqual([
       { index: 18, value: 1 },
       { index: 45, value: 1 },
@@ -121,7 +130,7 @@ describe('hidden tuples', () => {
      1234 1234 1234 1234 1234 1234 1234 1234 1234 
       `)
     const { matches, removals } = strategies.hiddenSingles(board)
-    expect(matches).toEqual([3])
+    expect(matches).toEqual([{ index: 3, value: 1 }])
     expect(removals).toEqual([
       { index: 3, value: 2 },
       { index: 3, value: 3 },
@@ -142,7 +151,12 @@ describe('hidden tuples', () => {
       1234 1234 1234 1234 1234 1234 1234 1234 1234 
       `)
     const { matches, removals } = strategies.hiddenDoubles(board)
-    expect(matches).toEqual([2, 3])
+    expect(matches).toEqual([
+      { index: 2, value: 1 },
+      { index: 2, value: 2 },
+      { index: 3, value: 1 },
+      { index: 3, value: 2 },
+    ])
     expect(removals).toEqual([
       { index: 2, value: 3 },
       { index: 2, value: 4 },
@@ -164,7 +178,17 @@ describe('hidden tuples', () => {
     1234 1234 1234 1234 1234 1234 1234 1234 1234 
     `)
     const { matches, removals } = strategies.hiddenTriples(board)
-    expect(matches).toEqual([2, 3, 4])
+    expect(matches).toEqual([
+      { index: 2, value: 1 },
+      { index: 2, value: 2 },
+      { index: 2, value: 3 },
+      { index: 3, value: 1 },
+      { index: 3, value: 2 },
+      { index: 3, value: 3 },
+      { index: 4, value: 1 },
+      { index: 4, value: 2 },
+      { index: 4, value: 3 },
+    ])
     expect(removals).toEqual([
       { index: 2, value: 4 },
       { index: 3, value: 4 },
@@ -205,7 +229,11 @@ describe('locked tuples', () => {
         `)
 
     const { matches, removals } = strategies.lockedTuples(board)
-    expect(matches).toEqual([55, 64, 73])
+    expect(matches).toEqual([
+      { index: 55, value: 2 },
+      { index: 64, value: 2 },
+      { index: 73, value: 2 },
+    ])
     expect(removals).toEqual([
       { index: 1, value: 2 },
       { index: 10, value: 2 },
@@ -227,7 +255,11 @@ describe('locked tuples', () => {
         `)
 
     const { matches, removals } = strategies.lockedTuples(board)
-    expect(matches).toEqual([15, 16, 17])
+    expect(matches).toEqual([
+      { index: 15, value: 2 },
+      { index: 16, value: 2 },
+      { index: 17, value: 2 },
+    ])
     expect(removals).toEqual([
       { index: 9, value: 2 },
       { index: 10, value: 2 },

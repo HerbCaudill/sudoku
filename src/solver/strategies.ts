@@ -16,15 +16,15 @@ export const nakedTuples = (N: number): Strategy => {
         const peers = peersByType[unitType][index]
         // find any peers in this unit that have the exact same set of candidates,
         // e.g. another cell containing [1,2]
-        const matches = [
+        const matchingCells = [
           index, //
           ...peers.filter(board.hasCandidates(values)),
         ]
-        if (matches.length === N) {
+        if (matchingCells.length === N) {
           // no other cells in the unit can have these cells, so remove them
-          const otherPeers = peers.filter(excluding(matches))
+          const otherPeers = peers.filter(excluding(matchingCells))
 
-          const candidates = matches.flatMap(index =>
+          const matches = matchingCells.flatMap(index =>
             board.candidates[index] //
               .filter(v => values.includes(v))
               .map(value => ({ index, value }))
@@ -35,7 +35,7 @@ export const nakedTuples = (N: number): Strategy => {
               .filter(value => board.candidates[index].includes(value))
               .map(value => ({ index, value }))
           )
-          if (removals.length) return { matches, candidates, removals }
+          if (removals.length) return { matches, removals }
         }
       }
     }
@@ -67,9 +67,15 @@ export const hiddenTuples = (N: number): Strategy => {
 
           if (matchingValues.length === N) {
             // if so, remove all other candidates from the matching cells
-            const matches = cellsByValue[value]
+            const matchingCells = cellsByValue[value]
 
-            const removals = matches.flatMap(index =>
+            const matches = matchingCells.flatMap(index =>
+              board.candidates[index] //
+                .filter(v => matchingValues.includes(v))
+                .map(value => ({ index, value }))
+            )
+
+            const removals = matchingCells.flatMap(index =>
               board.candidates[index]
                 .filter(v => !matchingValues.includes(v)) //
                 .map(value => ({ index, value }))
@@ -89,16 +95,22 @@ export const lockedTuples: Strategy = board => {
   for (const value of numbers) {
     for (const boxNumber of numbers) {
       const boxCells = box(boxNumber)
-      const matches = boxCells.filter(board.hasCandidate(value))
+      const matchingCells = boxCells.filter(board.hasCandidate(value))
       // only works for 2 or 3 candidates (4+ won't fit in a single row or column)
-      if (![2, 3].includes(matches.length)) continue
+      if (!(matchingCells.length === 2 || matchingCells.length === 3)) continue
 
       for (const rowOrCol of ['row', 'col'] as const) {
-        // are all matches in this box in the same row or column?
-        const matchesRowOrCol = matches.map(i => unitLookup[rowOrCol][i])
+        // are all matchingCells in this box in the same row or column?
+        const matchesRowOrCol = matchingCells.map(i => unitLookup[rowOrCol][i])
         const rowOrColIndex = matchesRowOrCol[0]
         const isSingleRowOrCol = matchesRowOrCol.every(i => i === rowOrColIndex)
         if (isSingleRowOrCol) {
+          const matches = matchingCells.flatMap(index =>
+            board.candidates[index] //
+              .filter(v => v === value)
+              .map(value => ({ index, value }))
+          )
+
           // if so, remove the value from the rest of the row or column (outside this box)
           const removals = unitByType[rowOrCol](rowOrColIndex)
             .filter(excluding(boxCells))
@@ -166,11 +178,8 @@ export const strategies = Object.keys(_strategies).reduce((acc, _key) => {
 }, {} as Record<string, AnnotatedStrategy>)
 
 type StrategyResult = {
-  /** Cells that matched the strategy. */
-  matches: number[]
-
-  /** The candidates that matched the strategy. We record these just so we can highlight them later.  */
-  candidates?: CellCandidate[]
+  /** Candidates that matched the strategy. We record these so we can highlight them later.  */
+  matches: CellCandidate[]
 
   /** Candidates to remove. In some cases (e.g. hidden doubles) these will be from the
    * matched cells, in others (e.g. naked doubles, locked doubles) they will be from other cells. */
