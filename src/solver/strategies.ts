@@ -23,12 +23,19 @@ export const nakedTuples = (N: number): Strategy => {
         if (matches.length === N) {
           // no other cells in the unit can have these cells, so remove them
           const otherPeers = peers.filter(excluding(matches))
-          const removals: Removal[] = otherPeers.flatMap(index =>
+
+          const candidates = matches.flatMap(index =>
+            board.candidates[index] //
+              .filter(v => values.includes(v))
+              .map(value => ({ index, value }))
+          )
+
+          const removals: CellCandidate[] = otherPeers.flatMap(index =>
             values //
               .filter(value => board.candidates[index].includes(value))
               .map(value => ({ index, value }))
           )
-          if (removals.length) return { matches, removals }
+          if (removals.length) return { matches, candidates, removals }
         }
       }
     }
@@ -161,12 +168,17 @@ export const strategies = Object.keys(_strategies).reduce((acc, _key) => {
 type StrategyResult = {
   /** Cells that matched the strategy. */
   matches: number[]
+
+  /** The candidates that matched the strategy. We record these just so we can highlight them later.  */
+  candidates?: CellCandidate[]
+
   /** Candidates to remove. In some cases (e.g. hidden doubles) these will be from the
    * matched cells, in others (e.g. naked doubles, locked doubles) they will be from other cells. */
-  removals: Removal[]
+  removals: CellCandidate[]
 }
 
-type Removal = {
+/** A specific candidate in a specific cell */
+type CellCandidate = {
   index: number
   value: number
 }
