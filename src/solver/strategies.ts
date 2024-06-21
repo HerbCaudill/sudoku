@@ -1,6 +1,6 @@
 import { Board } from './Board'
 import { arraysMatch } from 'lib/arraysMatch'
-import { cells, numbers, unitLookup } from 'lib/constants'
+import { boxes, cells, numbers, unitLookup } from 'lib/constants'
 import { excluding } from 'lib/excluding'
 import { peers, peersByType } from 'lib/peers'
 import { box, unitByType } from 'lib/units'
@@ -118,17 +118,17 @@ export const lockedTuples: Strategy = board => {
   for (const value of numbers) {
     for (const boxNumber of numbers) {
       const boxCells = box(boxNumber)
-      const matchingCells = boxCells.filter(board.hasCandidate(value))
+      const candidateCells = boxCells.filter(board.hasCandidate(value))
       // only works for 2 or 3 candidates (4+ won't fit in a single row or column)
-      if (!(matchingCells.length === 2 || matchingCells.length === 3)) continue
+      if (!(candidateCells.length === 2 || candidateCells.length === 3)) continue
 
       for (const rowOrCol of ['row', 'col'] as const) {
         // are all matchingCells in this box in the same row or column?
-        const matchesRowOrCol = matchingCells.map(i => unitLookup[rowOrCol][i])
+        const matchesRowOrCol = candidateCells.map(i => unitLookup[rowOrCol][i])
         const rowOrColIndex = matchesRowOrCol[0]
         const isSingleRowOrCol = matchesRowOrCol.every(i => i === rowOrColIndex)
         if (isSingleRowOrCol) {
-          const matches = matchingCells.flatMap(index =>
+          const matches = candidateCells.flatMap(index =>
             board.candidates[index] //
               .filter(v => v === value)
               .map(value => ({ index, value }))
@@ -144,6 +144,37 @@ export const lockedTuples: Strategy = board => {
       }
     }
   }
+  return null
+}
+
+export const boxLineReduction: Strategy = board => {
+  for (const value of numbers) {
+    for (const unitType of ['row', 'col'] as const) {
+      for (const unitIndex of numbers) {
+        // are all the candidates in this row or column in the same box?
+        const unit = unitByType[unitType](unitIndex)
+        const candidateCells = unit.filter(board.hasCandidate(value))
+        // only works for 2 or 3 candidates (4+ won't fit in a single row or column)
+        if (!(candidateCells.length === 2 || candidateCells.length === 3)) continue
+
+        const boxNumbers = candidateCells.map(i => boxes[i])
+        const boxNumber = boxNumbers[0]
+        const isSingleBox = boxNumbers.every(i => i === boxNumber)
+        if (isSingleBox) {
+          const boxCells = box(boxNumber)
+          const removals = boxCells
+            .filter(board.hasCandidate(value))
+            .filter(excluding(candidateCells))
+            .map(i => ({ index: i, value }))
+          if (removals.length) {
+            const matches = candidateCells.flatMap(index => ({ index, value }))
+            return { matches, removals }
+          }
+        }
+      }
+    }
+  }
+
   return null
 }
 
@@ -183,6 +214,10 @@ const _strategies = {
   lockedTuple: {
     strategy: lockedTuples,
     difficulty: 15,
+  },
+  boxLineReduction: {
+    strategy: boxLineReduction,
+    difficulty: 20,
   },
 }
 
