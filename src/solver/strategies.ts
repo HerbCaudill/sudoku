@@ -2,8 +2,19 @@ import { Board } from './Board.js'
 import { arraysMatch } from './arraysMatch.js'
 import { numbers, unitLookup } from './constants.js'
 import { excluding } from './excluding.js'
-import { peersByType } from './peers.js'
+import { peers, peersByType } from './peers.js'
+import { gridToCandidates } from './tests/toCandidateGrid'
 import { box, unitByType } from './units'
+
+export const nakedSingles: Strategy = board => {
+  for (const index of numbers) {
+    if (board.grid[index] === 0 && board.candidates[index].length === 1) {
+      const value = board.candidates[index][0]
+      return { solved: { index, value } }
+    }
+  }
+  return null
+}
 
 export const nakedTuples = (N: number): Strategy => {
   return board => {
@@ -43,7 +54,7 @@ export const nakedTuples = (N: number): Strategy => {
         }
       }
     }
-    return emptyResult
+    return null
   }
 }
 
@@ -93,7 +104,7 @@ export const hiddenTuples = (N: number): Strategy => {
         }
       }
     }
-    return emptyResult
+    return null
   }
 }
 
@@ -129,15 +140,12 @@ export const lockedTuples: Strategy = board => {
       }
     }
   }
-
-  return emptyResult
+  return null
 }
-
-const emptyResult = { matches: [], removals: [] }
 
 const _strategies = {
   nakedSingles: {
-    strategy: nakedTuples(1),
+    strategy: nakedSingles,
     difficulty: 0,
   },
   nakedDoubles: {
@@ -154,7 +162,7 @@ const _strategies = {
   },
   hiddenSingles: {
     strategy: hiddenTuples(1),
-    difficulty: 0,
+    difficulty: 5,
   },
   hiddenDoubles: {
     strategy: hiddenTuples(2),
@@ -187,18 +195,13 @@ export const strategies = Object.keys(_strategies).reduce((acc, _key) => {
 
 export const strategiesByDifficulty = Object.values(strategies).sort((a, b) => a.difficulty - b.difficulty)
 
-export const findNextMove = (board: Board) => {
-  for (const strategy of strategiesByDifficulty) {
-    const result = strategy(board)
-    if (result.removals.length) {
-      return { strategy, result }
-    }
-  }
-  throw new Error('No moves found')
+export type SolvedCell = {
+  /** A single cell that has been solved */
+  solved: CellCandidate
 }
 
-type StrategyResult = {
-  /** Candidates that matched the strategy. We record these so we can highlight them later.  */
+export type Elimination = {
+  /** Candidates that were used in the strategy. We record these so we can highlight them later.  */
   matches: CellCandidate[]
 
   /** Candidates to remove. In some cases (e.g. hidden doubles) these will be from the
@@ -206,14 +209,17 @@ type StrategyResult = {
   removals: CellCandidate[]
 }
 
+/** Either a solved cell (a naked single), or candidates eliminated using a strategy */
+export type StrategyResult = SolvedCell | Elimination
+
 /** A specific candidate in a specific cell */
-type CellCandidate = {
+export type CellCandidate = {
   index: number
   value: number
 }
 
-type Strategy = (board: Board) => StrategyResult
-type StrategyEntry = Strategy & {
+export type Strategy = (board: Board) => StrategyResult | null
+export type StrategyEntry = Strategy & {
   label: string
   difficulty: number
 }

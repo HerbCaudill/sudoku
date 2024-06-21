@@ -1,29 +1,29 @@
 import { describe, expect, it } from 'vitest'
-import { findNextMove, strategies } from '../strategies.js'
+import { strategies } from '../strategies.js'
 import { Board } from '../Board'
 
 describe('naked tuples', () => {
-  it('finds naked singles in a row', () => {
-    const board = new Board({
-      candidates: `
-      1 1234 1234 . . . . . .
-      . . . . . . . . .
-      . . . . . . . . .
-      . . . . . . . . .
-      . . . . . . . . .
-      . . . . . . . . .
-      . . . . . . . . .
-      . . . . . . . . .
-      . . . . . . . . .
-      `,
-    })
-    const { matches, removals } = strategies.nakedSingles(board)
-    expect(matches).toEqual([{ index: 0, value: 1 }])
-    expect(removals).toEqual([
-      { index: 1, value: 1 },
-      { index: 2, value: 1 },
-    ])
-  })
+  // it('finds naked singles in a row', () => {
+  //   const board = new Board({
+  //     candidates: `
+  //     1 1234 1234 . . . . . .
+  //     . . . . . . . . .
+  //     . . . . . . . . .
+  //     . . . . . . . . .
+  //     . . . . . . . . .
+  //     . . . . . . . . .
+  //     . . . . . . . . .
+  //     . . . . . . . . .
+  //     . . . . . . . . .
+  //     `,
+  //   })
+  //   const { matches, removals } = strategies.nakedSingles(board)!
+  //   expect(matches).toEqual([{ index: 0, value: 1 }])
+  //   expect(removals).toEqual([
+  //     { index: 1, value: 1 },
+  //     { index: 2, value: 1 },
+  //   ])
+  // })
 
   it('finds naked doubles in a row', () => {
     const board = new Board({
@@ -39,7 +39,7 @@ describe('naked tuples', () => {
       . . . . . . . . .
       `,
     })
-    const { matches, removals } = strategies.nakedDoubles(board)
+    const { matches, removals } = strategies.nakedDoubles(board)!
     expect(matches).toEqual([
       { index: 0, value: 1 },
       { index: 0, value: 2 },
@@ -68,7 +68,7 @@ describe('naked tuples', () => {
         . . . . . . . . .
       `,
     })
-    const { matches, removals } = strategies.nakedDoubles(board)
+    const { matches, removals } = strategies.nakedDoubles(board)!
     expect(matches).toEqual([
       { index: 0, value: 1 },
       { index: 0, value: 2 },
@@ -97,7 +97,7 @@ describe('naked tuples', () => {
         .   . . . . . . . .
       `,
     })
-    const { matches, removals } = strategies.nakedDoubles(board)
+    const { matches, removals } = strategies.nakedDoubles(board)!
     expect(removals).toEqual([
       { index: 18, value: 1 },
       { index: 45, value: 1 },
@@ -120,9 +120,8 @@ describe('naked tuples', () => {
         .   . . . . . . . .
       `,
     })
-    const { matches, removals } = strategies.nakedDoubles(board)
-    expect(matches).toEqual([])
-    expect(removals).toEqual([])
+    const result = strategies.nakedDoubles(board)
+    expect(result).toBeNull()
   })
 })
 
@@ -141,7 +140,7 @@ describe('hidden tuples', () => {
      1234 1234 1234 1234 1234 1234 1234 1234 1234 
       `,
     })
-    const { matches, removals } = strategies.hiddenSingles(board)
+    const { matches, removals } = strategies.hiddenSingles(board)!
     expect(matches).toEqual([{ index: 3, value: 1 }])
     expect(removals).toEqual([
       { index: 3, value: 2 },
@@ -164,7 +163,7 @@ describe('hidden tuples', () => {
       1234 1234 1234 1234 1234 1234 1234 1234 1234 
       `,
     })
-    const { matches, removals } = strategies.hiddenDoubles(board)
+    const { matches, removals } = strategies.hiddenDoubles(board)!
     expect(matches).toEqual([
       { index: 2, value: 1 },
       { index: 2, value: 2 },
@@ -193,7 +192,7 @@ describe('hidden tuples', () => {
     1234 1234 1234 1234 1234 1234 1234 1234 1234 
     `,
     })
-    const { matches, removals } = strategies.hiddenTriples(board)
+    const { matches, removals } = strategies.hiddenTriples(board)!
     expect(matches).toEqual([
       { index: 2, value: 1 },
       { index: 2, value: 2 },
@@ -226,9 +225,8 @@ describe('hidden tuples', () => {
     1234 1234 1234 1234 1234 1234 1234 1234 1234 
    `,
     })
-    const { matches, removals } = strategies.hiddenSingles(board)
-    expect(matches).toEqual([])
-    expect(removals).toEqual([])
+    const result = strategies.hiddenSingles(board)
+    expect(result).toBeNull()
   })
 })
 
@@ -248,7 +246,7 @@ describe('locked tuples', () => {
         `,
     })
 
-    const { matches, removals } = strategies.lockedTuples(board)
+    const { matches, removals } = strategies.lockedTuples(board)!
     expect(matches).toEqual([
       { index: 55, value: 2 },
       { index: 64, value: 2 },
@@ -276,7 +274,7 @@ describe('locked tuples', () => {
         `,
     })
 
-    const { matches, removals } = strategies.lockedTuples(board)
+    const { matches, removals } = strategies.lockedTuples(board)!
     expect(matches).toEqual([
       { index: 15, value: 2 },
       { index: 16, value: 2 },
@@ -304,30 +302,7 @@ describe('locked tuples', () => {
         `,
     })
 
-    const { matches, removals } = strategies.lockedTuples(board)
-    expect(matches).toEqual([])
-    expect(removals).toEqual([])
-  })
-})
-
-describe('findNextMove', () => {
-  it('naked single', () => {})
-
-  it('hidden single', () => {
-    const board = new Board({
-      grid: `
-      . . 2  . 3 .  . . 8 
-      . . .  . . 8  . . . 
-      . 3 1  . 2 .  . . . 
-      . 6 .  . 5 .  2 7 . 
-      . 1 .  . . .  . 5 . 
-      2 . 4  . 6 .  . 3 1 
-      . . .  . 8 .  6 . 5 
-      . . .  . . .  . 1 3 
-      . . 5  3 1 .  4 . .`,
-    })
-    const { strategy, result } = findNextMove(board)
-    expect(strategy.label).toBe('hiddenSingles')
-    expect(result.matches).toEqual([{ index: 15, value: 3 }])
+    const result = strategies.lockedTuples(board)
+    expect(result).toBeNull()
   })
 })

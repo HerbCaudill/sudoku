@@ -6,19 +6,17 @@ import { cells, numbers } from './constants'
 import { gridToCandidates, stringToCandidates } from './tests/toCandidateGrid'
 
 export class Board {
+  public grid: Grid
   public candidates: CandidateGrid
 
   constructor(input: { grid: string | Grid } | { candidates: string | CandidateGrid }) {
     if ('grid' in input) {
-      const grid = typeof input.grid === 'string' ? toGrid(input.grid) : input.grid
-      this.candidates = gridToCandidates(grid)
+      this.grid = typeof input.grid === 'string' ? toGrid(input.grid) : input.grid
+      this.candidates = gridToCandidates(this.grid)
     } else {
       this.candidates = typeof input.candidates === 'string' ? stringToCandidates(input.candidates) : input.candidates
+      this.grid = numbers.map(i => (this.candidates[i].length === 1 ? this.candidates[i][0] : 0))
     }
-  }
-
-  get grid() {
-    return numbers.map(i => (this.candidates[i].length === 1 ? this.candidates[i][0] : 0))
   }
 
   get printGrid() {
