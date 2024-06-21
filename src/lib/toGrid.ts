@@ -4,6 +4,6 @@ export const toGrid = (str: string) =>
   str
     .trim()
     .split(/\s*/)
-    .map(n => (!isNumeric(n) ? 0 : Number(n))) as Grid
+    .map(n => (isNumeric(n) ? Number(n) : 0)) as Grid
 
 export const isNumeric = (n: string) => !isNaN(parseFloat(n.trim()))
