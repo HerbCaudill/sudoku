@@ -1,5 +1,5 @@
 import type { Board } from './Board'
-import { type Move, findNextMove } from './findNextMove'
+import { type Move, findNextMove, isFailure } from './findNextMove'
 
 export function* solve(board: Board): Generator<{ board: Board; move?: Move }> {
   while (!board.isSolved()) {
@@ -9,4 +9,12 @@ export function* solve(board: Board): Generator<{ board: Board; move?: Move }> {
   }
 
   return { board }
+}
+
+export const tryToSolve = (board: Board) => {
+  const solver = solve(board)
+  for (const { board, move } of solver) {
+    if (isFailure(move!)) return { solved: false, board }
+  }
+  return { solved: true, board }
 }

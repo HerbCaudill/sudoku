@@ -5,7 +5,7 @@ import { stringToGrid } from 'lib/stringToGrid'
 import { cells, numbers } from '../lib/constants'
 import { stringToCandidates } from '../lib/stringToCandidates'
 import { gridToCandidates } from '../lib/gridToCandidates'
-import { findNextMove, type Move } from './findNextMove'
+import { findNextMove, isFailure, type Move } from './findNextMove'
 
 export class Board {
   public grid: Grid
@@ -47,6 +47,7 @@ export class Board {
   }
 
   applyMove(move: Move) {
+    if (isFailure(move)) return this
     if (move.solved) {
       const grid = [...this.grid]
       grid[move.solved.index] = move.solved.value

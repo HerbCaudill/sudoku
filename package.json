@@ -10,6 +10,7 @@
     "build": "tsc && vite build",
     "dev": "vite --host --port 3000 --open http://localhost:3000",
     "icons": "node ./src/scripts/icons.js",
+    "progress": "tsx ./src/scripts/progress.ts",
     "serve": "vite preview",
     "sort": "tsx ./src/scripts/sort.ts",
     "test": "vitest"
