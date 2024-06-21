@@ -1,11 +1,8 @@
 import { makeRandom } from '@herbcaudill/random'
-import { numbers } from './constants'
 import { toGrid } from 'lib/toGrid'
-import { peers } from './peers'
-import { allSingles } from './singles'
-import { AnalysisResult, CandidateGrid, Grid, InterimResult } from 'types'
-import { getUnsolved } from './getUnsolved'
-import { strategies } from './strategies'
+import { AnalysisResult, CandidateGrid, Grid, InterimResult, SingleMap } from 'types'
+import { numbers } from './constants'
+import { boxPeers, colPeers, peers, rowPeers } from './peers'
 
 const MAX_STEPS = 10000
 
@@ -98,8 +95,10 @@ export class Solver {
    * a contradiction is found.
    */
   *propagate(grid: Grid): Generator<InterimResult> {
+    const unsolved = grid.map((cell, index) => (cell === 0 ? index : -1)).filter(index => index !== -1)
+
     const candidates = Object.fromEntries(
-      getUnsolved(grid).map(i => {
+      unsolved.map(i => {
         const noPeerMatch = (v: number) => !peers[i].some(peer => grid[peer] === v)
         return [i, numbers.filter(noPeerMatch)]
       })
@@ -170,4 +169,36 @@ export class Solver {
       }
     }
   }
+}
+
+// HELPERS
+const nakedSingles = (candidates: CandidateGrid) => {
+  const unsolved = Object.keys(candidates).map(Number)
+  return Object.fromEntries(
+    unsolved //
+      .filter(index => candidates[index].length === 1)
+      .map(index => [index, candidates[index][0]])
+  ) as SingleMap
+}
+
+const hiddenSingles = (peers: number[][]) => (candidates: CandidateGrid) => {
+  const unsolved = Object.keys(candidates).map(Number)
+  return Object.fromEntries(
+    unsolved
+      .map(index => {
+        const noPeerHasValue = (v: number) => !peers[index].some(i => candidates[i]?.includes(v))
+        const single = candidates[index].find(noPeerHasValue)
+        if (single) return [index, single]
+      })
+      .filter(Boolean) as [number, number][] // omit undefined
+  ) as SingleMap
+}
+
+export const allSingles = (candidates: CandidateGrid) => {
+  return {
+    ...nakedSingles(candidates),
+    ...hiddenSingles(rowPeers)(candidates),
+    ...hiddenSingles(colPeers)(candidates),
+    ...hiddenSingles(boxPeers)(candidates),
+  } as SingleMap
 }

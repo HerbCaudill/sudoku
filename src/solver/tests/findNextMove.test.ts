@@ -16,7 +16,7 @@ describe('findNextMove', () => {
         9 1 2  3 4 5  6 7 8`,
     })
     const { label: strategy, solved } = findNextMove(board)
-    expect(strategy).toBe('nakedSingles')
+    expect(strategy).toBe('nakedSingle')
     expect(solved).toEqual({ index: 2, value: 3 })
   })
 
@@ -50,7 +50,7 @@ describe('findNextMove', () => {
       . 9 6  5 1 2  4 . 8`,
     })
     const { label: strategy, solved } = findNextMove(board)
-    expect(strategy).toBe('nakedSingles')
+    expect(strategy).toBe('nakedSingle')
     expect(solved).toEqual({ index: 1, value: 6 })
   })
 
@@ -68,7 +68,7 @@ describe('findNextMove', () => {
       . . 5  3 1 .  4 . .`,
     })
     const { label: strategy, matches } = findNextMove(board)
-    expect(strategy).toBe('hiddenSingles')
+    expect(strategy).toBe('hiddenSingle')
     expect(matches).toEqual([{ index: 15, value: 3 }])
   })
 })
@@ -153,20 +153,20 @@ describe('solve', () => {
   it('naked singles', () => {
     const puzzle = new Board({
       grid: `
-      3 . 5  4 2 .  8 1 . 
-      4 8 7  9 . 1  5 . 6 
-      . 2 9  . 5 6  3 7 4 
-      8 5 .  7 9 3  . 4 1 
-      6 1 3  2 . 8  9 5 7 
-      . 7 4  . 6 5  2 8 . 
-      2 4 1  3 . 9  . 6 5 
-      5 . 8  6 7 .  1 9 2 
-      . 9 6  5 1 2  4 . 8`,
+        3 . 5  4 2 .  8 1 . 
+        4 8 7  9 . 1  5 . 6 
+        . 2 9  . 5 6  3 7 4 
+        8 5 .  7 9 3  . 4 1 
+        6 1 3  2 . 8  9 5 7 
+        . 7 4  . 6 5  2 8 . 
+        2 4 1  3 . 9  . 6 5 
+        5 . 8  6 7 .  1 9 2 
+        . 9 6  5 1 2  4 . 8`,
     })
     const solver = solve(puzzle)
     for (const { board, move } of solver) {
       if (move) {
-        expect(move.label).toBe('nakedSingles')
+        expect(move.label).toBe('nakedSingle')
         expect(move.solved).toBeDefined()
       } else {
         expect(board.isSolved()).toBe(true)
