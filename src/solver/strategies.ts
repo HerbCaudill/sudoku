@@ -7,35 +7,39 @@ import { box, unitByType } from './units'
 
 export const nakedTuples = (N: number): Strategy => {
   return board => {
-    // find all cells that have exactly N candidates
+    // find all cells that have exactly N candidates (e.g. 2 for naked doubles)
     for (const index of board.tuples(N)) {
-      const values = board.candidates[index] // e.g. [1,2] for naked doubles
+      const values = board.candidates[index] // e.g. [1,2]
 
       // for each type of unit
       for (const unitType of ['row', 'col', 'box'] as const) {
         const peers = peersByType[unitType][index]
-        // find any peers in this unit that have the exact same set of candidates,
+        // find any peers that have the exact same set of candidates,
         // e.g. another cell containing [1,2]
         const matchingCells = [
-          index, //
+          index, // including this
           ...peers.filter(board.hasCandidates(values)),
         ]
+        // if there are exactly N matching cells (2 for naked doubles, 3 for naked triples, etc.)
         if (matchingCells.length === N) {
           // no other cells in the unit can have these cells, so remove them
           const otherPeers = peers.filter(excluding(matchingCells))
 
-          const matches = matchingCells.flatMap(index =>
-            board.candidates[index] //
-              .filter(v => values.includes(v))
-              .map(value => ({ index, value }))
-          )
-
-          const removals: CellCandidate[] = otherPeers.flatMap(index =>
-            values //
-              .filter(value => board.candidates[index].includes(value))
-              .map(value => ({ index, value }))
-          )
-          if (removals.length) return { matches, removals }
+          const result = {
+            matches: matchingCells.flatMap(index =>
+              board.candidates[index] //
+                .filter(v => values.includes(v))
+                .map(value => ({ index, value }))
+            ),
+            removals: otherPeers.flatMap(index =>
+              values //
+                .filter(value => {
+                  return board.candidates[index].includes(value)
+                })
+                .map(value => ({ index, value }))
+            ),
+          }
+          if (result.removals.length) return result
         }
       }
     }
@@ -52,10 +56,14 @@ export const hiddenTuples = (N: number): Strategy => {
         // in this unit, map each value to the cells that contain it
         // e.g. if a row is 12 123 23 . . . . . .
         // then the map will be {1: [0,1], 2: [0,1,2], 3: [1,2]}
-        const cellsByValue = Object.fromEntries(numbers.map(v => [v, unit.filter(board.hasCandidate(v))]))
+        const cellsByValue = numbers.reduce((acc, value) => {
+          acc[value] = unit.filter(board.hasCandidate(value))
+          return acc
+        }, {} as Record<number, number[]>)
 
         for (const value of numbers) {
           // are there N values in this unit that are only found in the same set of N cells?
+          // e.g. for hidden doubles, are there 2 values that are only found in the same 2 cells?
           if (cellsByValue[value].length !== N) continue
           const matchingValues = [value].concat(
             numbers.filter(
@@ -68,19 +76,19 @@ export const hiddenTuples = (N: number): Strategy => {
           if (matchingValues.length === N) {
             // if so, remove all other candidates from the matching cells
             const matchingCells = cellsByValue[value]
-
-            const matches = matchingCells.flatMap(index =>
-              board.candidates[index] //
-                .filter(v => matchingValues.includes(v))
-                .map(value => ({ index, value }))
-            )
-
-            const removals = matchingCells.flatMap(index =>
-              board.candidates[index]
-                .filter(v => !matchingValues.includes(v)) //
-                .map(value => ({ index, value }))
-            )
-            if (removals.length) return { matches, removals }
+            const result = {
+              matches: matchingCells.flatMap(index =>
+                board.candidates[index] //
+                  .filter(v => matchingValues.includes(v))
+                  .map(value => ({ index, value }))
+              ),
+              removals: matchingCells.flatMap(index =>
+                board.candidates[index]
+                  .filter(v => !matchingValues.includes(v)) //
+                  .map(value => ({ index, value }))
+              ),
+            }
+            if (result.removals.length) return result
           }
         }
       }
@@ -168,14 +176,26 @@ const _strategies = {
 
 export const strategies = Object.keys(_strategies).reduce((acc, _key) => {
   const key = _key as keyof typeof _strategies
-  const strategyEntry: AnnotatedStrategy = (board: Board) => {
+  const strategyEntry: StrategyEntry = (board: Board) => {
     return _strategies[key].strategy(board)
   }
   strategyEntry.label = key
   strategyEntry.difficulty = _strategies[key].difficulty
   acc[key] = strategyEntry
   return acc
-}, {} as Record<string, AnnotatedStrategy>)
+}, {} as Record<string, StrategyEntry>)
+
+export const strategiesByDifficulty = Object.values(strategies).sort((a, b) => a.difficulty - b.difficulty)
+
+export const findNextMove = (board: Board) => {
+  for (const strategy of strategiesByDifficulty) {
+    const result = strategy(board)
+    if (result.removals.length) {
+      return { strategy, result }
+    }
+  }
+  throw new Error('No moves found')
+}
 
 type StrategyResult = {
   /** Candidates that matched the strategy. We record these so we can highlight them later.  */
@@ -193,7 +213,7 @@ type CellCandidate = {
 }
 
 type Strategy = (board: Board) => StrategyResult
-type AnnotatedStrategy = Strategy & {
+type StrategyEntry = Strategy & {
   label: string
   difficulty: number
 }

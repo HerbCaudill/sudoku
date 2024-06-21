@@ -1,43 +1,77 @@
 import { CandidateGrid, Grid } from 'types'
+import { printCandidates } from '../lib/printCandidates'
+import { printGrid } from '../lib/printGrid'
+import { toGrid } from '../lib/toGrid'
 import { cells, numbers } from './constants'
-import { peers } from './peers'
+import { gridToCandidates, stringToCandidates } from './tests/toCandidateGrid'
 
 export class Board {
-  constructor(public candidates: CandidateGrid) {}
+  public candidates: CandidateGrid
+
+  constructor(input: { grid: string | Grid } | { candidates: string | CandidateGrid }) {
+    if ('grid' in input) {
+      const grid = typeof input.grid === 'string' ? toGrid(input.grid) : input.grid
+      this.candidates = gridToCandidates(grid)
+    } else {
+      this.candidates = typeof input.candidates === 'string' ? stringToCandidates(input.candidates) : input.candidates
+    }
+  }
+
+  get grid() {
+    return numbers.map(i => (this.candidates[i].length === 1 ? this.candidates[i][0] : 0))
+  }
+
+  get printGrid() {
+    return printGrid(this.grid)
+  }
+
+  get printCandidates() {
+    return printCandidates(this.candidates)
+  }
 
   /** returns all cells with exactly N candidates (1 for naked singles, 2 for naked doubles, etc.) */
-  tuples = (N: number) => cells.filter(this.hasCandidateCount(N))
+  tuples(N: number) {
+    return cells.filter(this.hasCandidateCount(N))
+  }
+
+  /** returns all cells with more than one candidate */
+  unsolvedCells() {
+    return cells.filter(i => this.hasMultipleCandidates(i))
+  }
 
   // filter predicates
 
   /** cells.filter(board.hasCandidateCount(3)) */
-  hasCandidateCount = (count: number) => (index: number) => this.candidates[index].length === count
+  hasCandidateCount(count: number) {
+    return (index: number) => this.candidates[index].length === count
+  }
 
   /** cells.filter(board.hasNoCandidates()) */
-  hasNoCandidates = this.hasCandidateCount(0)
+  hasNoCandidates() {
+    return this.hasCandidateCount(0)
+  }
 
   /** cells.filter(board.hasOneCandidate()) */
-  hasOneCandidate = this.hasCandidateCount(1)
+  hasOneCandidate() {
+    return this.hasCandidateCount(1)
+  }
 
   /** cells.filter(board.hasMultipleCandidates()) */
-  hasMultipleCandidates = (index: number) => this.candidates[index].length > 1
+  hasMultipleCandidates(index: number) {
+    return this.candidates[index].length > 1
+  }
 
   /** cells.filter(board.hasCandidate(7)) */
-  hasCandidate = (value: number) => (index: number) => this.candidates[index].includes(value)
+  hasCandidate(value: number) {
+    return (index: number) => this.candidates[index].includes(value)
+  }
 
   /** cells.filter(board.hasCandidates([1,2,3]) */
-  hasCandidates = (values: number[]) => (index: number) => isSubset(this.candidates[index], values)
-}
+  hasCandidates(values: number[]) {
+    return (index: number) => isSubset(this.candidates[index], values)
+  }
 
-export const boardFromGrid = (grid: Grid) => {
-  const candidates = Object.fromEntries(
-    grid.map((value, i) => {
-      if (value > 0) return [value] // known value = single candidate
-      const noPeerMatch = (v: number) => !peers[i].some(peer => grid[peer] === v)
-      return [i, numbers.filter(noPeerMatch)]
-    })
-  )
-  return new Board(candidates)
+  //
 }
 
 const isSubset = (a: number[] = [], b: number[]) => a.length > 0 && b.length > 0 && a.every(value => b.includes(value))

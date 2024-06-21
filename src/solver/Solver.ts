@@ -3,7 +3,7 @@ import { numbers } from './constants.js'
 import { toGrid } from '../lib/toGrid.js'
 import { peers } from './peers.js'
 import { allSingles } from './singles.js'
-import { AnalysisResult, CandidateGrid as CandidateMap, Grid, InterimResult } from '../types.js'
+import { AnalysisResult, CandidateGrid, Grid, InterimResult } from '../types.js'
 import { getUnsolved } from './getUnsolved.js'
 import { strategies } from './strategies'
 
@@ -47,7 +47,7 @@ export class Solver {
 
     // PROPAGATION
 
-    let candidates: CandidateMap = {}
+    let candidates: CandidateGrid = {}
 
     // solve as many cells as possible using constraint propagation
     for (const step of this.propagate(grid)) {

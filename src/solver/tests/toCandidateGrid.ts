@@ -1,7 +1,9 @@
+import { peers } from '../peers'
 import { Board } from '../Board'
-import { CandidateGrid } from 'types'
+import { CandidateGrid, type Grid } from 'types'
+import { numbers } from '../constants'
 
-export const toCandidateGrid = (s: string): CandidateGrid => {
+export const stringToCandidates = (s: string): CandidateGrid => {
   const grid = {} as CandidateGrid
   for (const [i, cell] of s.trim().split(/\s+/).entries()) {
     if (cell !== '.') {
@@ -13,7 +15,23 @@ export const toCandidateGrid = (s: string): CandidateGrid => {
   return grid
 }
 
-export const toBoard = (s: string): Board => {
-  const candidates = toCandidateGrid(s)
-  return new Board(candidates)
+export const stringToBoard = (s: string): Board => {
+  const candidates = stringToCandidates(s)
+  return new Board({ candidates })
 }
+
+export const boardFromGrid = (grid: Grid) => {
+  const candidates = gridToCandidates(grid)
+  return new Board({ candidates })
+}
+
+export const gridToCandidates = (grid: Grid) =>
+  Object.fromEntries(
+    grid.map((value, i) => {
+      // if the cell is already solved, return the value
+      if (value > 0) return [i, [value]]
+      // find candidates for each unsolved cell
+      const noMatchingPeer = (v: number) => !peers[i].some(peer => grid[peer] === v)
+      return [i, numbers.filter(noMatchingPeer)]
+    })
+  )
