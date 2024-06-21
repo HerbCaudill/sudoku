@@ -34,24 +34,19 @@ export const nakedTuples = (N: number): Strategy => {
         ]
         // if there are exactly N matching cells (2 for naked doubles, 3 for naked triples, etc.)
         if (matchingCells.length === N) {
+          const matches = matchingCells.flatMap(index =>
+            board.candidates[index] //
+              .filter(v => values.includes(v))
+              .map(value => ({ index, value }))
+          )
           // no other cells in the unit can have these cells, so remove them
           const otherPeers = peers.filter(excluding(matchingCells))
-
-          const result = {
-            matches: matchingCells.flatMap(index =>
-              board.candidates[index] //
-                .filter(v => values.includes(v))
-                .map(value => ({ index, value }))
-            ),
-            removals: otherPeers.flatMap(index =>
-              values //
-                .filter(value => {
-                  return board.candidates[index].includes(value)
-                })
-                .map(value => ({ index, value }))
-            ),
-          }
-          if (result.removals.length) return result
+          const removals = otherPeers.flatMap(index =>
+            values //
+              .filter(value => board.candidates[index].includes(value))
+              .map(value => ({ index, value }))
+          )
+          if (removals.length) return { matches, removals }
         }
       }
     }
@@ -80,30 +75,24 @@ export const hiddenTuples = (N: number): Strategy => {
           // are there N values in this unit that are only found in the same set of N cells?
           // e.g. for hidden doubles, are there 2 values that are only found in the same 2 cells?
           if (cellsByValue[value].length !== N) continue
-          const matchingValues = [value].concat(
-            numbers.filter(
-              otherValue =>
-                otherValue !== value && //
-                arraysMatch(cellsByValue[value], cellsByValue[otherValue])
-            )
+          const matchingValues = numbers.filter(
+            otherValue => value === otherValue || arraysMatch(cellsByValue[value], cellsByValue[otherValue])
           )
 
           if (matchingValues.length === N) {
             // if so, remove all other candidates from the matching cells
             const matchingCells = cellsByValue[value]
-            const result = {
-              matches: matchingCells.flatMap(index =>
-                board.candidates[index] //
-                  .filter(v => matchingValues.includes(v))
-                  .map(value => ({ index, value }))
-              ),
-              removals: matchingCells.flatMap(index =>
-                board.candidates[index]
-                  .filter(v => !matchingValues.includes(v)) //
-                  .map(value => ({ index, value }))
-              ),
-            }
-            if (result.removals.length) return result
+            const matches = matchingCells.flatMap(index =>
+              board.candidates[index] //
+                .filter(value => matchingValues.includes(value))
+                .map(value => ({ index, value }))
+            )
+            const removals = matchingCells.flatMap(index =>
+              board.candidates[index]
+                .filter(value => !matchingValues.includes(value)) //
+                .map(value => ({ index, value }))
+            )
+            if (removals.length) return { matches, removals }
           }
         }
       }
@@ -123,7 +112,7 @@ export const lockedTuples: Strategy = board => {
       if (!(candidateCells.length === 2 || candidateCells.length === 3)) continue
 
       for (const rowOrCol of ['row', 'col'] as const) {
-        // are all matchingCells in this box in the same row or column?
+        // are all candidates in this box in the same row or column?
         const matchesRowOrCol = candidateCells.map(i => unitLookup[rowOrCol][i])
         const rowOrColIndex = matchesRowOrCol[0]
         const isSingleRowOrCol = matchesRowOrCol.every(i => i === rowOrColIndex)
@@ -163,8 +152,8 @@ export const boxLineReduction: Strategy = board => {
         if (isSingleBox) {
           const boxCells = box(boxNumber)
           const removals = boxCells
-            .filter(board.hasCandidate(value))
             .filter(excluding(candidateCells))
+            .filter(board.hasCandidate(value))
             .map(i => ({ index: i, value }))
           if (removals.length) {
             const matches = candidateCells.flatMap(index => ({ index, value }))
