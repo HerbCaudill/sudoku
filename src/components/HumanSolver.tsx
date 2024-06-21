@@ -42,6 +42,10 @@ export const HumanSolver = ({ puzzle, onNewGame }: Props) => {
     setNumber(numberKey)
   })
 
+  useHotkeys(['escape'], () => clearHint())
+  useHotkeys(['h', 'H'], () => getHint())
+  useHotkeys(['f', 'F'], () => fill())
+
   // HELPERS
 
   const isSolved = state.grid.every((value, i) => value === state.solution[i])
@@ -86,6 +90,24 @@ export const HumanSolver = ({ puzzle, onNewGame }: Props) => {
   const reset = () => {
     setNumber(1)
     dispatch({ type: 'RESET' })
+  }
+
+  const getHint = () => {
+    const { grid, candidates } = state
+
+    const board = new Board(
+      Object.keys(candidates).length === 0 ? { grid: state.grid } : { candidates: state.candidates }
+    )
+    const hint = board.findNextMove()
+    if (hint.matches?.length) setNumber(hint.matches[0].value)
+    setHint(hint)
+  }
+
+  const clearHint = () => setHint(undefined)
+
+  const fill = () => {
+    const { candidates } = new Board({ grid: state.grid })
+    dispatch({ type: 'SET_CANDIDATES', candidates })
   }
 
   const numberIsComplete = (n: number) => state.grid.filter(v => v === n).length === 9
@@ -142,7 +164,7 @@ export const HumanSolver = ({ puzzle, onNewGame }: Props) => {
             <div className="font-sans text-sm border border-gray-600 rounded p-2 flex flex-row gap-2 ">
               <IconBulb className="size-4 text-gray-600" aria-hidden="true" />
               <span className="grow">{changeCase.sentenceCase(hint.label)}</span>
-              <button className="p-1" onClick={() => setHint(undefined)}>
+              <button className="p-1" onClick={clearHint}>
                 <IconX className="size-4 text-gray-500" aria-hidden="true" />
               </button>
             </div>
@@ -162,32 +184,12 @@ export const HumanSolver = ({ puzzle, onNewGame }: Props) => {
               Copy
             </button>
 
-            <button
-              className="button button-sm"
-              title="Fill candidates"
-              onClick={() => {
-                const { candidates } = new Board({ grid: state.grid })
-                dispatch({ type: 'SET_CANDIDATES', candidates })
-              }}
-            >
+            <button className="button button-sm" title="Fill candidates" onClick={fill}>
               <Icon123 className="size-4" aria-hidden="true" />
               Fill
             </button>
 
-            <button
-              className="button button-sm"
-              title="Move"
-              onClick={() => {
-                const { grid, candidates } = state
-
-                const board = new Board(
-                  Object.keys(candidates).length === 0 ? { grid: state.grid } : { candidates: state.candidates }
-                )
-                const hint = board.findNextMove()
-                if (hint.matches?.length) setNumber(hint.matches[0].value)
-                setHint(hint)
-              }}
-            >
+            <button className="button button-sm" title="Move" onClick={getHint}>
               <IconBulb className="size-4" aria-hidden="true" />
               Hint
             </button>
