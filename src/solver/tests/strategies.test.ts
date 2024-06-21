@@ -2,28 +2,6 @@ import { Board, strategies } from 'solver'
 import { describe, expect, it } from 'vitest'
 
 describe('naked tuples', () => {
-  // it('finds naked singles in a row', () => {
-  //   const board = new Board({
-  //     candidates: `
-  //     1 1234 1234 . . . . . .
-  //     . . . . . . . . .
-  //     . . . . . . . . .
-  //     . . . . . . . . .
-  //     . . . . . . . . .
-  //     . . . . . . . . .
-  //     . . . . . . . . .
-  //     . . . . . . . . .
-  //     . . . . . . . . .
-  //     `,
-  //   })
-  //   const { matches, removals } = strategies.nakedSingles(board)!
-  //   expect(matches).toEqual([{ index: 0, value: 1 }])
-  //   expect(removals).toEqual([
-  //     { index: 1, value: 1 },
-  //     { index: 2, value: 1 },
-  //   ])
-  // })
-
   it('finds naked doubles in a row', () => {
     const board = new Board({
       candidates: `

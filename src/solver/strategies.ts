@@ -2,16 +2,15 @@ import { Board } from './Board'
 import { arraysMatch } from 'lib/arraysMatch'
 import { cells, numbers, unitLookup } from './constants'
 import { excluding } from 'lib/excluding'
-import { peersByType } from './peers'
+import { peers, peersByType } from './peers'
 import { box, unitByType } from './units'
 
 export const nakedSingles: Strategy = board => {
   for (const index of cells) {
     if (board.grid[index] === 0 && board.candidates[index].length === 1) {
-      // console.log(board.printGrid)
-      // console.log(board.printCandidates)
       const value = board.candidates[index][0]
-      return { solved: { index, value }, matches: [], removals: [] }
+      const removals = peers[index].filter(board.hasCandidate(value)).map(index => ({ index, value }))
+      return { solved: { index, value }, matches: [], removals }
     }
   }
   return null
