@@ -1,4 +1,5 @@
 import { Action, Grid, State } from './types'
+import { numbers, Solver } from './solver'
 
 export const reducer = (state: State, action: Action): State => {
   const updateState = (newState: Partial<State>) => {
@@ -12,6 +13,16 @@ export const reducer = (state: State, action: Action): State => {
 
   switch (action.type) {
     // STATE UPDATES
+
+    case 'LOAD': {
+      const { puzzle } = action
+      const grid = [...puzzle]
+      const solver = new Solver(puzzle)
+      const solution = solver.solve() as Grid // we know it has a solution
+      const candidates = {}
+      return updateState({ grid, solution, candidates, index: -1 })
+    }
+
     case 'SET': {
       const { index: i, value } = action
 
@@ -51,7 +62,7 @@ export const reducer = (state: State, action: Action): State => {
     }
 
     case 'RESET': {
-      const initialState = state.history.pop()!!! // 😅
+      const initialState = state.history.pop()!!!!!! // 😅
       return { ...initialState }
     }
 
@@ -74,9 +85,10 @@ export const reducer = (state: State, action: Action): State => {
   }
 }
 
-export const getInitialState = (puzzle: Grid) => {
+export const getInitialState = () => {
   const initialState: State = {
-    grid: [...puzzle],
+    grid: [],
+    solution: [],
     candidates: {},
     index: -1,
     history: [],

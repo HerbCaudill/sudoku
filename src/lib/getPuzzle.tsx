@@ -1,6 +1,6 @@
 import { makeRandom } from '@herbcaudill/random'
 
-export const loadPuzzle = async (level: number) => {
+export const getPuzzle = async (level: number) => {
   const random = makeRandom()
   if (level < 0 || level > 4) throw new Error('Invalid level')
   const puzzles = await fetch(`/puzzles/${level}.txt`)

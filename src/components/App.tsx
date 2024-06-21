@@ -1,6 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { useLocalStorage } from '@uidotdev/usehooks'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { toGrid } from '../lib/toGrid'
 import { Grid, Solver } from '../solver'
 import { Fade } from '../transitions/Fade'
@@ -9,36 +9,40 @@ import { BotSolver } from './BotSolver'
 import { HumanSolver } from './HumanSolver'
 import { RadioGroup } from './RadioGroup'
 import { Spinner } from './Spinner'
-import { loadPuzzle } from '../lib/loadPuzzle'
+import { getPuzzle } from '../lib/getPuzzle'
+import { printGrid } from '../lib/printGrid'
 
 export const App = () => {
   const [mode, setMode] = useLocalStorage<Mode>('mode', HUMAN)
 
   const [puzzle, setPuzzle] = useState<Grid>()
-  const [solution, setSolution] = useState<Grid>()
+  const [puzzleToLoad, setPuzzleToLoad] = useState<string>()
   const [level, setLevel] = useLocalStorage('level', 0)
 
   const [showSettings, setShowSettings] = useState(false)
+  const [showLoadGame, setShowLoadGame] = useState(false)
+
+  const loadPuzzleTextArea = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     newGame(level)
   }, [level])
 
   useEffect(() => {
-    if (!puzzle) return
-    const solver = new Solver(puzzle)
-    const solution = solver.solve() as Grid // we know it has a solution
-    setSolution(solution)
-  }, [puzzle])
+    if (!puzzleToLoad || puzzleToLoad.length === 0) return
+    const puzzle = toGrid(puzzleToLoad)
+    setPuzzle(puzzle)
+    setPuzzleToLoad('')
+  }, [puzzleToLoad])
 
   const newGame = (level: number) => {
-    loadPuzzle(level).then(p => {
+    getPuzzle(level).then(p => {
       const puzzle = toGrid(p)
       setPuzzle(puzzle)
     })
   }
 
-  return puzzle && solution ? (
+  return puzzle ? (
     <>
       <div
         className="h-dvh p-2 pb-12 w-[36rem] max-w-full mx-auto flex flex-col gap-4 touch-none select-none relative"
@@ -48,7 +52,7 @@ export const App = () => {
           {mode === BOT ? ( //
             <BotSolver puzzle={puzzle} />
           ) : (
-            <HumanSolver puzzle={puzzle} solution={solution} onNewGame={() => newGame(level)} />
+            <HumanSolver puzzle={puzzle} onNewGame={() => newGame(level)} />
           )}
         </div>
 
@@ -57,7 +61,7 @@ export const App = () => {
           <IconSettings className="h-4 w-4" />
         </button>
 
-        {/* Settings */}
+        {/* Settings dialog */}
         <Transition.Root show={showSettings} as={Fragment}>
           <Dialog as="div" className="relative z-50 " onClose={setShowSettings}>
             <Fade>
@@ -68,7 +72,7 @@ export const App = () => {
                 {/* settings container */}
                 <Dialog.Panel>
                   {/* sidebar */}
-                  <div className="flex flex-col  gap-5 bg-white px-4 py-12 w-[36rem] max-w-full mx-auto">
+                  <div className="flex flex-col gap-5 bg-white px-4 py-12 w-[36rem] max-w-full mx-auto">
                     <RadioGroup
                       value={mode}
                       onChange={v => setMode(v as Mode)}
@@ -89,12 +93,54 @@ export const App = () => {
                         { value: 4, label: 'Extreme' },
                       ]}
                     />
-                    <p>
+                    <p className="flex flex-row gap-2">
                       <button className="button button-md" onClick={() => newGame(level)}>
                         <IconRefresh className="h-4 w-4" />
                         New game
                       </button>
+                      <button className="button button-md" onClick={() => setShowLoadGame(true)}>
+                        <IconUpload className="h-4 w-4" />
+                        Load
+                      </button>
                     </p>
+                  </div>
+                </Dialog.Panel>
+              </Slide>
+            </div>
+          </Dialog>
+        </Transition.Root>
+
+        {/* Load game dialog */}
+        <Transition.Root show={showLoadGame} as={Fragment}>
+          <Dialog as="div" className="relative z-50 " onClose={setShowLoadGame}>
+            <Fade>
+              <Backdrop />
+            </Fade>
+            <div className="fixed bottom-0  w-full ">
+              <Slide>
+                <Dialog.Panel>
+                  <div className="flex flex-col gap-5 bg-white p-4 w-[36rem] max-w-full mx-auto">
+                    <p className="text-sm">Load game</p>
+                    <textarea
+                      className="w-full h-64 border font-mono p-2 text-sm"
+                      autoFocus
+                      value={puzzleToLoad}
+                      ref={loadPuzzleTextArea}
+                    />
+                    <div className="flex flex-row justify-between gap-2">
+                      <button className="button button-sm" onClick={() => setShowLoadGame(false)}>
+                        Cancel
+                      </button>
+                      <button
+                        className="button button-sm"
+                        onClick={() => {
+                          setPuzzleToLoad(loadPuzzleTextArea.current?.value ?? '')
+                          setShowLoadGame(false)
+                        }}
+                      >
+                        Load
+                      </button>
+                    </div>
                   </div>
                 </Dialog.Panel>
               </Slide>

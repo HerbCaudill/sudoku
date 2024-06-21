@@ -1,25 +1,25 @@
-import { useEffect, useReducer, useState } from 'react'
+import { useEffect, useMemo, useReducer, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { Grid, numbers } from '../solver'
+import { Grid, numbers, Solver } from '../solver'
 import { Puzzle } from './Puzzle'
 import { RadioGroup } from './RadioGroup'
 import { Confetti } from './Confetti'
 import { reducer, getInitialState } from '../reducer'
+import { printGrid } from '../lib/printGrid'
 
 const numberKeys = numbers.map(n => n.toString())
 
-export const HumanSolver = ({ puzzle, solution, onNewGame }: Props) => {
+export const HumanSolver = ({ puzzle, onNewGame }: Props) => {
   // STATE
 
-  const [state, dispatch] = useReducer(reducer, getInitialState(puzzle))
+  const [state, dispatch] = useReducer(reducer, getInitialState())
 
   useEffect(() => {
-    reset()
-  }, [puzzle, solution])
+    if (!puzzle || puzzle.length === 0) return
+    dispatch({ type: 'LOAD', puzzle })
+  }, [puzzle])
 
   const [number, setNumber] = useState(1)
-
-  const isSolved = state.grid.every((value, i) => value === solution[i])
 
   // HOTKEYS
 
@@ -40,6 +40,8 @@ export const HumanSolver = ({ puzzle, solution, onNewGame }: Props) => {
   })
 
   // HELPERS
+
+  const isSolved = state.grid.every((value, i) => value === state.solution[i])
 
   const setValue = (index: number) => {
     if (puzzle[index]) return // can't change fixed cells
@@ -79,17 +81,20 @@ export const HumanSolver = ({ puzzle, solution, onNewGame }: Props) => {
     })
 
   const reset = () => {
+    console.log('reset')
     setNumber(1)
     dispatch({ type: 'RESET' })
   }
 
   const numberIsComplete = (n: number) => state.grid.filter(v => v === n).length === 9
 
+  if (!state.grid?.length) return null
+
   return (
     <div className="flex flex-col gap-4 h-full">
       <Puzzle
         puzzle={puzzle}
-        solution={solution}
+        solution={state.solution}
         grid={state.grid}
         candidates={state.candidates}
         onSetValue={setValue}
@@ -150,6 +155,5 @@ export const HumanSolver = ({ puzzle, solution, onNewGame }: Props) => {
 
 type Props = {
   puzzle: Grid
-  solution: Grid
   onNewGame: () => void
 }

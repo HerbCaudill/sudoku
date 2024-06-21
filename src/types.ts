@@ -49,6 +49,7 @@ export type Icon = (props: React.SVGProps<SVGSVGElement>) => React.ReactElement
 // REDUCER
 
 export type Action =
+  | { type: 'LOAD'; puzzle: Grid }
   | { type: 'SET'; index: number; value: number }
   | { type: 'ADD'; index: number; candidate: number }
   | { type: 'REMOVE'; index: number; candidate: number }
@@ -58,6 +59,7 @@ export type Action =
 
 export type State = {
   grid: Grid
+  solution: Grid
   candidates: CandidateGrid
   index: number
   history: State[]
