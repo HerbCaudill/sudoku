@@ -138,9 +138,18 @@ export const HumanSolver = ({ puzzle, onNewGame }: Props) => {
             </div>
           </div>
           {hint && (
-            <div className="font-sans text-[3cqw] border border-gray-600 rounded p-2 flex flex-row gap-2">
+            <div className="font-sans text-[2.5cqw] border border-gray-600 rounded p-2 flex flex-row gap-2 ">
               <IconBulb className="h-4 w-4 text-gray-600" aria-hidden="true" />
-              {changeCase.sentenceCase(hint.strategy)}
+              <span className="grow">{changeCase.sentenceCase(hint.strategy)}</span>
+
+              <button
+                className="p-1"
+                onClick={() => {
+                  setHint(undefined)
+                }}
+              >
+                <IconX className="size-4 text-gray-500" aria-hidden="true" />
+              </button>
             </div>
           )}
 

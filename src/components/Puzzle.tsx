@@ -125,14 +125,11 @@ export const Puzzle = ({
                     return (
                       <span
                         key={j}
-                        className={cx(
-                          'text-center rounded-full border border-transparent size-[3.4cqw] leading-[3.2cqw] aspect-square',
-                          {
-                            'border-danger-600 text-danger-300': include && hintRemove({ index: i, value: val }),
-                            'border-blue-500k text-white bg-primary-500':
-                              include && hintHighlight({ index: i, value: val }),
-                          }
-                        )}
+                        className={cx('text-center rounded-full size-[3.4cqw] leading-[3.2cqw] aspect-square', {
+                          'border border-danger-600 text-danger-400': include && hintRemove({ index: i, value: val }),
+                          'border border-blue-500k text-white bg-primary-500':
+                            include && hintHighlight({ index: i, value: val }),
+                        })}
                       >
                         {include ? val : ' '}
                       </span>
