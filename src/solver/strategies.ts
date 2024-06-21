@@ -2,15 +2,14 @@ import { Board } from './Board.js'
 import { arraysMatch } from './arraysMatch.js'
 import { numbers, unitLookup } from './constants.js'
 import { excluding } from './excluding.js'
-import { peers, peersByType } from './peers.js'
-import { gridToCandidates } from './tests/toCandidateGrid'
+import { peersByType } from './peers.js'
 import { box, unitByType } from './units'
 
 export const nakedSingles: Strategy = board => {
   for (const index of numbers) {
     if (board.grid[index] === 0 && board.candidates[index].length === 1) {
       const value = board.candidates[index][0]
-      return { solved: { index, value } }
+      return { solved: { index, value }, matches: [], removals: [] }
     }
   }
   return null
@@ -210,7 +209,17 @@ export type Elimination = {
 }
 
 /** Either a solved cell (a naked single), or candidates eliminated using a strategy */
-export type StrategyResult = SolvedCell | Elimination
+export type StrategyResult = {
+  /** A single cell that has been solved */
+  solved?: CellCandidate
+
+  /** Candidates that were used in the strategy. We record these so we can highlight them later.  */
+  matches: CellCandidate[]
+
+  /** Candidates to remove. In some cases (e.g. hidden doubles) these will be from the
+   * matched cells, in others (e.g. naked doubles, locked doubles) they will be from other cells. */
+  removals: CellCandidate[]
+}
 
 /** A specific candidate in a specific cell */
 export type CellCandidate = {
