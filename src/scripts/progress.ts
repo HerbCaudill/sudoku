@@ -27,9 +27,10 @@ for (const file of files) {
   totalAttempts += attempts
 }
 
+console.log()
 const percentage = `${((totalSolved / totalAttempts) * 100).toFixed(0)}%`
 console.log(
   chalk.gray(
-    `${chalk.cyan('Total')}: solved ${chalk.white(`${totalSolved}/${totalAttempts}`)} puzzles (${chalk.yellow(percentage)})`
+    `${chalk.cyan('total')}: solved ${chalk.white(`${totalSolved}/${totalAttempts}`)} puzzles (${chalk.yellow(percentage)})`
   )
 )
