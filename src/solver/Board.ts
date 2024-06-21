@@ -42,7 +42,6 @@ export class Board {
   }
 
   applyMove(move: Move) {
-    console.log(move)
     if (move.solved) {
       const grid = [...this.grid]
       grid[move.solved.index] = move.solved.value
