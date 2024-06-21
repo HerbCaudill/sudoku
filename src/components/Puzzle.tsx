@@ -69,7 +69,7 @@ export const Puzzle = ({
     hint?.matches.find(r => r.index === index && r.value === value) !== undefined
 
   return (
-    <div className="aspect-square outlinepointer-events-none">
+    <div className=" outlinepointer-events-none">
       <div className="grid grid-rows-9 h-full grid-cols-9 border-black border-4 bg-white">
         {grid.map((v, i) => {
           const cellCandidates = candidates[i]?.length > 0 ? candidates[i] : null
@@ -80,7 +80,7 @@ export const Puzzle = ({
           return (
             <div
               className={cx(
-                'flex content-center justify-center items-center aspect-square', //
+                'flex content-center justify-center items-center ', //
                 'pointer-events-auto cursor-pointer ',
                 {
                   'animate-highlight': index === i && state !== 'CONTRADICTION',
