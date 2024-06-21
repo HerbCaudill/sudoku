@@ -5,6 +5,7 @@ import { VitePWA as vitePWA } from 'vite-plugin-pwa'
 import autoImport from 'unplugin-auto-import/vite'
 import iconsResolver from 'unplugin-icons/resolver'
 import icons from 'unplugin-icons/vite'
+import tsconfigPaths from 'vite-tsconfig-paths'
 
 const pwaOptions: Partial<VitePWAOptions> = {
   mode: 'production',
@@ -14,7 +15,7 @@ const pwaOptions: Partial<VitePWAOptions> = {
   registerType: 'autoUpdate',
   strategies: 'injectManifest',
   injectManifest: {
-    globPatterns: ['**/*.{js,css,html,ico,png,json,svg}'],
+    globPatterns: ['**/*.{js,css,html,ico,png,json,svg,txt}'],
   },
   manifest: {
     name: 'Sudoku',
@@ -33,6 +34,7 @@ const pwaOptions: Partial<VitePWAOptions> = {
 
 export default defineConfig({
   plugins: [
+    tsconfigPaths(),
     react(),
     vitePWA(pwaOptions),
     autoImport({
