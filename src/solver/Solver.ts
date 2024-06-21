@@ -1,10 +1,10 @@
 import { makeRandom } from '@herbcaudill/random'
-import { numbers } from './constants.js'
-import { toGrid } from '../lib/toGrid.js'
-import { peers } from './peers.js'
-import { allSingles } from './singles.js'
-import { AnalysisResult, CandidateGrid, Grid, InterimResult } from '../types.js'
-import { getUnsolved } from './getUnsolved.js'
+import { numbers } from './constants'
+import { toGrid } from 'lib/toGrid'
+import { peers } from './peers'
+import { allSingles } from './singles'
+import { AnalysisResult, CandidateGrid, Grid, InterimResult } from 'types'
+import { getUnsolved } from './getUnsolved'
 import { strategies } from './strategies'
 
 const MAX_STEPS = 10000

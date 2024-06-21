@@ -1,4 +1,4 @@
-import { Grid } from '../types.js'
+import { Grid } from 'types'
 
 export const printGrid = (grid: Grid) => {
   let result = ''

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { generate } from '../generate.js'
-import { printGrid } from '../../lib/printGrid.js'
+import { generate } from 'solver/generate'
+import { printGrid } from 'lib/printGrid'
 import { makeRandom } from '@herbcaudill/random'
 
 describe('generate', () => {

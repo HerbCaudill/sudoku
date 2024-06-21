@@ -1,7 +1,5 @@
-import { peers } from '../peers'
-import { Board } from '../Board'
-import { CandidateGrid, type Grid } from 'types'
-import { numbers } from '../constants'
+import { Board, numbers, peers } from 'solver'
+import { type CandidateGrid, type Grid } from 'types'
 
 export const stringToCandidates = (s: string): CandidateGrid => {
   const grid = {} as CandidateGrid

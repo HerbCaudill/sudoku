@@ -1,5 +1,5 @@
 import cx from 'classnames'
-import { CandidateGrid, Grid, SolverState, cols, numbers, rows } from '../solver'
+import { CandidateGrid, Grid, SolverState, cols, numbers, rows } from 'solver'
 import { useState } from 'react'
 
 const DOUBLE_TAP_INTERVAL = 400

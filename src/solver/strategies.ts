@@ -1,8 +1,8 @@
-import { Board } from './Board.js'
-import { arraysMatch } from './arraysMatch.js'
-import { cells, numbers, unitLookup } from './constants.js'
-import { excluding } from './excluding.js'
-import { peersByType } from './peers.js'
+import { Board } from './Board'
+import { arraysMatch } from 'lib/arraysMatch'
+import { cells, numbers, unitLookup } from './constants'
+import { excluding } from 'lib/excluding'
+import { peersByType } from './peers'
 import { box, unitByType } from './units'
 
 export const nakedSingles: Strategy = board => {

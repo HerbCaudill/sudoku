@@ -1,6 +1,6 @@
-import { cols, emptyGrid, rows } from '../solver/constants.js'
+import { cols, emptyGrid, rows } from 'solver/constants'
 import chalk from 'chalk'
-import { CandidateGrid, Grid } from '../types.js'
+import { CandidateGrid, Grid } from 'types'
 
 export const printCandidates = (candidates: CandidateGrid) => {
   const output = Array.from({ length: 37 }, () => Array(37).fill(' '))

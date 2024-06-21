@@ -1,7 +1,7 @@
 import { CandidateGrid, Grid } from 'types'
-import { printCandidates } from '../lib/printCandidates'
-import { printGrid } from '../lib/printGrid'
-import { toGrid } from '../lib/toGrid'
+import { printCandidates } from 'lib/printCandidates'
+import { printGrid } from 'lib/printGrid'
+import { toGrid } from 'lib/toGrid'
 import { cells, numbers } from './constants'
 import { gridToCandidates, stringToCandidates } from './tests/toCandidateGrid'
 import type { Move } from './findNextMove'
@@ -86,8 +86,6 @@ export class Board {
   hasCandidates(values: number[]) {
     return (index: number) => isSubset(this.candidates[index], values)
   }
-
-  //
 }
 
 const isSubset = (a: number[] = [], b: number[]) => a.length > 0 && b.length > 0 && a.every(value => b.includes(value))

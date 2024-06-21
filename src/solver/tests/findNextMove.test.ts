@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Board } from '../Board.js'
-import { findNextMove, solve } from '../findNextMove.js'
+import { Board, findNextMove, solve } from 'solver'
 
 describe('findNextMove', () => {
   it('single vacancy', () => {

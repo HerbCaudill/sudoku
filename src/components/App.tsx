@@ -1,16 +1,15 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { useLocalStorage } from '@uidotdev/usehooks'
+import { getPuzzle } from 'lib/getPuzzle'
+import { toGrid } from 'lib/toGrid'
 import { Fragment, useEffect, useRef, useState } from 'react'
-import { toGrid } from '../lib/toGrid'
-import { Grid, Solver } from '../solver'
-import { Fade } from '../transitions/Fade'
-import { Slide } from '../transitions/Slide'
+import { Fade } from 'transitions/Fade'
+import { Slide } from 'transitions/Slide'
+import { Grid } from 'types'
 import { BotSolver } from './BotSolver'
 import { HumanSolver } from './HumanSolver'
 import { RadioGroup } from './RadioGroup'
 import { Spinner } from './Spinner'
-import { getPuzzle } from '../lib/getPuzzle'
-import { printGrid } from '../lib/printGrid'
 
 export const App = () => {
   const [mode, setMode] = useLocalStorage<Mode>('mode', HUMAN)

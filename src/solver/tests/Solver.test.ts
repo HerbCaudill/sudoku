@@ -1,9 +1,9 @@
 import { assert, describe, expect, it } from 'vitest'
-import { load } from '../../lib/loadFile.js'
-import { printGrid } from '../../lib/printGrid.js'
-import { solve } from '../../lib/solve.js'
-import { toGrid } from '../../lib/toGrid.js'
-import { Grid } from '../../types.js'
+import { load } from 'lib/loadFile'
+import { printGrid } from 'lib/printGrid'
+import { solve } from 'lib/solve'
+import { toGrid } from 'lib/toGrid'
+import { Grid } from 'types'
 
 describe('Solver', () => {
   it('no vacancies', () => {

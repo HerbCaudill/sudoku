@@ -1,6 +1,5 @@
+import { Board, strategies } from 'solver'
 import { describe, expect, it } from 'vitest'
-import { strategies } from '../strategies.js'
-import { Board } from '../Board'
 
 describe('naked tuples', () => {
   // it('finds naked singles in a row', () => {

@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useReducer, useState } from 'react'
+import { useEffect, useReducer, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { Grid, numbers, Solver } from '../solver'
+import { getInitialState, reducer } from 'reducer'
+import { Board, numbers } from 'solver'
+import type { Grid } from 'types'
+import { Confetti } from './Confetti'
 import { Puzzle } from './Puzzle'
 import { RadioGroup } from './RadioGroup'
-import { Confetti } from './Confetti'
-import { reducer, getInitialState } from '../reducer'
-import { printGrid } from '../lib/printGrid'
 
 const numberKeys = numbers.map(n => n.toString())
 
@@ -141,6 +141,15 @@ export const HumanSolver = ({ puzzle, onNewGame }: Props) => {
             </button>
             <button className="button button-lg" title="Redo" onClick={() => dispatch({ type: 'REDO' })}>
               <IconArrowForwardUp className="h-4 w-4" aria-hidden="true" />
+            </button>
+            <button
+              className="button button-lg"
+              title="Hint"
+              onClick={() => {
+                const board = new Board({ grid: state.grid })
+              }}
+            >
+              <IconBulb className="h-4 w-4" aria-hidden="true" />
             </button>
             <button className="button button-lg" title="Reset" onClick={() => reset()}>
               <IconTrash className="h-4 w-4" aria-hidden="true" />

@@ -1,6 +1,6 @@
-import { rowPeers, colPeers, boxPeers } from './peers.js'
-import { CandidateGrid } from '../types.js'
-import { SingleMap } from '../types.js'
+import { rowPeers, colPeers, boxPeers } from './peers'
+import { CandidateGrid } from 'types'
+import { SingleMap } from 'types'
 
 // HELPERS
 const nakedSingles = (candidates: CandidateGrid) => {

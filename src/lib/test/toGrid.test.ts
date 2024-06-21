@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { toGrid } from '../toGrid'
-import { printGrid } from '../printGrid'
-import { arraysMatch } from '../../solver/arraysMatch'
+import { toGrid } from 'lib/toGrid'
+import { printGrid } from 'lib/printGrid'
+import { arraysMatch } from 'lib/arraysMatch'
 
 describe('toGrid', () => {
   it('should fill in missing values', () => {

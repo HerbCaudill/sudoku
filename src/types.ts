@@ -59,7 +59,7 @@ export type Action =
 
 export type State = {
   grid: Grid
-  solution: Grid
+  solution:
   candidates: CandidateGrid
   index: number
   history: State[]

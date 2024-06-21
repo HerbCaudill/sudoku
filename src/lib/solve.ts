@@ -1,6 +1,6 @@
-import { toGrid } from './toGrid.js'
-import { printGrid } from './printGrid.js'
-import { Solver } from '../solver/Solver.js'
+import { toGrid } from './toGrid'
+import { printGrid } from './printGrid'
+import { Solver } from 'solver/Solver'
 
 export const solve = (puzzle: string) => {
   const { solution, solved, error } = new Solver(puzzle).analyze()

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { peers } from '../peers.js'
+import { peers } from 'solver'
 
 describe('peers', () => {
   it('every cell has 20 peers', () => {

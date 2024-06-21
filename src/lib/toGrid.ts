@@ -1,4 +1,4 @@
-import { Grid } from '../types'
+import { Grid } from 'types'
 
 export const toGrid = (str: string) => {
   const grid = str
