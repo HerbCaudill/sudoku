@@ -8,7 +8,11 @@ export const findNextMove = (board: Board): Move => {
   for (const strategy of strategiesByDifficulty) {
     const result = strategy(board)
     if (result && ('solved' in result || result.removals.length)) {
-      return { strategy: strategy.label, difficulty: strategy.difficulty, ...result }
+      return {
+        strategy: strategy.label,
+        difficulty: strategy.difficulty,
+        ...result,
+      }
     }
   }
   throw new Error('No moves found')
