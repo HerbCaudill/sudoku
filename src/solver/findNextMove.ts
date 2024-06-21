@@ -9,18 +9,17 @@ export const findNextMove = (board: Board): Move => {
     const result = strategy(board)
     if (result && ('solved' in result || result.removals.length)) {
       return {
-        strategy: strategy.label,
-        difficulty: strategy.difficulty,
+        ...strategy,
         ...result,
       }
     }
   }
-  throw new Error('No moves found')
+  return { label: 'No moves found', matches: [], removals: [] } as Move
 }
 
 export type Move = {
-  strategy: keyof typeof strategies
-  difficulty: number
+  label: keyof typeof strategies
+  difficulty?: number
   solved?: CellCandidate
   matches: CellCandidate[]
   removals: CellCandidate[]

@@ -1,5 +1,5 @@
 import { Action, Grid, State } from './types'
-import { numbers, Solver } from './solver'
+import { numbers, peers, Solver } from './solver'
 
 export const reducer = (state: State, action: Action): State => {
   const updateState = (newState: Partial<State>) => {
@@ -35,9 +35,12 @@ export const reducer = (state: State, action: Action): State => {
       const grid = [...state.grid]
       grid[i] = value
 
-      // remove candidates
+      // propagate
       const candidates = { ...state.candidates }
-      delete candidates[i]
+      candidates[i] = [value]
+      peers[i].forEach(peer => {
+        candidates[peer] = candidates[peer]?.filter(n => n !== value)
+      })
 
       return updateState({ grid, candidates, index: i })
     }

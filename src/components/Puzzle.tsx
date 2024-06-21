@@ -80,7 +80,7 @@ export const Puzzle = ({
           return (
             <div
               className={cx(
-                'flex content-center justify-center items-center ', //
+                'flex content-center justify-center items-center aspect-square overflow-hidden ', //
                 'pointer-events-auto cursor-pointer ',
                 {
                   'animate-highlight': index === i && state !== 'CONTRADICTION',
@@ -117,7 +117,7 @@ export const Puzzle = ({
                 <div
                   className={cx(
                     'pointer-events-none',
-                    'w-full h-full grid grid-rows-3 grid-cols-3 text-[2.2cqw] p-[1px] text-neutral-500'
+                    'grid grid-rows-3 grid-cols-3 text-[2.2cqw] p-[1px] text-neutral-500'
                   )}
                 >
                   {numbers.map((val, j) => {

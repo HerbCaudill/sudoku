@@ -16,7 +16,7 @@ export class Board {
       this.candidates = gridToCandidates(this.grid)
     } else {
       this.candidates = typeof input.candidates === 'string' ? stringToCandidates(input.candidates) : input.candidates
-      this.grid = cells.map(i => (this.candidates[i].length === 1 ? this.candidates[i][0] : 0))
+      this.grid = cells.map(i => (this.candidates[i]?.length === 1 ? this.candidates[i][0] : 0))
     }
   }
 

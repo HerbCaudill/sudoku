@@ -140,7 +140,7 @@ export const HumanSolver = ({ puzzle, onNewGame }: Props) => {
           {hint && (
             <div className="font-sans text-[2.5cqw] border border-gray-600 rounded p-2 flex flex-row gap-2 ">
               <IconBulb className="h-4 w-4 text-gray-600" aria-hidden="true" />
-              <span className="grow">{changeCase.sentenceCase(hint.strategy)}</span>
+              <span className="grow">{changeCase.sentenceCase(hint.label)}</span>
               <button className="p-1" onClick={() => setHint(undefined)}>
                 <IconX className="size-4 text-gray-500" aria-hidden="true" />
               </button>
@@ -162,9 +162,13 @@ export const HumanSolver = ({ puzzle, onNewGame }: Props) => {
               className="button button-lg"
               title="Move"
               onClick={() => {
-                const board = new Board({ candidates: state.candidates })
+                const { grid, candidates } = state
+
+                const board = new Board(
+                  Object.keys(candidates).length === 0 ? { grid: state.grid } : { candidates: state.candidates }
+                )
                 const hint = board.findNextMove()
-                setNumber(hint.matches[0].value)
+                if (hint.matches?.length) setNumber(hint.matches[0].value)
                 setHint(hint)
               }}
             >

@@ -15,7 +15,7 @@ describe('findNextMove', () => {
         6 7 8  9 1 2  3 4 5
         9 1 2  3 4 5  6 7 8`,
     })
-    const { strategy, solved } = findNextMove(board)
+    const { label: strategy, solved } = findNextMove(board)
     expect(strategy).toBe('nakedSingles')
     expect(solved).toEqual({ index: 2, value: 3 })
   })
@@ -49,7 +49,7 @@ describe('findNextMove', () => {
       5 . 8  6 7 .  1 9 2 
       . 9 6  5 1 2  4 . 8`,
     })
-    const { strategy, solved } = findNextMove(board)
+    const { label: strategy, solved } = findNextMove(board)
     expect(strategy).toBe('nakedSingles')
     expect(solved).toEqual({ index: 1, value: 6 })
   })
@@ -67,7 +67,7 @@ describe('findNextMove', () => {
       . . .  . . .  . 1 3 
       . . 5  3 1 .  4 . .`,
     })
-    const { strategy, matches } = findNextMove(board)
+    const { label: strategy, matches } = findNextMove(board)
     expect(strategy).toBe('hiddenSingles')
     expect(matches).toEqual([{ index: 15, value: 3 }])
   })
@@ -166,7 +166,7 @@ describe('solve', () => {
     const solver = solve(puzzle)
     for (const { board, move } of solver) {
       if (move) {
-        expect(move.strategy).toBe('nakedSingles')
+        expect(move.label).toBe('nakedSingles')
         expect(move.solved).toBeDefined()
       } else {
         expect(board.isSolved()).toBe(true)
