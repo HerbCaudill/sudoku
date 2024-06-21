@@ -22,18 +22,11 @@ export const App = () => {
   const [showSettings, setShowSettings] = useState(false)
   const [showLoadGame, setShowLoadGame] = useState(false)
 
-  const loadPuzzleTextArea = useRef<HTMLTextAreaElement>(null)
+  const loadInput = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     newGame(level)
   }, [level])
-
-  useEffect(() => {
-    if (!puzzleToLoad || puzzleToLoad.length === 0) return
-    const puzzle = toGrid(puzzleToLoad)
-    setPuzzle(puzzle)
-    setPuzzleToLoad('')
-  }, [puzzleToLoad])
 
   const newGame = (level: number) => {
     getPuzzle(level).then(p => {
@@ -98,7 +91,15 @@ export const App = () => {
                         <IconRefresh className="h-4 w-4" />
                         New game
                       </button>
-                      <button className="button button-md" onClick={() => setShowLoadGame(true)}>
+                      <button
+                        className="button button-md"
+                        onClick={() => {
+                          setShowSettings(false)
+                          setShowLoadGame(true)
+                          loadInput.current?.focus()
+                          setTimeout(() => loadInput.current?.focus(), 300)
+                        }}
+                      >
                         <IconUpload className="h-4 w-4" />
                         Load
                       </button>
@@ -112,20 +113,27 @@ export const App = () => {
 
         {/* Load game dialog */}
         <Transition.Root show={showLoadGame} as={Fragment}>
-          <Dialog as="div" className="relative z-50 " onClose={setShowLoadGame}>
+          <Dialog as="div" className="relative z-50 " onClose={setShowLoadGame} initialFocus={loadInput}>
             <Fade>
               <Backdrop />
             </Fade>
-            <div className="fixed bottom-0  w-full ">
+            <div className="fixed bottom-0 w-full ">
               <Slide>
                 <Dialog.Panel>
                   <div className="flex flex-col gap-5 bg-white p-4 w-[36rem] max-w-full mx-auto">
                     <p className="text-sm">Load game</p>
                     <textarea
-                      className="w-full h-64 border font-mono p-2 text-sm"
-                      autoFocus
+                      className="w-full h-64 border font-mono p-2 text-sm rounded"
+                      onChange={e => {
+                        const puzzleToLoad = e.target.value
+                          .trim()
+                          .split('\n')
+                          .map(line => line.trim())
+                          .join('\n')
+                        setPuzzleToLoad(puzzleToLoad)
+                      }}
                       value={puzzleToLoad}
-                      ref={loadPuzzleTextArea}
+                      ref={loadInput}
                     />
                     <div className="flex flex-row justify-between gap-2">
                       <button className="button button-sm" onClick={() => setShowLoadGame(false)}>
@@ -134,7 +142,10 @@ export const App = () => {
                       <button
                         className="button button-sm"
                         onClick={() => {
-                          setPuzzleToLoad(loadPuzzleTextArea.current?.value ?? '')
+                          if (!puzzleToLoad || puzzleToLoad.length === 0) return
+                          const puzzle = toGrid(puzzleToLoad)
+                          setPuzzle(puzzle)
+                          setPuzzleToLoad('')
                           setShowLoadGame(false)
                         }}
                       >

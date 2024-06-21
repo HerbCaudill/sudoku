@@ -81,7 +81,6 @@ export const HumanSolver = ({ puzzle, onNewGame }: Props) => {
     })
 
   const reset = () => {
-    console.log('reset')
     setNumber(1)
     dispatch({ type: 'RESET' })
   }
