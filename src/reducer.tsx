@@ -27,6 +27,7 @@ export const reducer = (state: State, action: Action): State => {
       const { candidates } = action
       return updateState({ candidates, index: -1 })
     }
+
     case 'SET': {
       const { index: i, value } = action
 
@@ -66,8 +67,7 @@ export const reducer = (state: State, action: Action): State => {
     }
 
     case 'RESET': {
-      const initialState = state.history.pop()!!!!!! // 😅
-      return { ...initialState }
+      return updateState({ candidates: {}, index: -1 })
     }
 
     // UNDO/REDO
