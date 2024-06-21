@@ -7,6 +7,7 @@ import { Confetti } from './Confetti'
 import { Puzzle } from './Puzzle'
 import { RadioGroup } from './RadioGroup'
 import * as changeCase from 'change-case'
+import { printGrid } from 'lib/printGrid'
 
 const numberKeys = numbers.map(n => n.toString())
 
@@ -110,7 +111,7 @@ export const HumanSolver = ({ puzzle, onNewGame }: Props) => {
 
           <div className="flex items-center w-full justify-center">
             <button className="button button-lg" onClick={onNewGame}>
-              <IconRefresh className="h-4 w-4" />
+              <IconRefresh className="size-4" />
               New game
             </button>
           </div>
@@ -129,17 +130,17 @@ export const HumanSolver = ({ puzzle, onNewGame }: Props) => {
           {/* next/prev number */}
           <div className="grow">
             <div className="flex flex-row w-full gap-2">
-              <button className="button button-lg grow" onClick={prevNumber}>
-                <IconArrowLeft className="h-4 w-4" aria-hidden="true" />
+              <button className="button h-12 grow" onClick={prevNumber}>
+                <IconArrowLeft className="size-4" aria-hidden="true" />
               </button>
-              <button className="button button-lg grow" onClick={nextNumber}>
-                <IconArrowRight className="h-4 w-4" aria-hidden="true" />
+              <button className="button h-12 grow" onClick={nextNumber}>
+                <IconArrowRight className="size-4" aria-hidden="true" />
               </button>
             </div>
           </div>
           {hint && (
-            <div className="font-sans text-[2.5cqw] border border-gray-600 rounded p-2 flex flex-row gap-2 ">
-              <IconBulb className="h-4 w-4 text-gray-600" aria-hidden="true" />
+            <div className="font-sans text-sm border border-gray-600 rounded p-2 flex flex-row gap-2 ">
+              <IconBulb className="size-4 text-gray-600" aria-hidden="true" />
               <span className="grow">{changeCase.sentenceCase(hint.label)}</span>
               <button className="p-1" onClick={() => setHint(undefined)}>
                 <IconX className="size-4 text-gray-500" aria-hidden="true" />
@@ -147,19 +148,34 @@ export const HumanSolver = ({ puzzle, onNewGame }: Props) => {
             </div>
           )}
 
-          <div className="flex flex-row gap-2">
+          <div className="flex flex-row gap-2 pb-12">
             <button
-              className="button button-lg"
+              className="button button-sm"
+              title="Copy"
+              onClick={() => {
+                const { grid } = state
+                const text = printGrid(grid)
+                navigator.clipboard.writeText(text)
+              }}
+            >
+              <IconCopy className="size-4" aria-hidden="true" />
+              Copy
+            </button>
+
+            <button
+              className="button button-sm"
               title="Fill candidates"
               onClick={() => {
                 const { candidates } = new Board({ grid: state.grid })
                 dispatch({ type: 'SET_CANDIDATES', candidates })
               }}
             >
-              <Icon123 className="h-4 w-4" aria-hidden="true" />
+              <Icon123 className="size-4" aria-hidden="true" />
+              Fill
             </button>
+
             <button
-              className="button button-lg"
+              className="button button-sm"
               title="Move"
               onClick={() => {
                 const { grid, candidates } = state
@@ -172,19 +188,20 @@ export const HumanSolver = ({ puzzle, onNewGame }: Props) => {
                 setHint(hint)
               }}
             >
-              <IconBulb className="h-4 w-4" aria-hidden="true" />
+              <IconBulb className="size-4" aria-hidden="true" />
+              Hint
             </button>
           </div>
           {/* undo/redo/reset */}
           <div className="flex flex-row gap-2">
             <button className="button button-lg" title="Undo" onClick={() => dispatch({ type: 'UNDO' })}>
-              <IconArrowBackUp className="h-4 w-4" aria-hidden="true" />
+              <IconArrowBackUp className="size-4" aria-hidden="true" />
             </button>
             <button className="button button-lg" title="Redo" onClick={() => dispatch({ type: 'REDO' })}>
-              <IconArrowForwardUp className="h-4 w-4" aria-hidden="true" />
+              <IconArrowForwardUp className="size-4" aria-hidden="true" />
             </button>
             <button className="button button-lg" title="Reset" onClick={() => reset()}>
-              <IconTrash className="h-4 w-4" aria-hidden="true" />
+              <IconTrash className="size-4" aria-hidden="true" />
             </button>
           </div>
         </div>

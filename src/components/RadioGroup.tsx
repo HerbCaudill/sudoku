@@ -56,11 +56,11 @@ export function RadioGroup<T extends string | number | boolean>({
                     'border border-gray-500',
                     'focus:z-10 focus:border-primary-700 focus:outline-none focus:ring-1 focus:ring-primary-700',
                     {
-                      'px-2 py-1 rounded-md': size === 'xs',
-                      'px-3 py-1 rounded-md': size === 'sm',
-                      'px-4 py-1 rounded-md': size === 'md',
-                      'px-5 py-2 rounded-lg': size === 'lg',
-                      'px-6 py-3 rounded-lg': size === 'xl',
+                      'px-3 py-1 rounded-md': size === 'xs',
+                      'px-4 py-1 rounded-md': size === 'sm',
+                      'px-5 py-1 rounded-md': size === 'md',
+                      'px-6 py-2 rounded-lg': size === 'lg',
+                      'px-7 py-3 rounded-lg': size === 'xl',
                       // first item
                       'rounded-r-none': i === 0,
                       // middle items

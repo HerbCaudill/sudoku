@@ -11,11 +11,15 @@ h2 i {
 }
 
 .button {
-  @apply inline-flex items-center justify-center gap-2;
+  @apply inline-flex items-center justify-center gap-4;
   @apply rounded-md border border-opacity-50 bg-white border-black;
   @apply focus:outline-none focus:ring-0;
   @apply font-mono;
   @apply disabled:opacity-50;
+}
+
+.button svg {
+  @apply text-gray-800;
 }
 
 .button-xs {
@@ -24,17 +28,17 @@ h2 i {
 }
 
 .button-sm {
-  @apply text-sm;
-  @apply px-3 py-1;
+  @apply text-xs;
+  @apply px-4 py-2;
 }
 
 .button-md {
-  @apply text-base;
+  @apply text-sm;
   @apply px-4 py-1;
 }
 
 .button-lg {
-  @apply text-lg;
+  @apply text-base;
   @apply px-6 py-2;
 }
 
@@ -43,5 +47,9 @@ h2 i {
 }
 
 .text-outline-white {
-  text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+  text-shadow:
+    -1px -1px 0 #fff,
+    1px -1px 0 #fff,
+    -1px 1px 0 #fff,
+    1px 1px 0 #fff;
 }
