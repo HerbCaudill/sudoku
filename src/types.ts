@@ -1,4 +1,5 @@
 import { makeRandom } from '@herbcaudill/random'
+import type { CellCandidate } from 'solver'
 
 export type Grid = number[]
 
@@ -50,6 +51,7 @@ export type Icon = (props: React.SVGProps<SVGSVGElement>) => React.ReactElement
 
 export type Action =
   | { type: 'LOAD'; puzzle: Grid }
+  | { type: 'SET_CANDIDATES'; candidates: CandidateGrid }
   | { type: 'SET'; index: number; value: number }
   | { type: 'ADD'; index: number; candidate: number }
   | { type: 'REMOVE'; index: number; candidate: number }
@@ -59,7 +61,7 @@ export type Action =
 
 export type State = {
   grid: Grid
-  solution:
+  solution: Grid
   candidates: CandidateGrid
   index: number
   history: State[]

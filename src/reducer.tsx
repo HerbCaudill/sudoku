@@ -23,6 +23,10 @@ export const reducer = (state: State, action: Action): State => {
       return updateState({ grid, solution, candidates, index: -1 })
     }
 
+    case `SET_CANDIDATES`: {
+      const { candidates } = action
+      return updateState({ candidates, index: -1 })
+    }
     case 'SET': {
       const { index: i, value } = action
 

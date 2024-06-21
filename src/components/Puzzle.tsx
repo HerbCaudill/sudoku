@@ -1,6 +1,7 @@
 import cx from 'classnames'
-import { CandidateGrid, Grid, SolverState, cols, numbers, rows } from 'solver'
 import { useState } from 'react'
+import { cols, numbers, rows, type CellCandidate, type Move } from 'solver'
+import type { CandidateGrid, Grid, SolverState } from 'types'
 
 const DOUBLE_TAP_INTERVAL = 400
 
@@ -11,6 +12,7 @@ export const Puzzle = ({
   candidates = {},
   state,
   index,
+  hint,
   selectedNumber = 0,
   onSetValue = () => {},
   onAddCandidate = () => {},
@@ -60,6 +62,12 @@ export const Puzzle = ({
 
   const pointerUp = () => setPointerAction(null)
 
+  const hintRemove = ({ index, value }: CellCandidate) =>
+    hint?.removals.find(r => r.index === index && r.value === value) !== undefined
+
+  const hintHighlight = ({ index, value }: CellCandidate) =>
+    hint?.matches.find(r => r.index === index && r.value === value) !== undefined
+
   return (
     <div className="aspect-square outlinepointer-events-none">
       <div className="grid grid-rows-9 h-full grid-cols-9 border-black border-4 bg-white">
@@ -72,7 +80,7 @@ export const Puzzle = ({
           return (
             <div
               className={cx(
-                'flex content-center justify-center items-center', //
+                'flex content-center justify-center items-center aspect-square', //
                 'pointer-events-auto cursor-pointer ',
                 {
                   'animate-highlight': index === i && state !== 'CONTRADICTION',
@@ -109,14 +117,27 @@ export const Puzzle = ({
                 <div
                   className={cx(
                     'pointer-events-none',
-                    'w-full grid grid-rows-3 grid-cols-3 text-[2.2cqw] text-neutral-500'
+                    'w-full h-full grid grid-rows-3 grid-cols-3 text-[2.2cqw] p-[1px] text-neutral-500'
                   )}
                 >
-                  {numbers.map((val, i) => (
-                    <span key={i} className="text-center">
-                      {cellCandidates?.includes(val) ? val : ' '}
-                    </span>
-                  ))}
+                  {numbers.map((val, j) => {
+                    const include = cellCandidates?.includes(val)
+                    return (
+                      <span
+                        key={j}
+                        className={cx(
+                          'text-center rounded-full border border-transparent size-[3.4cqw] leading-[3.2cqw] aspect-square',
+                          {
+                            'border-danger-600 text-danger-300': include && hintRemove({ index: i, value: val }),
+                            'border-blue-500k text-white bg-primary-500':
+                              include && hintHighlight({ index: i, value: val }),
+                          }
+                        )}
+                      >
+                        {include ? val : ' '}
+                      </span>
+                    )
+                  })}
                 </div>
               )}
             </div>
@@ -164,4 +185,6 @@ type Props = {
 
   /** handler for removing cell candidate */
   onRemoveCandidate?: (i: number) => void
+
+  hint?: Move
 }

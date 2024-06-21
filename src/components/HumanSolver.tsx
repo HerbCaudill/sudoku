@@ -1,11 +1,12 @@
 import { useEffect, useReducer, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { getInitialState, reducer } from 'reducer'
-import { Board, numbers } from 'solver'
+import { Board, numbers, type Move } from 'solver'
 import type { Grid } from 'types'
 import { Confetti } from './Confetti'
 import { Puzzle } from './Puzzle'
 import { RadioGroup } from './RadioGroup'
+import * as changeCase from 'change-case'
 
 const numberKeys = numbers.map(n => n.toString())
 
@@ -13,6 +14,7 @@ export const HumanSolver = ({ puzzle, onNewGame }: Props) => {
   // STATE
 
   const [state, dispatch] = useReducer(reducer, getInitialState())
+  const [hint, setHint] = useState<Move>()
 
   useEffect(() => {
     if (!puzzle || puzzle.length === 0) return
@@ -96,6 +98,7 @@ export const HumanSolver = ({ puzzle, onNewGame }: Props) => {
         solution={state.solution}
         grid={state.grid}
         candidates={state.candidates}
+        hint={hint}
         onSetValue={setValue}
         onAddCandidate={toggle('ADD')}
         onRemoveCandidate={toggle('REMOVE')}
@@ -134,6 +137,39 @@ export const HumanSolver = ({ puzzle, onNewGame }: Props) => {
               </button>
             </div>
           </div>
+          {hint && (
+            <div className="font-sans text-[3cqw] border border-gray-600 rounded p-2 flex flex-row gap-2">
+              <IconBulb className="h-4 w-4 text-gray-600" aria-hidden="true" />
+              {changeCase.sentenceCase(hint.strategy)}
+            </div>
+          )}
+
+          <div className="flex flex-row gap-2">
+            <button
+              className="button button-lg"
+              title="Fill candidates"
+              onClick={() => {
+                const { candidates } = new Board({ grid: state.grid })
+                dispatch({ type: 'SET_CANDIDATES', candidates })
+              }}
+            >
+              <Icon123 className="h-4 w-4" aria-hidden="true" />
+            </button>
+            <button
+              className="button button-lg"
+              title="Move"
+              onClick={() => {
+                const board = new Board({ grid: state.grid })
+                // dispatch({ type: 'SET_CANDIDATES', candidates: board.candidates })
+                const hint = board.findNextMove()
+                setNumber(hint.matches[0].value)
+
+                setHint(hint)
+              }}
+            >
+              <IconBulb className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
           {/* undo/redo/reset */}
           <div className="flex flex-row gap-2">
             <button className="button button-lg" title="Undo" onClick={() => dispatch({ type: 'UNDO' })}>
@@ -141,15 +177,6 @@ export const HumanSolver = ({ puzzle, onNewGame }: Props) => {
             </button>
             <button className="button button-lg" title="Redo" onClick={() => dispatch({ type: 'REDO' })}>
               <IconArrowForwardUp className="h-4 w-4" aria-hidden="true" />
-            </button>
-            <button
-              className="button button-lg"
-              title="Hint"
-              onClick={() => {
-                const board = new Board({ grid: state.grid })
-              }}
-            >
-              <IconBulb className="h-4 w-4" aria-hidden="true" />
             </button>
             <button className="button button-lg" title="Reset" onClick={() => reset()}>
               <IconTrash className="h-4 w-4" aria-hidden="true" />

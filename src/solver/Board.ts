@@ -4,7 +4,7 @@ import { printGrid } from 'lib/printGrid'
 import { toGrid } from 'lib/toGrid'
 import { cells, numbers } from './constants'
 import { gridToCandidates, stringToCandidates } from './tests/toCandidateGrid'
-import type { Move } from './findNextMove'
+import { findNextMove, type Move } from './findNextMove'
 
 export class Board {
   public grid: Grid
@@ -39,6 +39,10 @@ export class Board {
 
   isSolved() {
     return this.unsolvedCells().length === 0
+  }
+
+  findNextMove(): Move {
+    return findNextMove(this)
   }
 
   applyMove(move: Move) {

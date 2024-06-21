@@ -9,8 +9,9 @@ export const nakedSingles: Strategy = board => {
   for (const index of cells) {
     if (board.grid[index] === 0 && board.candidates[index].length === 1) {
       const value = board.candidates[index][0]
+      const solved = { index, value }
       const removals = peers[index].filter(board.hasCandidate(value)).map(index => ({ index, value }))
-      return { solved: { index, value }, matches: [], removals }
+      return { solved, matches: [solved], removals }
     }
   }
   return null
@@ -67,10 +68,13 @@ export const hiddenTuples = (N: number): Strategy => {
         // in this unit, map each value to the cells that contain it
         // e.g. if a row is 12 123 23 . . . . . .
         // then the map will be {1: [0,1], 2: [0,1,2], 3: [1,2]}
-        const cellsByValue = numbers.reduce((acc, value) => {
-          acc[value] = unit.filter(board.hasCandidate(value))
-          return acc
-        }, {} as Record<number, number[]>)
+        const cellsByValue = numbers.reduce(
+          (acc, value) => {
+            acc[value] = unit.filter(board.hasCandidate(value))
+            return acc
+          },
+          {} as Record<number, number[]>
+        )
 
         for (const value of numbers) {
           // are there N values in this unit that are only found in the same set of N cells?
@@ -144,54 +148,57 @@ export const lockedTuples: Strategy = board => {
 }
 
 const _strategies = {
-  nakedSingles: {
+  nakedSingle: {
     strategy: nakedSingles,
     difficulty: 0,
   },
-  nakedDoubles: {
+  nakedDouble: {
     strategy: nakedTuples(2),
     difficulty: 20,
   },
-  nakedTriples: {
+  nakedTriple: {
     strategy: nakedTuples(3),
     difficulty: 30,
   },
-  nakedQuads: {
+  nakedQuad: {
     strategy: nakedTuples(4),
     difficulty: 40,
   },
-  hiddenSingles: {
+  hiddenSingle: {
     strategy: hiddenTuples(1),
     difficulty: 5,
   },
-  hiddenDoubles: {
+  hiddenDouble: {
     strategy: hiddenTuples(2),
     difficulty: 40,
   },
-  hiddenTriples: {
+  hiddenTriple: {
     strategy: hiddenTuples(3),
     difficulty: 50,
   },
-  hiddenQuads: {
+  hiddenQuad: {
     strategy: hiddenTuples(4),
     difficulty: 60,
   },
-  lockedTuples: {
+  lockedTuple: {
     strategy: lockedTuples,
     difficulty: 15,
   },
 }
 
-export const strategies = Object.keys(_strategies).reduce((acc, _key) => {
-  const key = _key as keyof typeof _strategies
-  const strategyEntry: StrategyEntry = (board: Board) => {
-    return _strategies[key].strategy(board)
-  }
-  strategyEntry.label = key
-  strategyEntry.difficulty = _strategies[key].difficulty
-  acc[key] = strategyEntry
-  return acc
-}, {} as Record<string, StrategyEntry>)
+export const strategies = Object.keys(_strategies).reduce(
+  (acc, _key) => {
+    const key = _key as keyof typeof _strategies
+    const strategyEntry: StrategyEntry = (board: Board) => {
+      return _strategies[key].strategy(board)
+    }
+    strategyEntry.label = key
+    strategyEntry.difficulty = _strategies[key].difficulty
+    acc[key] = strategyEntry
+    return acc
+  },
+  {} as Record<string, StrategyEntry>
+)
 
 export const strategiesByDifficulty = Object.values(strategies).sort((a, b) => a.difficulty - b.difficulty)
 
