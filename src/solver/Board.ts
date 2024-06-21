@@ -4,6 +4,7 @@ import { printGrid } from '../lib/printGrid'
 import { toGrid } from '../lib/toGrid'
 import { cells, numbers } from './constants'
 import { gridToCandidates, stringToCandidates } from './tests/toCandidateGrid'
+import type { Move } from './findNextMove'
 
 export class Board {
   public grid: Grid
@@ -15,7 +16,7 @@ export class Board {
       this.candidates = gridToCandidates(this.grid)
     } else {
       this.candidates = typeof input.candidates === 'string' ? stringToCandidates(input.candidates) : input.candidates
-      this.grid = numbers.map(i => (this.candidates[i].length === 1 ? this.candidates[i][0] : 0))
+      this.grid = cells.map(i => (this.candidates[i].length === 1 ? this.candidates[i][0] : 0))
     }
   }
 
@@ -32,9 +33,27 @@ export class Board {
     return cells.filter(this.hasCandidateCount(N))
   }
 
-  /** returns all cells with more than one candidate */
   unsolvedCells() {
-    return cells.filter(i => this.hasMultipleCandidates(i))
+    return cells.filter(i => this.grid[i] === 0)
+  }
+
+  isSolved() {
+    return this.unsolvedCells().length === 0
+  }
+
+  applyMove(move: Move) {
+    console.log(move)
+    if (move.solved) {
+      const grid = [...this.grid]
+      grid[move.solved.index] = move.solved.value
+      return new Board({ grid })
+    } else {
+      const candidates = { ...this.candidates }
+      for (const removal of move.removals) {
+        candidates[removal.index] = candidates[removal.index].filter(value => value !== removal.value)
+      }
+      return new Board({ candidates })
+    }
   }
 
   // filter predicates
