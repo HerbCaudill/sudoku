@@ -1,7 +1,6 @@
 import * as Headless from '@headlessui/react'
 import { type ReactNode, useState, Fragment } from 'react'
 import cx from 'classnames'
-import { Icon } from 'solver'
 
 export function RadioGroup<T extends string | number | boolean>({
   label,

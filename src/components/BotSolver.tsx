@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Grid, InterimResult, Solver } from 'solver'
+import type { Grid, InterimResult } from 'types'
+import { Solver } from 'solver'
 import { Puzzle } from './Puzzle'
 import { useHotkeys } from 'react-hotkeys-hook'
 
