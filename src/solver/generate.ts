@@ -1,8 +1,7 @@
 import { makeRandom } from '@herbcaudill/random'
-import { Solver } from './Solver'
-import { cells, emptyGrid } from './constants'
 import { Grid, Random } from 'types'
-import { printGrid } from 'lib/printGrid'
+import { cells, emptyGrid } from '../lib/constants'
+import { Solver } from './Solver'
 
 export const generate = (seed = Math.random().toString()): { puzzle: Grid; solution: Grid } => {
   const random = makeRandom(seed)

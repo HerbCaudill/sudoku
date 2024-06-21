@@ -1,4 +1,4 @@
-import { cols, emptyGrid, rows } from 'solver/constants'
+import { cols, emptyGrid, rows } from 'lib/constants'
 import chalk from 'chalk'
 import { CandidateGrid, Grid } from 'types'
 
@@ -71,8 +71,8 @@ export const printCandidates = (candidates: CandidateGrid) => {
           '┣━┏┗╋┻┳'.includes(c)
             ? c + '━' //
             : '─┼'.includes(c)
-            ? c + '─'
-            : c + ' '
+              ? c + '─'
+              : c + ' '
         )
         .join('')
     )

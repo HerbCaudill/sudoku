@@ -1,7 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { useLocalStorage } from '@uidotdev/usehooks'
 import { getPuzzle } from 'lib/getPuzzle'
-import { toGrid } from 'lib/toGrid'
+import { stringToGrid } from 'lib/stringToGrid'
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { Fade } from 'transitions/Fade'
 import { Slide } from 'transitions/Slide'
@@ -29,7 +29,7 @@ export const App = () => {
 
   const newGame = (level: number) => {
     getPuzzle(level).then(p => {
-      const puzzle = toGrid(p)
+      const puzzle = stringToGrid(p)
       setPuzzle(puzzle)
     })
   }
@@ -142,7 +142,7 @@ export const App = () => {
                         className="button button-sm"
                         onClick={() => {
                           if (!puzzleToLoad || puzzleToLoad.length === 0) return
-                          const puzzle = toGrid(puzzleToLoad)
+                          const puzzle = stringToGrid(puzzleToLoad)
                           setPuzzle(puzzle)
                           setPuzzleToLoad('')
                           setShowLoadGame(false)

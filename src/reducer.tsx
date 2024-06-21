@@ -1,5 +1,6 @@
+import { Solver } from 'solver/Solver'
 import { Action, Grid, State } from './types'
-import { numbers, peers, Solver } from './solver'
+import { peers } from 'lib/peers'
 
 export const reducer = (state: State, action: Action): State => {
   const updateState = (newState: Partial<State>) => {

@@ -1,5 +1,5 @@
 import { makeRandom } from '@herbcaudill/random'
-import type { CellCandidate } from 'solver'
+import type { CellCandidate } from 'solver/strategies'
 
 export type Grid = number[]
 

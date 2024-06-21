@@ -1,9 +1,9 @@
 import { Board } from './Board'
 import { arraysMatch } from 'lib/arraysMatch'
-import { cells, numbers, unitLookup } from './constants'
+import { cells, numbers, unitLookup } from 'lib/constants'
 import { excluding } from 'lib/excluding'
-import { peers, peersByType } from './peers'
-import { box, unitByType } from './units'
+import { peers, peersByType } from 'lib/peers'
+import { box, unitByType } from 'lib/units'
 
 export const nakedSingles: Strategy = board => {
   for (const index of cells) {

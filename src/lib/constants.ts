@@ -1,7 +1,7 @@
-import { toGrid } from 'lib/toGrid'
+import { stringToGrid } from 'lib/stringToGrid'
 import { Grid } from 'types'
 
-export const rows: Grid = toGrid(`
+export const rows: Grid = stringToGrid(`
   1 1 1 1 1 1 1 1 1 
   2 2 2 2 2 2 2 2 2 
   3 3 3 3 3 3 3 3 3 
@@ -13,7 +13,7 @@ export const rows: Grid = toGrid(`
   9 9 9 9 9 9 9 9 9 
 `)
 
-export const cols: Grid = toGrid(`
+export const cols: Grid = stringToGrid(`
   1 2 3 4 5 6 7 8 9 
   1 2 3 4 5 6 7 8 9 
   1 2 3 4 5 6 7 8 9 
@@ -25,7 +25,7 @@ export const cols: Grid = toGrid(`
   1 2 3 4 5 6 7 8 9 
 `)
 
-export const boxes: Grid = toGrid(`
+export const boxes: Grid = stringToGrid(`
   1 1 1 2 2 2 3 3 3 
   1 1 1 2 2 2 3 3 3 
   1 1 1 2 2 2 3 3 3 
@@ -39,7 +39,7 @@ export const boxes: Grid = toGrid(`
 
 export const unitLookup = { row: rows, col: cols, box: boxes }
 
-export const emptyGrid: Grid = toGrid(`
+export const emptyGrid: Grid = stringToGrid(`
   . . . . . . . . . 
   . . . . . . . . . 
   . . . . . . . . . 

@@ -1,8 +1,8 @@
 import { makeRandom } from '@herbcaudill/random'
-import { toGrid } from 'lib/toGrid'
+import { stringToGrid } from 'lib/stringToGrid'
 import { AnalysisResult, CandidateGrid, Grid, InterimResult, SingleMap } from 'types'
-import { numbers } from './constants'
-import { boxPeers, colPeers, peers, rowPeers } from './peers'
+import { numbers } from '../lib/constants'
+import { boxPeers, colPeers, peers, rowPeers } from '../lib/peers'
 
 const MAX_STEPS = 10000
 
@@ -15,7 +15,7 @@ export class Solver {
 
   constructor(puzzle: string | Grid, seed: string = Math.random().toString()) {
     // grid can be passed as a string or as an array of numbers
-    const parsedPuzzle = typeof puzzle === 'string' ? toGrid(puzzle) : puzzle
+    const parsedPuzzle = typeof puzzle === 'string' ? stringToGrid(puzzle) : puzzle
     this.#puzzle = [...parsedPuzzle]
     this.#random = makeRandom(seed)
   }

@@ -1,13 +1,15 @@
+import * as changeCase from 'change-case'
+import { numbers } from 'lib/constants'
+import { printGrid } from 'lib/printGrid'
 import { useEffect, useReducer, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { getInitialState, reducer } from 'reducer'
-import { Board, numbers, type Move } from 'solver'
+import { Board } from 'solver/Board'
+import { type Move } from 'solver/findNextMove'
 import type { Grid } from 'types'
 import { Confetti } from './Confetti'
 import { Puzzle } from './Puzzle'
 import { RadioGroup } from './RadioGroup'
-import * as changeCase from 'change-case'
-import { printGrid } from 'lib/printGrid'
 
 const numberKeys = numbers.map(n => n.toString())
 

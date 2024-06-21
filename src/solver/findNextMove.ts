@@ -24,13 +24,3 @@ export type Move = {
   matches: CellCandidate[]
   removals: CellCandidate[]
 }
-
-export function* solve(board: Board): Generator<{ board: Board; move?: Move }> {
-  while (!board.isSolved()) {
-    const move = findNextMove(board)
-    board = board.applyMove(move)
-    yield { board, move }
-  }
-
-  return { board }
-}

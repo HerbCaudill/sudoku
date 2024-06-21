@@ -1,9 +1,10 @@
 import { CandidateGrid, Grid } from 'types'
 import { printCandidates } from 'lib/printCandidates'
 import { printGrid } from 'lib/printGrid'
-import { toGrid } from 'lib/toGrid'
-import { cells, numbers } from './constants'
-import { gridToCandidates, stringToCandidates } from './tests/toCandidateGrid'
+import { stringToGrid } from 'lib/stringToGrid'
+import { cells, numbers } from '../lib/constants'
+import { stringToCandidates } from '../lib/stringToCandidates'
+import { gridToCandidates } from '../lib/gridToCandidates'
 import { findNextMove, type Move } from './findNextMove'
 
 export class Board {
@@ -12,7 +13,7 @@ export class Board {
 
   constructor(input: { grid: string | Grid } | { candidates: string | CandidateGrid }) {
     if ('grid' in input) {
-      this.grid = typeof input.grid === 'string' ? toGrid(input.grid) : input.grid
+      this.grid = typeof input.grid === 'string' ? stringToGrid(input.grid) : input.grid
       this.candidates = gridToCandidates(this.grid)
     } else {
       this.candidates = typeof input.candidates === 'string' ? stringToCandidates(input.candidates) : input.candidates

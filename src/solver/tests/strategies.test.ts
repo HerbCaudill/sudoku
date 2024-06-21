@@ -1,4 +1,5 @@
-import { Board, strategies } from 'solver'
+import { Board } from 'solver/Board'
+import { strategies } from 'solver/strategies'
 import { describe, expect, it } from 'vitest'
 
 describe('naked tuples', () => {

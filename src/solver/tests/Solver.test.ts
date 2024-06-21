@@ -2,7 +2,7 @@ import { assert, describe, expect, it } from 'vitest'
 import { load } from 'lib/loadFile'
 import { printGrid } from 'lib/printGrid'
 import { solve } from 'lib/solve'
-import { toGrid } from 'lib/toGrid'
+import { stringToGrid } from 'lib/stringToGrid'
 import { Grid } from 'types'
 
 describe('Solver', () => {
@@ -18,7 +18,7 @@ describe('Solver', () => {
       6 7 8  9 1 2  3 4 5
       9 1 2  3 4 5  6 7 8`)
     expect(solution).toEqual(
-      toGrid(`
+      stringToGrid(`
         1 2 3  4 5 6  7 8 9
         4 5 6  7 8 9  1 2 3
         7 8 9  1 2 3  4 5 6
@@ -76,7 +76,7 @@ describe('Solver', () => {
     assert(solution)
     compare(
       solution,
-      toGrid(`
+      stringToGrid(`
         3 6 5  4 2 7  8 1 9 
         4 8 7  9 3 1  5 2 6 
         1 2 9  8 5 6  3 7 4 
@@ -102,7 +102,7 @@ describe('Solver', () => {
       . . 5  3 1 .  4 . .`)
     compare(
       solution,
-      toGrid(`
+      stringToGrid(`
         6 7 2  4 3 5  1 9 8 
         5 4 9  1 7 8  3 6 2 
         8 3 1  6 2 9  5 4 7 
@@ -128,7 +128,7 @@ describe('Solver', () => {
       1 8 .  2 . 4  . . .`)
     compare(
       solution,
-      toGrid(`
+      stringToGrid(`
         5 3 1  8 4 9  6 7 2 
         6 4 9  5 7 2  8 3 1 
         8 2 7  1 3 6  5 4 9 
@@ -154,7 +154,7 @@ describe('Solver', () => {
       . 4 .  2 . 7  . . .`)
     compare(
       solution,
-      toGrid(` 
+      stringToGrid(` 
         3 6 4  7 9 5  8 2 1 
         9 1 7  6 8 2  4 3 5 
         8 5 2  4 3 1  9 7 6 
@@ -180,7 +180,7 @@ describe('Solver', () => {
       8 . .  4 7 3  . 5 .`)
     compare(
       solution,
-      toGrid(` 
+      stringToGrid(` 
         5 8 3  2 1 9  4 6 7 
         1 2 6  7 3 4  8 9 5 
         4 9 7  6 8 5  2 3 1 
@@ -206,7 +206,7 @@ describe('Solver', () => {
       6 2 .  3 . .  . . .`)
     compare(
       solution,
-      toGrid(` 
+      stringToGrid(` 
         5 6 2  7 3 4  9 8 1 
         4 7 9  8 1 2  3 5 6 
         8 1 3  6 9 5  2 7 4 
@@ -232,7 +232,7 @@ describe('Solver', () => {
       . . .  . . 9  7 . .`)
     compare(
       solution,
-      toGrid(` 
+      stringToGrid(` 
         1 4 5  3 2 7  6 9 8 
         8 3 9  6 5 4  1 2 7 
         6 7 2  9 1 8  5 4 3 

@@ -1,6 +1,8 @@
 import cx from 'classnames'
+import { cols, numbers, rows } from 'lib/constants'
 import { useState } from 'react'
-import { cols, numbers, rows, type CellCandidate, type Move } from 'solver'
+import { type Move } from 'solver/findNextMove'
+import { type CellCandidate } from 'solver/strategies'
 import type { CandidateGrid, Grid, SolverState } from 'types'
 
 const DOUBLE_TAP_INTERVAL = 400
