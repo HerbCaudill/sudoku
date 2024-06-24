@@ -1,6 +1,6 @@
 import { Board } from 'solver/Board'
-import { findNextMove } from 'solver/findNextMove'
-import { describe, expect, it } from 'vitest'
+import { findNextMove, isFailure } from 'solver/findNextMove'
+import { assert, describe, expect, it } from 'vitest'
 
 describe('findNextMove', () => {
   it('single vacancy', () => {
@@ -16,9 +16,10 @@ describe('findNextMove', () => {
         6 7 8  9 1 2  3 4 5
         9 1 2  3 4 5  6 7 8`,
     })
-    const { label: strategy, solved } = findNextMove(board)
-    expect(strategy).toBe('nakedSingle')
-    expect(solved).toEqual({ index: 2, value: 3 })
+    const move = findNextMove(board)
+    expect(move.label).toBe('nakedSingle')
+    assert(isFailure(move) === false)
+    expect(move.solved).toEqual({ cell: 2, value: 3 })
   })
 
   it('no vacancies', () => {
@@ -50,9 +51,10 @@ describe('findNextMove', () => {
       5 . 8  6 7 .  1 9 2 
       . 9 6  5 1 2  4 . 8`,
     })
-    const { label: strategy, solved } = findNextMove(board)
-    expect(strategy).toBe('nakedSingle')
-    expect(solved).toEqual({ index: 1, value: 6 })
+    const move = findNextMove(board)
+    expect(move.label).toBe('nakedSingle')
+    assert(isFailure(move) === false)
+    expect(move.solved).toEqual({ cell: 1, value: 6 })
   })
 
   it('hidden single', () => {
@@ -68,8 +70,10 @@ describe('findNextMove', () => {
       . . .  . . .  . 1 3 
       . . 5  3 1 .  4 . .`,
     })
-    const { label: strategy, matches } = findNextMove(board)
-    expect(strategy).toBe('hiddenSingle')
-    expect(matches).toEqual([{ index: 15, value: 3 }])
+
+    const move = findNextMove(board)
+    expect(move.label).toBe('hiddenSingle')
+    assert(isFailure(move) === false)
+    expect(move.matches).toEqual([{ cell: 15, value: 3 }])
   })
 })

@@ -42,11 +42,13 @@ export class Board {
   }
 
   unitCandidates() {
-    return units.map(unit => unit.map(cell => this.candidates[cell]))
+    const candidates = this.candidates
+    return units.map(unit => unit.flatMap(cell => candidates.filter(c => c.cell === cell)))
   }
 
   lineCandidates() {
-    return lines.map(line => line.map(cell => this.candidates[cell]))
+    const candidates = this.candidates
+    return lines.map(unit => unit.flatMap(cell => candidates.filter(c => c.cell === cell)))
   }
 
   unsolvedCells() {

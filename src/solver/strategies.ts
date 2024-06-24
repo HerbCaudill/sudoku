@@ -19,11 +19,8 @@ export const nakedSingles: Strategy = board => {
 
 export const nakedTuples = (N: number): Strategy => {
   return board => {
-    const groups = board.unitCandidates()
-
-    for (const group of groups) {
-      const unitCandidates = group.map(c => ({ value: c.value, cell: c.cell }))
-      const valuesByCell = unitCandidates.reduce(groupBy('cell', 'value'), {})
+    for (const unit of board.unitCandidates()) {
+      const valuesByCell = unit.reduce(groupBy('cell', 'value'), {})
 
       const cellsByValueSet = Object.entries(valuesByCell).reduce(
         (result, current) => {
@@ -43,11 +40,11 @@ export const nakedTuples = (N: number): Strategy => {
           const values = k_values.split(',').map(Number)
           if (values.length === N) {
             const matches = cells.flatMap(cell => values.map(value => ({ cell, value })))
-            const removals = unitCandidates
+            const removals = unit
               .filter(c => !cells.includes(c.cell) && values.includes(c.value))
               .map(c => ({ cell: c.cell, value: c.value }))
 
-            return { matches, removals }
+            if (removals.length) return { matches, removals }
           }
         }
       }

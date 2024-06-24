@@ -1,6 +1,6 @@
 import { Board } from 'solver/Board'
 import { strategies } from 'solver/strategies'
-import { describe, expect, it } from 'vitest'
+import { assert, describe, expect, it } from 'vitest'
 
 describe('naked tuples', () => {
   it('finds naked doubles in a row', () => {
@@ -19,20 +19,20 @@ describe('naked tuples', () => {
     })
     const { matches, removals } = strategies.nakedDouble(board)!
     expect(matches).toEqual([
-      { index: 0, value: 1 },
-      { index: 0, value: 2 },
-      { index: 2, value: 1 },
-      { index: 2, value: 2 },
+      { cell: 0, value: 1 },
+      { cell: 0, value: 2 },
+      { cell: 2, value: 1 },
+      { cell: 2, value: 2 },
     ])
     expect(removals).toEqual([
-      { index: 1, value: 2 },
-      { index: 5, value: 1 },
-      { index: 5, value: 2 },
-      { index: 6, value: 1 },
+      { cell: 1, value: 2 },
+      { cell: 5, value: 1 },
+      { cell: 5, value: 2 },
+      { cell: 6, value: 1 },
     ])
   })
 
-  it.only('finds naked doubles in a box', () => {
+  it('finds naked doubles in a box', () => {
     const board = new Board({
       candidates: `
         12  .  .   . . . . . .
@@ -46,18 +46,20 @@ describe('naked tuples', () => {
         .   .  .   . . . . . .
       `,
     })
-    const { matches, removals } = strategies.nakedDouble(board)!
+    const result = strategies.nakedDouble(board)
+    assert(result !== null)
+    const { matches, removals } = result
     expect(matches).toEqual([
-      { index: 0, value: 1 },
-      { index: 0, value: 2 },
-      { index: 10, value: 1 },
-      { index: 10, value: 2 },
+      { cell: 0, value: 1 },
+      { cell: 0, value: 2 },
+      { cell: 10, value: 1 },
+      { cell: 10, value: 2 },
     ])
     expect(removals).toEqual([
-      { index: 11, value: 1 },
-      { index: 18, value: 2 },
-      { index: 20, value: 1 },
-      { index: 20, value: 2 },
+      { cell: 11, value: 1 },
+      { cell: 18, value: 2 },
+      { cell: 20, value: 1 },
+      { cell: 20, value: 2 },
     ])
   })
 
@@ -75,12 +77,13 @@ describe('naked tuples', () => {
         .   . . . . . . . .
       `,
     })
-    const { matches, removals } = strategies.nakedDouble(board)!
-    expect(removals).toEqual([
-      { index: 18, value: 1 },
-      { index: 45, value: 1 },
-      { index: 45, value: 2 },
-      { index: 63, value: 2 },
+    const result = strategies.nakedDouble(board)
+    assert(result !== null)
+    expect(result.removals).toEqual([
+      { cell: 18, value: 1 },
+      { cell: 45, value: 1 },
+      { cell: 45, value: 2 },
+      { cell: 63, value: 2 },
     ])
   })
 
@@ -119,11 +122,11 @@ describe('hidden tuples', () => {
           `,
     })
     const { matches, removals } = strategies.hiddenSingle(board)!
-    expect(matches).toEqual([{ index: 3, value: 1 }])
+    expect(matches).toEqual([{ cell: 3, value: 1 }])
     expect(removals).toEqual([
-      { index: 3, value: 2 },
-      { index: 3, value: 3 },
-      { index: 3, value: 4 },
+      { cell: 3, value: 2 },
+      { cell: 3, value: 3 },
+      { cell: 3, value: 4 },
     ])
   })
 
@@ -143,16 +146,16 @@ describe('hidden tuples', () => {
     })
     const { matches, removals } = strategies.hiddenDouble(board)!
     expect(matches).toEqual([
-      { index: 2, value: 1 },
-      { index: 2, value: 2 },
-      { index: 3, value: 1 },
-      { index: 3, value: 2 },
+      { cell: 2, value: 1 },
+      { cell: 2, value: 2 },
+      { cell: 3, value: 1 },
+      { cell: 3, value: 2 },
     ])
     expect(removals).toEqual([
-      { index: 2, value: 3 },
-      { index: 2, value: 4 },
-      { index: 3, value: 3 },
-      { index: 3, value: 4 },
+      { cell: 2, value: 3 },
+      { cell: 2, value: 4 },
+      { cell: 3, value: 3 },
+      { cell: 3, value: 4 },
     ])
   })
 
@@ -172,20 +175,20 @@ describe('hidden tuples', () => {
     })
     const { matches, removals } = strategies.hiddenTriple(board)!
     expect(matches).toEqual([
-      { index: 2, value: 1 },
-      { index: 2, value: 2 },
-      { index: 2, value: 3 },
-      { index: 3, value: 1 },
-      { index: 3, value: 2 },
-      { index: 3, value: 3 },
-      { index: 4, value: 1 },
-      { index: 4, value: 2 },
-      { index: 4, value: 3 },
+      { cell: 2, value: 1 },
+      { cell: 2, value: 2 },
+      { cell: 2, value: 3 },
+      { cell: 3, value: 1 },
+      { cell: 3, value: 2 },
+      { cell: 3, value: 3 },
+      { cell: 4, value: 1 },
+      { cell: 4, value: 2 },
+      { cell: 4, value: 3 },
     ])
     expect(removals).toEqual([
-      { index: 2, value: 4 },
-      { index: 3, value: 4 },
-      { index: 4, value: 4 },
+      { cell: 2, value: 4 },
+      { cell: 3, value: 4 },
+      { cell: 4, value: 4 },
     ])
   })
 
@@ -226,14 +229,14 @@ describe('locked tuples', () => {
 
     const { matches, removals } = strategies.lockedTuple(board)!
     expect(matches).toEqual([
-      { index: 55, value: 2 },
-      { index: 64, value: 2 },
-      { index: 73, value: 2 },
+      { cell: 55, value: 2 },
+      { cell: 64, value: 2 },
+      { cell: 73, value: 2 },
     ])
     expect(removals).toEqual([
-      { index: 1, value: 2 },
-      { index: 10, value: 2 },
-      { index: 19, value: 2 },
+      { cell: 1, value: 2 },
+      { cell: 10, value: 2 },
+      { cell: 19, value: 2 },
     ])
   })
 
@@ -254,14 +257,14 @@ describe('locked tuples', () => {
 
     const { matches, removals } = strategies.lockedTuple(board)!
     expect(matches).toEqual([
-      { index: 15, value: 2 },
-      { index: 16, value: 2 },
-      { index: 17, value: 2 },
+      { cell: 15, value: 2 },
+      { cell: 16, value: 2 },
+      { cell: 17, value: 2 },
     ])
     expect(removals).toEqual([
-      { index: 9, value: 2 },
-      { index: 10, value: 2 },
-      { index: 11, value: 2 },
+      { cell: 9, value: 2 },
+      { cell: 10, value: 2 },
+      { cell: 11, value: 2 },
     ])
   })
 
@@ -304,14 +307,14 @@ describe('box line reduction', () => {
     const result = strategies.boxLineReduction(board)
     expect(result).toEqual({
       matches: [
-        { index: 12, value: 3 },
-        { index: 13, value: 3 },
-        { index: 14, value: 3 },
+        { cell: 12, value: 3 },
+        { cell: 13, value: 3 },
+        { cell: 14, value: 3 },
       ],
       removals: [
-        { index: 5, value: 3 },
-        { index: 21, value: 3 },
-        { index: 22, value: 3 },
+        { cell: 5, value: 3 },
+        { cell: 21, value: 3 },
+        { cell: 22, value: 3 },
       ],
     })
   })
