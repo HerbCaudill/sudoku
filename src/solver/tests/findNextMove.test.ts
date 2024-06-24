@@ -74,6 +74,6 @@ describe('findNextMove', () => {
     const move = findNextMove(board)
     expect(move.label).toBe('hiddenSingle')
     assert(isFailure(move) === false)
-    expect(move.matches).toEqual([{ cell: 15, value: 3 }])
+    expect(move.matches).toEqual([{ cell: 18, value: 8 }])
   })
 })

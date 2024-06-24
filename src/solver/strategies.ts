@@ -2,8 +2,9 @@ import { arraysMatch } from 'lib/arraysMatch'
 import { box, boxes, cells, numbers, unitByType, unitLookup, units } from 'lib/constants'
 import { excluding } from 'lib/excluding'
 import { peers } from 'lib/peers'
-import { groupBy } from '../lib/groupBy'
+import { group } from 'lib/group'
 import { Board } from './Board'
+import type { Candidate } from 'types'
 
 export const nakedSingles: Strategy = board => {
   for (const cell of cells) {
@@ -17,72 +18,78 @@ export const nakedSingles: Strategy = board => {
   return null
 }
 
-export const nakedTuples = (N: number): Strategy => {
+export const genericStrategy = ({
+  N,
+  sets,
+  A,
+  B,
+}: {
+  N: number
+  sets: number[][]
+  A: keyof Candidate
+  B: keyof Candidate
+}): Strategy => {
   return board => {
-    for (const unit of board.unitCandidates()) {
-      const valuesByCell = unit.reduce(groupBy('cell', 'value'), {})
-
-      const cellsByValueSet = Object.entries(valuesByCell).reduce(
-        (result, current) => {
-          const [cell, values] = current
-          if (values.length === N) {
-            const k_values = values.join()
-            result[k_values] = result[k_values] ?? []
-            result[k_values].push(parseInt(cell))
-          }
-          return result
-        },
-        {} as Record<string, number[]>
+    const allCandidates = board.candidates
+    const candidateSets = sets.map(unit => unit.flatMap(cell => allCandidates.filter(c => c.cell === cell)))
+    for (const candidates of candidateSets) {
+      // group the values by A, e.g.
+      // {
+      //   0: [1, 2],
+      //   2: [5, 6],
+      //   10: [1, 2],
+      //   11: [1, 3, 4],
+      //   18: [2, 3, 4],
+      //   20: [1, 2, 3],
+      // }
+      const B_by_A = group(
+        candidates,
+        d => d[A],
+        d => d[B]
       )
 
-      for (const [k_values, cells] of Object.entries(cellsByValueSet)) {
-        if (cells.length === N) {
-          const values = k_values.split(',').map(Number)
-          if (values.length === N) {
-            const matches = cells.flatMap(cell => values.map(value => ({ cell, value })))
-            const removals = unit
-              .filter(c => !cells.includes(c.cell) && values.includes(c.value))
-              .map(c => ({ cell: c.cell, value: c.value }))
+      // group the cells by value set, e.g.
+      // [
+      //   { values: [1, 2],    cells: [0, 10] },
+      //   { values: [5, 6],    cells: [2]     },
+      //   { values: [1, 3, 4], cells: [11]    },
+      //   { values: [2, 3, 4], cells: [18]    },
+      //   { values: [1, 2, 3], cells: [20]    },
+      // ]
+      const A_by_B_set = Object.entries(
+        group(
+          Object.entries(B_by_A),
+          ([a, b_set]) => b_set.join(','),
+          ([a, b_set]) => Number(a)
+        )
+      ).map(([b_set, a_set]) => ({ b_set: b_set.split(',').map(Number), a_set }))
 
-            if (removals.length) return { matches, removals }
-          }
-        }
-      }
-    }
-    return null
-  }
-}
-
-export const hiddenTuples = (N: number): Strategy => {
-  return board => {
-    // look at every row, column and box
-    for (const unitType of ['row', 'col', 'box'] as const) {
-      for (const unitIndex of numbers) {
-        const unit = unitByType[unitType](unitIndex)
-        // in this unit, map each value to the cells that contain it
-        // e.g. if a row is 12 123 23 . . . . . .
-        // then the map will be {1: [0,1], 2: [0,1,2], 3: [1,2]}
-        // const cellsByValue = numbers.reduces
-
-        const cellsByValue = (value: number) => unit.filter(board.hasCandidate(value))
-
-        for (const value of numbers) {
-          // are there N values in this unit that are only found in the same set of N cells?
-          // e.g. for hidden doubles, are there 2 values that are only found in the same 2 cells?
-          const cells = cellsByValue(value)
-          if (cells.length !== N) continue
-          const values = numbers.filter(
-            otherValue => value === otherValue || arraysMatch(cells, cellsByValue(otherValue))
+      // look for a group that has exactly N values and N cells, e.g.
+      // { values: [1, 2], cells: [0, 10] }
+      const match = A_by_B_set.find(({ b_set, a_set }) => a_set.length === N && b_set.length === N)
+      if (match) {
+        // remove the matched values from all other cells in the unit e.g.
+        // [
+        //   { cell: 11, value: 1 },
+        //   { cell: 18, value: 2 },
+        //   { cell: 20, value: 1 },
+        //   { cell: 20, value: 2 }
+        // ]
+        const removals = candidates
+          .filter(
+            candidate =>
+              !match.a_set.includes(candidate[A]) && // other cells
+              match.b_set.includes(candidate[B]) // with this value
           )
-
-          if (values.length !== N) continue
-
-          // yes, remove all other candidates from the matching cells
-          const cellCandidates = cells.flatMap(cell => board.candidateGrid[cell].map(value => ({ cell, value })))
-          const removals = cellCandidates.filter(({ value }) => !values.includes(value))
-          if (removals.length) {
-            const matches = cellCandidates.filter(({ value }) => values.includes(value))
-            return { matches, removals }
+          .map(({ cell, value }) => ({ cell, value }))
+        if (removals.length) {
+          const matchedDimensions = match.a_set.flatMap(a => match.b_set.map(b => ({ a, b })))
+          const matches = candidates
+            .filter(c => matchedDimensions.some(({ a, b }) => c[A] === a && c[B] === b))
+            .map(({ cell, value }) => ({ cell, value }))
+          return {
+            matches,
+            removals,
           }
         }
       }
@@ -90,6 +97,9 @@ export const hiddenTuples = (N: number): Strategy => {
     return null
   }
 }
+
+export const nakedTuples = (N: number) => genericStrategy({ N, sets: units, A: 'cell', B: 'value' })
+export const hiddenTuples = (N: number) => genericStrategy({ N, sets: units, A: 'value', B: 'cell' })
 
 /** Locked pairs & triples: if there are any boxes whose values can only go in one row or
  * column, eliminate those values from other cells in that row or column. */
