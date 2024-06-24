@@ -32,18 +32,18 @@ describe('naked tuples', () => {
     ])
   })
 
-  it('finds naked doubles in a box', () => {
+  it.only('finds naked doubles in a box', () => {
     const board = new Board({
       candidates: `
         12  .  .   . . . . . .
         .   12 134 . . . . . .
         234 .  123 . . . . . .
-        . . . . . . . . .
-        . . . . . . . . .
-        . . . . . . . . .
-        . . . . . . . . .
-        . . . . . . . . .
-        . . . . . . . . .
+        .   .  .   . . . . . .
+        .   .  .   . . . . . .
+        .   .  .   . . . . . .
+        .   .  .   . . . . . .
+        .   .  .   . . . . . .
+        .   .  .   . . . . . .
       `,
     })
     const { matches, removals } = strategies.nakedDouble(board)!

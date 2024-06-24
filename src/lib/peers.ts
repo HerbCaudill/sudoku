@@ -1,5 +1,5 @@
 import { boxes, cells, cols, numbers, rows } from './constants'
-import { row, col, box } from './units'
+import { row, col, box } from './constants'
 
 const exclude = (j: number) => (i: number) => i !== j
 

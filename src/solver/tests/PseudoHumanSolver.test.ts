@@ -1,5 +1,6 @@
 import { Board } from 'solver/Board'
 import { solve } from 'solver/PseudoHumanSolver'
+import { isFailure } from 'solver/findNextMove'
 import { describe, expect, it } from 'vitest'
 
 describe('solve', () => {
@@ -38,7 +39,7 @@ describe('solve', () => {
     const solver = solve(puzzle)
     {
       const { board, move } = solver.next().value
-      expect(move.solved).toEqual({ index: 2, value: 3 })
+      expect(move.solved).toEqual({ cell: 2, value: 3 })
       expect(board.grid[2]).toBe(3)
     }
     {
@@ -64,12 +65,12 @@ describe('solve', () => {
     const solver = solve(puzzle)
     {
       const { board, move } = solver.next().value
-      expect(move.solved).toEqual({ index: 72, value: 9 })
+      expect(move.solved).toEqual({ cell: 72, value: 9 })
       expect(board.grid[72]).toBe(9)
     }
     {
       const { board, move } = solver.next().value
-      expect(move.solved).toEqual({ index: 73, value: 1 })
+      expect(move.solved).toEqual({ cell: 73, value: 1 })
       expect(board.grid[73]).toBe(1)
     }
     {
@@ -96,7 +97,7 @@ describe('solve', () => {
     for (const { board, move } of solver) {
       if (move) {
         expect(move.label).toBe('nakedSingle')
-        expect(move.solved).toBeDefined()
+        expect(isFailure(move)).toBe(false)
       } else {
         expect(board.isSolved()).toBe(true)
         expect(board).toEqual(

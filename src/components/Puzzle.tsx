@@ -64,10 +64,10 @@ export const Puzzle = ({
 
   const pointerUp = () => setPointerAction(null)
 
-  const hintRemove = ({ index, value }: CellCandidate) =>
+  const hintRemove = ({ cell: index, value }: CellCandidate) =>
     hint?.removals.find(r => r.index === index && r.value === value) !== undefined
 
-  const hintHighlight = ({ index, value }: CellCandidate) =>
+  const hintHighlight = ({ cell: index, value }: CellCandidate) =>
     hint?.matches.find(r => r.index === index && r.value === value) !== undefined
 
   return (
@@ -128,9 +128,9 @@ export const Puzzle = ({
                       <span
                         key={j}
                         className={cx('text-center rounded-full size-[3.4cqw] leading-[3.2cqw] aspect-square', {
-                          'border border-danger-600 text-danger-400': include && hintRemove({ index: i, value: val }),
+                          'border border-danger-600 text-danger-400': include && hintRemove({ cell: i, value: val }),
                           'border border-blue-500k text-white bg-primary-500':
-                            include && hintHighlight({ index: i, value: val }),
+                            include && hintHighlight({ cell: i, value: val }),
                         })}
                       >
                         {include ? val : ' '}

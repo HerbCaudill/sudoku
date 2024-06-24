@@ -26,6 +26,14 @@ export type AnalysisResult = (
 export type CandidateGrid = Record<number, number[]>
 export type SingleMap = { [index: number]: number }
 
+export type Candidate = {
+  cell: number // 0-81
+  value: number // 1-9
+  row: number // 1-9
+  col: number // 1-9
+  box: number // 1-9
+}
+
 export type SolverState =
   | 'GUESSING'
   | 'PROPAGATING'

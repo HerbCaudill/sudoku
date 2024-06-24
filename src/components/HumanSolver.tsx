@@ -108,7 +108,7 @@ export const HumanSolver = ({ puzzle, onNewGame }: Props) => {
   const clearHint = () => setHint(undefined)
 
   const fill = () => {
-    const { candidates } = new Board({ grid: state.grid })
+    const { candidateGrid: candidates } = new Board({ grid: state.grid })
     dispatch({ type: 'SET_CANDIDATES', candidates })
   }
 
