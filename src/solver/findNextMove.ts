@@ -18,7 +18,7 @@ export const findNextMove = (board: Board): Move => {
 
 export type Success = {
   label: keyof typeof strategies
-  difficulty?: number
+  difficulty: number
   solved?: CellCandidate
   matches: CellCandidate[]
   removals: CellCandidate[]

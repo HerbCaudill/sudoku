@@ -3,7 +3,7 @@ import { stringToGrid } from 'lib/stringToGrid'
 import { printGrid } from 'lib/printGrid'
 import { arraysMatch } from 'lib/arraysMatch'
 
-describe('toGrid', () => {
+describe('stringToGrid', () => {
   it('should fill in missing values', () => {
     const str = '1 2 3 4 5 6 7 8 9'
     const result = stringToGrid(str)

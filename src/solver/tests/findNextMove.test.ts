@@ -1,5 +1,5 @@
 import { Board } from 'solver/Board'
-import { findNextMove } from 'solver/findNextMove'
+import { findNextMove, type Success } from 'solver/findNextMove'
 import { describe, expect, it } from 'vitest'
 
 describe('findNextMove', () => {
@@ -16,8 +16,8 @@ describe('findNextMove', () => {
         6 7 8  9 1 2  3 4 5
         9 1 2  3 4 5  6 7 8`,
     })
-    const { label: strategy, solved } = findNextMove(board)
-    expect(strategy).toBe('nakedSingle')
+    const { label, solved } = findNextMove(board) as Success
+    expect(label).toBe('nakedSingle')
     expect(solved).toEqual({ index: 2, value: 3 })
   })
 
@@ -50,8 +50,8 @@ describe('findNextMove', () => {
       5 . 8  6 7 .  1 9 2 
       . 9 6  5 1 2  4 . 8`,
     })
-    const { label: strategy, solved } = findNextMove(board)
-    expect(strategy).toBe('nakedSingle')
+    const { label, solved } = findNextMove(board) as Success
+    expect(label).toBe('nakedSingle')
     expect(solved).toEqual({ index: 1, value: 6 })
   })
 
@@ -68,8 +68,8 @@ describe('findNextMove', () => {
       . . .  . . .  . 1 3 
       . . 5  3 1 .  4 . .`,
     })
-    const { label: strategy, matches } = findNextMove(board)
-    expect(strategy).toBe('hiddenSingle')
+    const { label, matches } = findNextMove(board) as Success
+    expect(label).toBe('hiddenSingle')
     expect(matches).toEqual([{ index: 15, value: 3 }])
   })
 })
