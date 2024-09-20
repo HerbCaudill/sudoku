@@ -1,7 +1,7 @@
 import cx from 'classnames'
 import { cols, numbers, rows } from 'lib/constants'
 import { useState } from 'react'
-import { type Move } from 'solver/findNextMove'
+import { isFailure, type Move } from 'solver/findNextMove'
 import { type CellCandidate } from 'solver/strategies'
 import type { CandidateGrid, Grid, SolverState } from 'types'
 
@@ -64,11 +64,11 @@ export const Puzzle = ({
 
   const pointerUp = () => setPointerAction(null)
 
-  const hintRemove = ({ index, value }: CellCandidate) =>
-    hint?.removals.find(r => r.index === index && r.value === value) !== undefined
+  const hasHintRemove = ({ index, value }: CellCandidate) =>
+    hint && !isFailure(hint) && hint?.removals.find(r => r.index === index && r.value === value) !== undefined
 
-  const hintHighlight = ({ index, value }: CellCandidate) =>
-    hint?.matches.find(r => r.index === index && r.value === value) !== undefined
+  const hasHintHighlight = ({ index, value }: CellCandidate) =>
+    hint && !isFailure(hint) && hint?.matches.find(r => r.index === index && r.value === value) !== undefined
 
   return (
     <div className=" outlinepointer-events-none">
@@ -124,14 +124,19 @@ export const Puzzle = ({
                 >
                   {numbers.map((val, j) => {
                     const include = cellCandidates?.includes(val)
+                    const remove = hasHintRemove({ index: i, value: val })
+                    const highlight = hasHintHighlight({ index: i, value: val })
                     return (
                       <span
                         key={j}
-                        className={cx('text-center rounded-full size-[3.4cqw] leading-[3.2cqw] aspect-square', {
-                          'border border-danger-600 text-danger-400': include && hintRemove({ index: i, value: val }),
-                          'border border-blue-500k text-white bg-primary-500':
-                            include && hintHighlight({ index: i, value: val }),
-                        })}
+                        className={cx(
+                          'text-center rounded-full size-[3.4cqw] leading-[3.2cqw] aspect-square border transition-all duration-500',
+                          {
+                            'border-transparent': !include || (!remove && !highlight),
+                            'border-danger-600 text-danger-400': include && remove,
+                            'border-blue-500k text-white bg-primary-500': include && highlight,
+                          }
+                        )}
                       >
                         {include ? val : ' '}
                       </span>

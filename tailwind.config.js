@@ -77,6 +77,12 @@ export default {
           '60%': { opacity: 1 },
           to: { opacity: 0, bottom: '23px' },
         },
+
+        hint: {
+          from: { opacity: 0 },
+          '5%, 80%': { opacity: 1 },
+          to: { opacity: 0 },
+        },
       },
 
       animation: {
@@ -86,6 +92,7 @@ export default {
         rise: '2s rise ease-out',
         celebrate: '1s celebrate ease-in-out',
         shake: '500ms shake',
+        hint: '2s hint ease-in-out',
       },
     },
   },

@@ -5,7 +5,7 @@ import { useEffect, useReducer, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { getInitialState, reducer } from 'reducer'
 import { Board } from 'solver/Board'
-import { type Move } from 'solver/findNextMove'
+import { isFailure, type Move } from 'solver/findNextMove'
 import type { Grid } from 'types'
 import { Confetti } from './Confetti'
 import { Puzzle } from './Puzzle'
@@ -101,8 +101,9 @@ export const HumanSolver = ({ puzzle, onNewGame }: Props) => {
       Object.keys(candidates).length === 0 ? { grid: state.grid } : { candidates: state.candidates }
     )
     const hint = board.findNextMove()
-    if (hint.matches?.length) setNumber(hint.matches[0].value)
+    if (!isFailure(hint) && hint.matches?.length) setNumber(hint.matches[0].value)
     setHint(hint)
+    setTimeout(() => clearHint(), 2100)
   }
 
   const clearHint = () => setHint(undefined)
@@ -151,6 +152,7 @@ export const HumanSolver = ({ puzzle, onNewGame }: Props) => {
             className="w-full"
             optionClassName="grow text-[3cqw] py-[2cqw]"
           />
+
           {/* next/prev number */}
           <div className="grow">
             <div className="flex flex-row w-full gap-2">
@@ -162,16 +164,16 @@ export const HumanSolver = ({ puzzle, onNewGame }: Props) => {
               </button>
             </div>
           </div>
+
+          {/* hint */}
           {hint && (
-            <div className="font-sans text-sm border border-gray-600 rounded p-2 flex flex-row gap-2 ">
+            <div className="animate-hint opacity-0 font-sans text-sm border border-gray-600 bg-white/50 rounded p-2 flex flex-row gap-2 ">
               <IconBulb className="size-4 text-gray-600" aria-hidden="true" />
-              <span className="grow">{changeCase.sentenceCase(hint.label)}</span>
-              <button className="p-1" onClick={clearHint}>
-                <IconX className="size-4 text-gray-500" aria-hidden="true" />
-              </button>
+              <span>{changeCase.sentenceCase(hint.label)}</span>
             </div>
           )}
 
+          {/* buttons */}
           <div className="flex flex-row gap-2 pb-12">
             <button
               className="button button-sm"
@@ -196,6 +198,7 @@ export const HumanSolver = ({ puzzle, onNewGame }: Props) => {
               Hint
             </button>
           </div>
+
           {/* undo/redo/reset */}
           <div className="flex flex-row gap-2">
             <button className="button button-lg" title="Undo" onClick={() => dispatch({ type: 'UNDO' })}>
