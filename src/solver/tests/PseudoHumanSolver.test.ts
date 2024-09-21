@@ -1,6 +1,7 @@
 import { Board } from 'solver/Board'
+import { isFailure } from 'solver/findNextMove'
 import { solve } from 'solver/PseudoHumanSolver'
-import { describe, expect, it } from 'vitest'
+import { assert, describe, expect, it } from 'vitest'
 
 describe('solve', () => {
   it('no vacancies', () => {
@@ -95,6 +96,7 @@ describe('solve', () => {
     const solver = solve(puzzle)
     for (const { board, move } of solver) {
       if (move) {
+        assert(!isFailure(move))
         expect(move.label).toBe('nakedSingle')
         expect(move.solved).toBeDefined()
       } else {
