@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "bench": "tsx ./src/scripts/benchmark.ts",
-    "build": "tsc && vite build",
+    "build": "tsc -p ./tsconfig.build.json && vite build",
     "dev": "vite --host --port 3000 --open http://localhost:3000",
     "icons": "node ./src/scripts/icons.js",
     "progress": "tsx ./src/scripts/progress.ts",
