@@ -10,6 +10,7 @@ import { BotSolver } from './BotSolver'
 import { HumanSolver } from './HumanSolver'
 import { RadioGroup } from './RadioGroup'
 import { Spinner } from './Spinner'
+import { shufflePuzzle } from 'lib/shufflePuzzle'
 
 export const App = () => {
   const [mode, setMode] = useLocalStorage<Mode>('mode', HUMAN)
@@ -29,8 +30,9 @@ export const App = () => {
 
   const newGame = (level: number) => {
     getPuzzle(level).then(p => {
-      const puzzle = stringToGrid(p)
-      setPuzzle(puzzle)
+      const puzzle = shufflePuzzle(p)
+      const grid = stringToGrid(puzzle)
+      setPuzzle(grid)
     })
   }
 

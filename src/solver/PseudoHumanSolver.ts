@@ -12,9 +12,9 @@ export function* solve(board: Board): Generator<{ board: Board; move?: Move }> {
 }
 
 export const tryToSolve = (board: Board) => {
-  const solver = solve(board)
   let i = 0
   let difficulty = 0
+  const solver = solve(board)
   for (const { board, move } of solver) {
     i++
     if (!move) continue // done

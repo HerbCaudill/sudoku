@@ -1,6 +1,5 @@
 import fs from 'fs'
 import { files, load } from 'lib/loadFile'
-import { shufflePuzzle } from 'lib/shufflePuzzle'
 import path from 'path'
 import { Solver } from 'solver/Solver'
 import { AnalysisResult } from 'types'
@@ -48,9 +47,7 @@ function writeToFiles() {
   for (const level in sortedPuzzles) {
     console.log(`Level ${level}: ${sortedPuzzles[level].length} puzzles`)
     const filePath = path.join(puzzlesDir, `${level}.txt`)
-    const output = sortedPuzzles[level] //
-      .map(p => shufflePuzzle(p))
-      .join('\n')
+    const output = sortedPuzzles[level].join('\n')
     fs.writeFileSync(filePath, output)
   }
 }
