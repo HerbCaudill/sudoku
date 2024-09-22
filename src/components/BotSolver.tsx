@@ -1,27 +1,35 @@
+import * as changeCase from 'change-case'
 import { useEffect, useState } from 'react'
-import type { Grid, InterimResult } from 'types'
-import { Solver } from 'solver/Solver'
+import type { Grid } from 'types'
 import { Puzzle } from './Puzzle'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { search, type Step } from 'solver/PseudoHumanSolver'
+import { Board } from 'solver/Board'
+import type { Move } from 'solver/findNextMove'
 
 export const BotSolver = ({ puzzle }: { puzzle: Grid }) => {
-  const [steps, setSteps] = useState<InterimResult[]>([])
+  const [steps, setSteps] = useState<Step[]>([])
   const [stepIndex, setStepIndex] = useState(0)
   const [intervalId, setIntervalId] = useState<ReturnType<typeof setInterval> | undefined>(undefined)
 
-  const initialStep = { grid: [...puzzle], candidates: {}, state: 'PROPAGATING' }
+  const [hint, setHint] = useState<Move | undefined>()
+
   useEffect(() => {
     if (!puzzle) return
     stop()
     setStepIndex(0)
-    const solver = new Solver(puzzle)
-    const steps = [initialStep] as InterimResult[]
-    let done = false
-    for (const step of solver.search(puzzle)) {
-      if (!done) {
-        steps.push(step)
-        if (step.state === 'SOLVED') done = true
-      }
+    const board = new Board({ grid: puzzle })
+    const steps = [] as Step[]
+    let prevBoard = board
+    for (const step of search(board)) {
+      // make one step just showing this step's move with the previous board
+      steps.push({ board: prevBoard, move: step.move })
+      // make another step showing the board after the move
+      steps.push({ board: step.board })
+
+      prevBoard = step.board
+
+      if (step.solved === true) break
     }
     setSteps(steps)
   }, [puzzle])
@@ -45,7 +53,6 @@ export const BotSolver = ({ puzzle }: { puzzle: Grid }) => {
   }
 
   const start = () => {
-    if (isSolved()) reset()
     stop()
     const id = setInterval(stepForward, 10)
     setIntervalId(id) // Store the intervalId
@@ -63,19 +70,16 @@ export const BotSolver = ({ puzzle }: { puzzle: Grid }) => {
     setStepIndex(0)
   }
 
-  const step = steps[stepIndex] || initialStep
+  if (!steps.length) return null
 
-  const isSolved = () => {
-    const solvedCount = step.grid.filter(Boolean).length
-    return solvedCount === 81
-  }
+  const { board, move, guess } = steps[stepIndex]
 
-  if (isSolved()) stop()
+  if (board.isSolved()) stop()
 
   return (
     <div className="flex flex-col gap-2">
       {/* Puzzle */}
-      <Puzzle puzzle={puzzle} {...step} />
+      <Puzzle puzzle={puzzle} grid={board.grid} candidates={board.candidates} hint={move} />
 
       {/* Buttons */}
       <div className="flex gap-2">
@@ -97,6 +101,11 @@ export const BotSolver = ({ puzzle }: { puzzle: Grid }) => {
             <IconPlayerTrackNextFilled className="h-4 w-4" />
           </button>
         )}
+      </div>
+
+      <div className="font-sans text-sm">
+        {move && changeCase.sentenceCase(move.label)}
+        {guess && 'Guessing...'}
       </div>
     </div>
   )

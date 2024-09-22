@@ -1,35 +1,21 @@
 import { files, load } from 'lib/loadFile'
 import { Board } from 'solver/Board'
 import chalk from 'chalk'
-import { solve } from 'solver/PseudoHumanSolver'
+import { analyze } from 'solver/analyze'
 
 // assess progress of PseudoHumanSolver by analyzing a set of puzzles
 
 let allResults = []
-type Result = ReturnType<typeof tryToSolve>
+type Result = ReturnType<typeof analyze>
 
-export const tryToSolve = (startingBoard: Board) => {
-  let difficulty = 0
-  let backtracks = 0
-  let moves = 0
-  for (const { board, move, solved } of solve(startingBoard)) {
-    moves += 1
-    if (moves > 100000) break // give up
-    if (solved === true) return { solved: true, moves, difficulty, backtracks } // solved
-    if (solved === false) backtracks += 1
-    if (move) difficulty += move.difficulty
-  }
-  return { solved: false, moves, difficulty, backtracks } // give up
+const stats = (results: Result[], prop: keyof Result) => {
+  const values = results.map(result => Number(result[prop]))
+  const min = String(Math.min(...values)).padStart(5)
+  const avg = (values.reduce((sum, v) => sum + v, 0) / results.length).toFixed(0).padStart(5)
+  const max = String(Math.max(...values)).padStart(5)
+  return `  ${prop}: ${chalk.white(`${min} ${avg} ${max}`)}`
 }
 
-const average = (arr: Result[], prop: keyof Result) => {
-  const result = (
-    arr.reduce((sum, result) => {
-      return sum + Number(result[prop])
-    }, 0) / arr.length
-  ).toFixed(0)
-  return `   ${prop}: ${chalk.white(String(result).padStart(3))}   `
-}
 const ratioAndPercentage = (a: number, b: number) => {
   const ratio = String(a).padStart(3) + ' /' + String(b).padStart(4)
   const percentage = (((a / b) * 100).toFixed(0) + '%').padStart(5)
@@ -42,23 +28,16 @@ const summary = (label: string, results: Result[]) => {
   return chalk.gray(
     chalk.cyan(label.padEnd(20)) +
       `  solved: ${ratioAndPercentage(solved, attempts)}  ` +
-      average(results, 'difficulty') +
-      average(results, 'backtracks') +
-      average(results, 'moves')
+      stats(results, 'difficulty') +
+      stats(results, 'backtracks') +
+      stats(results, 'moves')
   )
 }
 
 for (const file of files) {
-  const results = []
-  const puzzles = load(file).slice(0, 500)
-  for (const puzzle of puzzles) {
-    const board = new Board({ grid: puzzle })
-    const result = tryToSolve(board)
-    results.push(result)
-  }
-
+  const puzzles = load(file).slice(0, 100)
+  const results = puzzles.map(puzzle => analyze(puzzle))
   console.log(summary(file.replace('.txt', ''), results))
-
   allResults.push(...results)
 }
 

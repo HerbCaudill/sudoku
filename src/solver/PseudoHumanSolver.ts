@@ -1,11 +1,23 @@
 import { makeRandom } from '@herbcaudill/random'
-import type { Board } from './Board'
+import { Board } from './Board'
 import { type Move } from './findNextMove'
-import { peers } from 'lib/peers'
 
 const random = makeRandom('solver')
 
-export function* solve(board: Board): Generator<Step> {
+export const solve = (grid: string) => {
+  const startingBoard = new Board({ grid })
+  let moves = 0
+  let currentBoard = startingBoard
+  for (const { board, solved } of search(startingBoard)) {
+    currentBoard = board
+    moves += 1
+    if (moves > 100000) break // give up
+    if (solved === true) return currentBoard.grid
+  }
+  return false
+}
+
+export function* search(board: Board): Generator<Step> {
   // get as far as possible using strategies
   while (true) {
     if (board.isSolved()) yield { board, solved: true }
@@ -30,7 +42,7 @@ export function* solve(board: Board): Generator<Step> {
     const nextBoard = board.setCell(index, value)
 
     // recursively continue the search, yielding interim results as we go
-    for (const step of solve(nextBoard)) yield step
+    for (const step of search(nextBoard)) yield step
   }
 
   // none of the candidates for this cell worked - backtrack
@@ -42,7 +54,7 @@ type Guess = {
   value: number
 }
 
-type Step = {
+export type Step = {
   board: Board
   solved?: boolean
   move?: Move

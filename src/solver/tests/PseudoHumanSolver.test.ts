@@ -1,28 +1,13 @@
 import { load } from 'lib/loadFile'
 import { printGrid } from 'lib/printGrid'
 import { stringToGrid } from 'lib/stringToGrid'
-import { Board } from 'solver/Board'
 import { solve } from 'solver/PseudoHumanSolver'
 import type { Grid } from 'types'
 import { assert, describe, expect, it } from 'vitest'
 
-export const tryToSolve = (grid: string) => {
-  const startingBoard = new Board({ grid })
-  let moves = 0
-  let currentBoard = startingBoard
-  for (const { board, solved } of solve(startingBoard)) {
-    currentBoard = board
-    moves += 1
-    if (moves > 100000) break // give up
-    if (solved === true) break
-  }
-  if (currentBoard.isSolved()) return currentBoard.grid
-  return false
-}
-
 describe('Solver', () => {
   it('no vacancies', () => {
-    const solution = tryToSolve(`
+    const solution = solve(`
       1 2 3  4 5 6  7 8 9
       4 5 6  7 8 9  1 2 3
       7 8 9  1 2 3  4 5 6
@@ -47,7 +32,7 @@ describe('Solver', () => {
   })
 
   it('1 vacancy', () => {
-    const solution = tryToSolve(`
+    const solution = solve(`
       1 2 .  4 5 6  7 8 9
       4 5 6  7 8 9  1 2 3
       7 8 9  1 2 3  4 5 6
@@ -62,7 +47,7 @@ describe('Solver', () => {
   })
 
   it('2 vacancies', () => {
-    const solution = tryToSolve(`
+    const solution = solve(`
       1 2 3  4 5 6  7 8 9
       4 5 6  7 8 9  1 2 3
       7 8 9  1 2 3  4 5 6
@@ -78,7 +63,7 @@ describe('Solver', () => {
   })
 
   it('naked singles', () => {
-    const solution = tryToSolve(`
+    const solution = solve(`
       3 . 5  4 2 .  8 1 . 
       4 8 7  9 . 1  5 . 6 
       . 2 9  . 5 6  3 7 4 
@@ -105,7 +90,7 @@ describe('Solver', () => {
   })
 
   it('hidden singles', () => {
-    const solution = tryToSolve(`
+    const solution = solve(`
       . . 2  . 3 .  . . 8 
       . . .  . . 8  . . . 
       . 3 1  . 2 .  . . . 
@@ -131,7 +116,7 @@ describe('Solver', () => {
   })
 
   it('solves an "easy" puzzle', () => {
-    const solution = tryToSolve(`
+    const solution = solve(`
       5 3 .  8 . .  6 . . 
       . 4 9  5 . 2  8 3 1 
       . 2 7  1 . .  5 . 9 
@@ -157,7 +142,7 @@ describe('Solver', () => {
   })
 
   it('solves a "medium" puzzle', () => {
-    const solution = tryToSolve(`
+    const solution = solve(`
       3 . .  . 9 .  8 2 . 
       . 1 .  6 . .  . . . 
       . . .  4 3 .  . 7 6 
@@ -183,7 +168,7 @@ describe('Solver', () => {
   })
 
   it(`solves a "master" puzzle`, () => {
-    const solution = tryToSolve(`
+    const solution = solve(`
       . . 3  . 1 9  . . 7
       1 2 .  7 . 4  . . 5
       . . .  . . .  . 3 .
@@ -209,7 +194,7 @@ describe('Solver', () => {
   })
 
   it(`solves a 17-clue puzzle`, () => {
-    const solution = tryToSolve(`
+    const solution = solve(`
       . . .  . . .  . . 1 
       . . .  . . 2  . . . 
       . 1 3  . . .  . . 4 
@@ -235,7 +220,7 @@ describe('Solver', () => {
   })
 
   it(`solves Arto Inkala's "hardest puzzle ever"`, () => {
-    const solution = tryToSolve(`
+    const solution = solve(`
       . . 5  3 . .  . . .
       8 . .  . . .  . 2 .
       . 7 .  . 1 .  5 . .
@@ -262,7 +247,7 @@ describe('Solver', () => {
 
   // 💀 takes 12 seconds
   it.skip(`solves Dr. Norvig's "impossible puzzle"`, () => {
-    const solution = tryToSolve(`
+    const solution = solve(`
       . . .  . . 5  . 8 . 
       . . .  6 . 1  . 4 3 
       . . .  . . .  . . . 
@@ -276,7 +261,7 @@ describe('Solver', () => {
 
   it(`solves the Project Euler sudoku problem`, () => {
     const puzzles = load('project-euler.txt')
-    const solutions = puzzles.map(puzzle => tryToSolve(puzzle))
+    const solutions = puzzles.map(puzzle => solve(puzzle))
     const expected = solutions.map(solution => {
       assert(solution)
       return Number(solution.slice(0, 3).join(''))

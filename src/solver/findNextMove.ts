@@ -2,7 +2,7 @@ import { Board } from './Board'
 import { strategiesByDifficulty, type CellCandidate, type strategies } from './strategies'
 
 export const findNextMove = (board: Board): Move | false => {
-  if (board.isSolved()) throw new Error('Board is solved')
+  if (board.isSolved()) return false //throw new Error('Board is solved')
 
   for (const strategy of strategiesByDifficulty) {
     const result = strategy(board)
