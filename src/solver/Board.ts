@@ -5,7 +5,8 @@ import { stringToGrid } from 'lib/stringToGrid'
 import { cells, numbers } from '../lib/constants'
 import { stringToCandidates } from '../lib/stringToCandidates'
 import { gridToCandidates } from '../lib/gridToCandidates'
-import { findNextMove, isFailure, type Move } from './findNextMove'
+import { findNextMove, type Move } from './findNextMove'
+import { peers } from 'lib/peers'
 
 export class Board {
   public grid: Grid
@@ -21,17 +22,21 @@ export class Board {
     }
   }
 
-  get printGrid() {
+  printGrid() {
     return printGrid(this.grid)
   }
 
-  get printCandidates() {
+  printCandidates() {
     return printCandidates(this.candidates)
   }
 
   /** returns all cells with exactly N candidates (1 for naked singles, 2 for naked doubles, etc.) */
   tuples(N: number) {
     return cells.filter(this.hasCandidateCount(N))
+  }
+
+  singles() {
+    return this.tuples(1)
   }
 
   unsolvedCells() {
@@ -42,12 +47,12 @@ export class Board {
     return this.unsolvedCells().length === 0
   }
 
-  findNextMove(): Move {
+  findNextMove() {
     return findNextMove(this)
   }
 
   applyMove(move: Move) {
-    if (isFailure(move)) return this
+    if (!move) return this
     if (move.solved) {
       const grid = [...this.grid]
       grid[move.solved.index] = move.solved.value
@@ -57,38 +62,51 @@ export class Board {
       for (const removal of move.removals) {
         candidates[removal.index] = candidates[removal.index].filter(value => value !== removal.value)
       }
+      // propagate: if any cell has exactly one candidate, remove that candidate from all peers
+      for (const index of cells.filter(i => candidates[i].length === 1)) {
+        const value = candidates[index][0]
+        for (const peer of peers[index]) {
+          candidates[peer] = candidates[peer].filter(v => v !== value)
+        }
+      }
       return new Board({ candidates })
     }
   }
 
+  setCell(index: number, value: number) {
+    const grid = [...this.grid]
+    grid[index] = value
+    return new Board({ grid })
+  }
+
   // filter predicates
 
-  /** cells.filter(board.hasCandidateCount(3)) */
+  /** example: `cells.filter(board.hasCandidateCount(3))` */
   hasCandidateCount(count: number) {
     return (index: number) => this.candidates[index].length === count
   }
 
-  /** cells.filter(board.hasNoCandidates()) */
+  /** example: `cells.filter(board.hasNoCandidates())` */
   hasNoCandidates() {
     return this.hasCandidateCount(0)
   }
 
-  /** cells.filter(board.hasOneCandidate()) */
+  /** example: `cells.filter(board.hasOneCandidate())` */
   hasOneCandidate() {
     return this.hasCandidateCount(1)
   }
 
-  /** cells.filter(board.hasMultipleCandidates()) */
+  /** example: `cells.filter(board.hasMultipleCandidates())` */
   hasMultipleCandidates(index: number) {
     return this.candidates[index].length > 1
   }
 
-  /** cells.filter(board.hasCandidate(7)) */
+  /** example: `cells.filter(board.hasCandidate(7))` */
   hasCandidate(value: number) {
     return (index: number) => this.candidates[index].includes(value)
   }
 
-  /** cells.filter(board.hasCandidates([1,2,3]) */
+  /** example: `cells.filter(board.hasCandidates([1,2,3])` */
   hasCandidates(values: number[]) {
     return (index: number) => isSubset(this.candidates[index], values)
   }

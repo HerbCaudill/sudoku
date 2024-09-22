@@ -5,7 +5,7 @@ import { useEffect, useReducer, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { getInitialState, reducer } from 'reducer'
 import { Board } from 'solver/Board'
-import { isFailure, type Move } from 'solver/findNextMove'
+import { type Move } from 'solver/findNextMove'
 import type { Grid } from 'types'
 import { Confetti } from './Confetti'
 import { Puzzle } from './Puzzle'
@@ -101,8 +101,10 @@ export const HumanSolver = ({ puzzle, onNewGame }: Props) => {
       Object.keys(candidates).length === 0 ? { grid: state.grid } : { candidates: state.candidates }
     )
     const hint = board.findNextMove()
-    if (!isFailure(hint) && hint.matches?.length) setNumber(hint.matches[0].value)
-    setHint(hint)
+    if (hint && hint.matches?.length) {
+      setNumber(hint.matches[0].value)
+      setHint(hint)
+    }
     setTimeout(() => clearHint(), 2100)
   }
 

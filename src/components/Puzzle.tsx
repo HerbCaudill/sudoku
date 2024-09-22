@@ -1,7 +1,7 @@
 import cx from 'classnames'
 import { cols, numbers, rows } from 'lib/constants'
 import { useState } from 'react'
-import { isFailure, type Move } from 'solver/findNextMove'
+import { type Move } from 'solver/findNextMove'
 import { type CellCandidate } from 'solver/strategies'
 import type { CandidateGrid, Grid, SolverState } from 'types'
 
@@ -65,10 +65,10 @@ export const Puzzle = ({
   const pointerUp = () => setPointerAction(null)
 
   const hasHintRemove = ({ index, value }: CellCandidate) =>
-    hint && !isFailure(hint) && hint?.removals.find(r => r.index === index && r.value === value) !== undefined
+    hint && hint.removals.find(r => r.index === index && r.value === value) !== undefined
 
   const hasHintHighlight = ({ index, value }: CellCandidate) =>
-    hint && !isFailure(hint) && hint?.matches.find(r => r.index === index && r.value === value) !== undefined
+    hint && hint.matches.find(r => r.index === index && r.value === value) !== undefined
 
   return (
     <div className=" outlinepointer-events-none">
