@@ -50,7 +50,7 @@
     "@svgr/core": "^8.1.0",
     "@svgr/plugin-jsx": "^8.1.0",
     "@types/node": "^20.16.5",
-    "happy-dom": "^13.10.1",
+    "happy-dom": "^20.0.2",
     "prettier": "^3.3.3",
     "tsx": "^4.19.1",
     "unplugin-auto-import": "^0.17.8",
