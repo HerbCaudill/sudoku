@@ -1,6 +1,7 @@
 {
   "name": "sudoku",
   "version": "1.0.0",
+  "packageManager": "pnpm@10.28.2",
   "repository": "https://github.com/herbcaudill/sudoku.git",
   "license": "ISC",
   "author": "herb@devresults.com",
